@@ -116,32 +116,43 @@ export function YouTubeHub() {
 
       {/* Featured */}
       {featured && (
-        <motion.a
-          href={featured.url}
-          target="_blank"
-          rel="noreferrer"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="group relative block aspect-video rounded-3xl overflow-hidden shadow-card mb-10"
-        >
-          <img src={featured.thumbnail} alt={featured.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <div className="absolute inset-0 grid place-items-center">
-            <div className="w-20 h-20 rounded-full bg-white/95 grid place-items-center group-hover:scale-110 transition shadow-glow">
-              <Play className="w-8 h-8 text-[color:var(--rose-deep)] fill-current ms-1" />
+        <div className="relative p-3 rounded-[32px] bg-gradient-to-tr from-[#FFB2CB] via-[#FFF9F7] to-[#FCE5EE] border border-[#FFD6E3] shadow-soft mb-10 hover:shadow-glow hover:scale-[1.01] transition duration-300">
+          {/* Large Floating Ribbon */}
+          <div className="absolute -top-3 -left-3.5 text-3xl z-20 select-none drop-shadow-md animate-bounce" style={{ animationDuration: "3s" }}>
+            💝
+          </div>
+          {/* Sparkles on opposite side */}
+          <div className="absolute -bottom-3 -right-3 text-2xl z-20 select-none drop-shadow-md">
+            ✨
+          </div>
+
+          <motion.a
+            href={featured.url}
+            target="_blank"
+            rel="noreferrer"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="group relative block aspect-video rounded-[22px] overflow-hidden shadow-card"
+          >
+            <img src={featured.thumbnail} alt={featured.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute inset-0 grid place-items-center">
+              <div className="w-20 h-20 rounded-full bg-white/95 grid place-items-center group-hover:scale-110 transition shadow-glow">
+                <Play className="w-8 h-8 text-[color:var(--rose-deep)] fill-current ms-1" />
+              </div>
             </div>
-          </div>
-          <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-            <p className="text-xs uppercase tracking-widest opacity-80">⭐ {isAr ? "الأكثر مشاهدة" : "Most Watched"}</p>
-            <p className="mt-1 text-xl md:text-2xl font-display font-semibold line-clamp-2">{featured.title}</p>
-            <p className="mt-2 text-xs opacity-80 flex items-center gap-3">
-              <span className="inline-flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> {formatViews(featured.views)}</span>
-              <span className="inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {formatDuration(featured.duration)}</span>
-              <span>{timeAgo(featured.publishedAt, isAr)}</span>
-            </p>
-          </div>
-        </motion.a>
+            <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+              <p className="text-xs uppercase tracking-widest opacity-80">⭐ {isAr ? "الأكثر مشاهدة" : "Most Watched"}</p>
+              <p className="mt-1 text-xl md:text-2xl font-display font-semibold line-clamp-2">{featured.title}</p>
+              <p className="mt-2 text-xs opacity-80 flex items-center gap-3">
+                <span className="inline-flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> {formatViews(featured.views)}</span>
+                <span className="inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {formatDuration(featured.duration)}</span>
+                <span>{timeAgo(featured.publishedAt, isAr)}</span>
+              </p>
+            </div>
+          </motion.a>
+        </div>
       )}
 
       {/* Filter tabs */}
@@ -210,25 +221,37 @@ function VideoCard({ v, i, isAr }: { v: YTVideo; i: number; isAr: boolean }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: Math.min(i * 0.04, 0.3) }}
-      className="group rounded-2xl overflow-hidden bg-white border border-[color:var(--border)] shadow-sm hover:shadow-card transition"
+      className="group relative p-2 rounded-[24px] bg-gradient-to-tr from-[#FFB2CB] via-[#FFF9F7] to-[#FCE5EE] border border-[#FFD6E3] hover:shadow-glow hover:scale-[1.02] transition duration-300 block"
     >
-      <div className="relative aspect-video overflow-hidden bg-[color:var(--blush)]">
-        <img src={v.thumbnail} alt={v.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-        <div className="absolute bottom-2 end-2 px-1.5 py-0.5 rounded bg-black/80 text-white text-[10px] font-medium">
-          {formatDuration(v.duration)}
-        </div>
-        <div className="absolute inset-0 grid place-items-center opacity-0 group-hover:opacity-100 transition bg-black/30">
-          <div className="w-12 h-12 rounded-full bg-white/95 grid place-items-center">
-            <Play className="w-5 h-5 text-[color:var(--rose-deep)] fill-current ms-0.5" />
+      {/* Cute Floating Ribbon decoration */}
+      <div className="absolute -top-2.5 -left-2.5 text-xl z-20 select-none drop-shadow-sm filter animate-pulse" style={{ animationDuration: "4s" }}>
+        🎀
+      </div>
+      {/* Cute Flower decoration on the bottom-right of frame */}
+      <div className="absolute -bottom-2 -right-2 text-lg z-20 select-none drop-shadow-sm">
+        🌸
+      </div>
+
+      {/* Inner Card Content */}
+      <div className="rounded-[18px] overflow-hidden bg-white border border-[#FFD6E3]/40 shadow-sm h-full flex flex-col">
+        <div className="relative aspect-video overflow-hidden bg-[color:var(--blush)]">
+          <img src={v.thumbnail} alt={v.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+          <div className="absolute bottom-2 end-2 px-1.5 py-0.5 rounded bg-black/80 text-white text-[10px] font-medium">
+            {formatDuration(v.duration)}
+          </div>
+          <div className="absolute inset-0 grid place-items-center opacity-0 group-hover:opacity-100 transition bg-black/30">
+            <div className="w-12 h-12 rounded-full bg-white/95 grid place-items-center">
+              <Play className="w-5 h-5 text-[color:var(--rose-deep)] fill-current ms-0.5" />
+            </div>
           </div>
         </div>
-      </div>
-      <div className="p-4">
-        <p className="font-medium text-sm text-[color:var(--mauve)] line-clamp-2 leading-snug">{v.title}</p>
-        <div className="mt-2 flex items-center gap-3 text-[11px] text-[color:var(--mauve)]/60">
-          <span className="inline-flex items-center gap-1"><Eye className="w-3 h-3" /> {formatViews(v.views)}</span>
-          <span>·</span>
-          <span>{timeAgo(v.publishedAt, isAr)}</span>
+        <div className="p-4 flex-1 flex flex-col justify-between">
+          <p className="font-medium text-sm text-[color:var(--mauve)] line-clamp-2 leading-snug">{v.title}</p>
+          <div className="mt-2.5 flex items-center gap-3 text-[11px] text-[color:var(--mauve)]/60">
+            <span className="inline-flex items-center gap-1"><Eye className="w-3 h-3" /> {formatViews(v.views)}</span>
+            <span>·</span>
+            <span>{timeAgo(v.publishedAt, isAr)}</span>
+          </div>
         </div>
       </div>
     </motion.a>
@@ -245,24 +268,30 @@ function PlaylistCard({ p, i, isAr }: { p: YTPlaylist; i: number; isAr: boolean 
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ delay: i * 0.04 }}
-      className="group rounded-2xl overflow-hidden bg-white border border-[color:var(--border)] shadow-sm hover:shadow-card hover:scale-[1.02] transition"
+      className="group relative p-1.5 rounded-[20px] bg-gradient-to-tr from-[#FFD6E3] via-[#FFF9F7] to-[#FCE5EE] border border-[#FFD6E3]/60 hover:shadow-glow hover:scale-[1.02] transition duration-300 block"
     >
-      <div className="relative aspect-video overflow-hidden">
-        {p.thumbnail ? (
-          <img src={p.thumbnail} alt={p.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[#FFD6E3] to-[#F4A4C0]" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-        <div className="absolute bottom-2 end-2 px-2 py-0.5 rounded bg-black/80 text-white text-[10px] font-medium flex items-center gap-1">
-          <Play className="w-2.5 h-2.5 fill-current" /> {p.itemCount}
-        </div>
+      {/* Tiny Tulip emoji */}
+      <div className="absolute -top-1.5 -left-1.5 text-sm z-20 select-none">
+        🌷
       </div>
-      <div className="p-3">
-        <p className="font-medium text-sm text-[color:var(--mauve)] line-clamp-2">{p.title}</p>
-        <p className="text-[11px] text-[color:var(--mauve)]/60 mt-1">
-          {p.itemCount} {isAr ? "فيديو" : "videos"}
-        </p>
+      <div className="rounded-[14px] overflow-hidden bg-white border border-[#FFD6E3]/30 h-full flex flex-col">
+        <div className="relative aspect-video overflow-hidden">
+          {p.thumbnail ? (
+            <img src={p.thumbnail} alt={p.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-[#FFD6E3] to-[#F4A4C0]" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute bottom-2 end-2 px-2 py-0.5 rounded bg-black/80 text-white text-[10px] font-medium flex items-center gap-1">
+            <Play className="w-2.5 h-2.5 fill-current" /> {p.itemCount}
+          </div>
+        </div>
+        <div className="p-3 flex-1 flex flex-col justify-between">
+          <p className="font-medium text-sm text-[color:var(--mauve)] line-clamp-2 leading-tight">{p.title}</p>
+          <p className="text-[11px] text-[color:var(--mauve)]/60 mt-1.5">
+            {p.itemCount} {isAr ? "فيديو" : "videos"}
+          </p>
+        </div>
       </div>
     </motion.a>
   );
