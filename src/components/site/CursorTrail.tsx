@@ -42,12 +42,20 @@ export function CursorTrail() {
       }, 1300);
     };
 
-    // pointermove covers mouse, touch, and pen inputs beautifully and without conflicts
-    const onPointerMove = (e: PointerEvent) => spawn(e.clientX, e.clientY);
+    const onMouseMove = (e: MouseEvent) => spawn(e.clientX, e.clientY);
+    const onTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (touch) {
+        spawn(touch.clientX, touch.clientY);
+      }
+    };
 
-    document.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.addEventListener("mousemove", onMouseMove, { passive: true });
+    document.addEventListener("touchmove", onTouchMove, { passive: true });
+
     return () => {
-      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("touchmove", onTouchMove);
     };
   }, []);
 
