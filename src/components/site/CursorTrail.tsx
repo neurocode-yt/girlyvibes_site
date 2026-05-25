@@ -18,7 +18,6 @@ export function CursorTrail() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const spawn = (cx: number, cy: number) => {
       const now = performance.now();
@@ -43,20 +42,12 @@ export function CursorTrail() {
       }, 1300);
     };
 
-    const onPointer = (e: PointerEvent) => spawn(e.clientX, e.clientY);
-    const onMouse = (e: MouseEvent) => spawn(e.clientX, e.clientY);
-    const onTouch = (e: TouchEvent) => {
-      const t = e.touches[0];
-      if (t) spawn(t.clientX, t.clientY);
-    };
+    // pointermove covers mouse, touch, and pen inputs beautifully and without conflicts
+    const onPointerMove = (e: PointerEvent) => spawn(e.clientX, e.clientY);
 
-    document.addEventListener("pointermove", onPointer, { passive: true });
-    document.addEventListener("mousemove", onMouse, { passive: true });
-    document.addEventListener("touchmove", onTouch, { passive: true });
+    document.addEventListener("pointermove", onPointerMove, { passive: true });
     return () => {
-      document.removeEventListener("pointermove", onPointer);
-      document.removeEventListener("mousemove", onMouse);
-      document.removeEventListener("touchmove", onTouch);
+      document.removeEventListener("pointermove", onPointerMove);
     };
   }, []);
 
