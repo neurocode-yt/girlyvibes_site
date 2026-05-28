@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { setResponseHeader } from "@tanstack/react-start/server";
-import { getEvent } from "vinxi/http";
 
 if (typeof window === "undefined") {
   import("node:dns").then((dns) => {
@@ -48,34 +47,7 @@ export type YTPayload = {
 
 const API = "https://www.googleapis.com/youtube/v3";
 
-function getApiKey(): string | undefined {
-  // 1. Try local process.env (Vite/Node)
-  if (typeof process !== "undefined" && process.env?.YOUTUBE_API_KEY) {
-    return process.env.YOUTUBE_API_KEY;
-  }
-
-  // 2. Try Vinxi/Cloudflare context
-  try {
-    const event = getEvent();
-    const cfEnv = (event?.context as any)?.cloudflare?.env;
-    if (cfEnv?.YOUTUBE_API_KEY) {
-      return cfEnv.YOUTUBE_API_KEY;
-    }
-  } catch (e) {
-    // Ignore error if getEvent is called outside request context
-  }
-
-  // 3. Try Cloudflare global binding
-  if (typeof globalThis !== "undefined" && (globalThis as any).YOUTUBE_API_KEY) {
-    return (globalThis as any).YOUTUBE_API_KEY;
-  }
-
-  return undefined;
-}
-
-async function yt<T>(path: string, params: Record<string, string>): Promise<T> {
-  const key = getApiKey();
-  if (!key) throw new Error("Missing YouTube API Key");
+async function yt<T>(key: string, path: string, params: Record<string, string>): Promise<T> {
   const url = new URL(`${API}/${path}`);
   Object.entries({ ...params, key }).forEach(([k, v]) => url.searchParams.set(k, v));
   const res = await fetch(url.toString());
@@ -85,13 +57,40 @@ async function yt<T>(path: string, params: Record<string, string>): Promise<T> {
 
 export const getChannelData = createServerFn({ method: "GET" }).handler(async (): Promise<YTPayload> => {
   try {
-    const key = getApiKey();
+    let key: string | undefined = undefined;
+
+    // 1. Try local process.env (Vite/Node)
+    if (typeof process !== "undefined" && process.env?.YOUTUBE_API_KEY) {
+      key = process.env.YOUTUBE_API_KEY;
+    }
+
+    // 2. Try Vinxi/Cloudflare context (Only compiles on server, stripped from client bundle!)
+    if (typeof window === "undefined" && !key) {
+      try {
+        // Construct dynamic module string and use vite-ignore to prevent compile-time Rollup resolution
+        const vinxiHttp = "vin" + "xi/http";
+        const { getEvent } = await import(/* @vite-ignore */ vinxiHttp);
+        const event = getEvent();
+        const cfEnv = (event?.context as any)?.cloudflare?.env;
+        if (cfEnv?.YOUTUBE_API_KEY) {
+          key = cfEnv.YOUTUBE_API_KEY;
+        }
+      } catch (e) {
+        // Ignore error
+      }
+    }
+
+    // 3. Try Cloudflare global binding
+    if (typeof globalThis !== "undefined" && (globalThis as any).YOUTUBE_API_KEY && !key) {
+      key = (globalThis as any).YOUTUBE_API_KEY;
+    }
+
     if (!key) {
       return { channel: null, videos: [], playlists: [], error: "Missing API key" };
     }
 
     // 1) Channel
-    const ch = await yt<any>("channels", {
+    const ch = await yt<any>(key, "channels", {
       part: "snippet,contentDetails,statistics",
       forHandle: `@${HANDLE}`,
     });
@@ -102,7 +101,7 @@ export const getChannelData = createServerFn({ method: "GET" }).handler(async ()
     const channelId = channel.id;
 
     // 2) Uploads (up to 50)
-    const uploads = await yt<any>("playlistItems", {
+    const uploads = await yt<any>(key, "playlistItems", {
       part: "snippet,contentDetails",
       playlistId: uploadsId,
       maxResults: "50",
@@ -112,7 +111,7 @@ export const getChannelData = createServerFn({ method: "GET" }).handler(async ()
     // 3) Video stats
     let videos: YTVideo[] = [];
     if (videoIds.length) {
-      const stats = await yt<any>("videos", {
+      const stats = await yt<any>(key, "videos", {
         part: "snippet,contentDetails,statistics",
         id: videoIds.join(","),
       });
@@ -134,7 +133,7 @@ export const getChannelData = createServerFn({ method: "GET" }).handler(async ()
     }
 
     // 4) Playlists
-    const pl = await yt<any>("playlists", {
+    const pl = await yt<any>(key, "playlists", {
       part: "snippet,contentDetails",
       channelId,
       maxResults: "50",
