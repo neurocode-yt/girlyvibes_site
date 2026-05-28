@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { setResponseHeader } from "@tanstack/react-start/server";
+import { getEvent } from "vinxi/http";
 
 if (typeof window === "undefined") {
   import("node:dns").then((dns) => {
@@ -47,8 +48,34 @@ export type YTPayload = {
 
 const API = "https://www.googleapis.com/youtube/v3";
 
+function getApiKey(): string | undefined {
+  // 1. Try local process.env (Vite/Node)
+  if (typeof process !== "undefined" && process.env?.YOUTUBE_API_KEY) {
+    return process.env.YOUTUBE_API_KEY;
+  }
+
+  // 2. Try Vinxi/Cloudflare context
+  try {
+    const event = getEvent();
+    const cfEnv = (event?.context as any)?.cloudflare?.env;
+    if (cfEnv?.YOUTUBE_API_KEY) {
+      return cfEnv.YOUTUBE_API_KEY;
+    }
+  } catch (e) {
+    // Ignore error if getEvent is called outside request context
+  }
+
+  // 3. Try Cloudflare global binding
+  if (typeof globalThis !== "undefined" && (globalThis as any).YOUTUBE_API_KEY) {
+    return (globalThis as any).YOUTUBE_API_KEY;
+  }
+
+  return undefined;
+}
+
 async function yt<T>(path: string, params: Record<string, string>): Promise<T> {
-  const key = process.env.YOUTUBE_API_KEY!;
+  const key = getApiKey();
+  if (!key) throw new Error("Missing YouTube API Key");
   const url = new URL(`${API}/${path}`);
   Object.entries({ ...params, key }).forEach(([k, v]) => url.searchParams.set(k, v));
   const res = await fetch(url.toString());
@@ -58,7 +85,8 @@ async function yt<T>(path: string, params: Record<string, string>): Promise<T> {
 
 export const getChannelData = createServerFn({ method: "GET" }).handler(async (): Promise<YTPayload> => {
   try {
-    if (!process.env.YOUTUBE_API_KEY) {
+    const key = getApiKey();
+    if (!key) {
       return { channel: null, videos: [], playlists: [], error: "Missing API key" };
     }
 
