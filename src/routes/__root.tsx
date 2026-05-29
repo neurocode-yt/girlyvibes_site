@@ -100,6 +100,28 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var saved = localStorage.getItem('gv-theme-mode');
+                  var selectedTheme = localStorage.getItem('gv-selected-theme');
+                  var mode = saved || 'light';
+                  document.documentElement.setAttribute('data-theme-mode', mode);
+                  if (mode === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                  if (selectedTheme) {
+                    document.documentElement.setAttribute('data-selected-theme', selectedTheme);
+                  }
+                } catch (e) {}
+              })();
+            `
+          }}
+        />
       </head>
       <body>
         {children}

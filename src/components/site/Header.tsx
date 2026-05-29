@@ -22,15 +22,8 @@ export function Header() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const saved = localStorage.getItem("gv-theme-mode") as "light" | "dark" | null;
-    const initialMode = saved || "light";
-    setThemeMode(initialMode);
-    document.documentElement.setAttribute("data-theme-mode", initialMode);
-    if (initialMode === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    const activeMode = document.documentElement.getAttribute("data-theme-mode") as "light" | "dark" || "light";
+    setThemeMode(activeMode);
     window.dispatchEvent(new Event("scroll"));
   }, []);
 
