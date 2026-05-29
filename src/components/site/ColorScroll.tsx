@@ -41,16 +41,35 @@ export function ColorScroll() {
 
       // Update root oklch variables dynamically for full-site color transition
       const root = document.documentElement;
-      root.style.setProperty("--background", `oklch(0.985 0.012 ${h})`);
-      root.style.setProperty("--blush", `oklch(0.86 0.07 ${h})`);
-      root.style.setProperty("--rose-soft", `oklch(0.93 0.04 ${h})`);
-      root.style.setProperty("--rose-deep", `oklch(0.58 0.13 ${h})`);
-      root.style.setProperty("--mauve", `oklch(0.32 0.05 ${h})`);
-      root.style.setProperty("--glow", `oklch(0.78 0.12 ${h})`);
-      root.style.setProperty("--primary", `oklch(0.58 0.13 ${h})`);
-      root.style.setProperty("--secondary", `oklch(0.93 0.04 ${h})`);
-      root.style.setProperty("--accent", `oklch(0.86 0.07 ${h})`);
-      root.style.setProperty("--border", `oklch(0.9 0.035 ${h})`);
+      const mode = root.getAttribute("data-theme-mode") || "light";
+
+      if (mode === "dark") {
+        root.style.setProperty("--background", `oklch(0.2 0.03 ${h})`);
+        root.style.setProperty("--card", `oklch(0.25 0.04 ${h})`);
+        root.style.setProperty("--blush", `oklch(0.4 0.08 ${h})`);
+        root.style.setProperty("--rose-soft", `oklch(0.25 0.04 ${h})`);
+        root.style.setProperty("--rose-deep", `oklch(0.78 0.12 ${h})`);
+        root.style.setProperty("--mauve", `oklch(0.95 0.02 ${h})`);
+        root.style.setProperty("--foreground", `oklch(0.95 0.02 ${h})`);
+        root.style.setProperty("--glow", `oklch(0.78 0.12 ${h})`);
+        root.style.setProperty("--primary", `oklch(0.78 0.12 ${h})`);
+        root.style.setProperty("--secondary", `oklch(0.3 0.05 ${h})`);
+        root.style.setProperty("--accent", `oklch(0.4 0.08 ${h})`);
+        root.style.setProperty("--border", `oklch(0.95 0.02 ${h} / 12%)`);
+      } else {
+        root.style.setProperty("--background", `oklch(0.985 0.012 ${h})`);
+        root.style.setProperty("--card", `#ffffff`);
+        root.style.setProperty("--blush", `oklch(0.86 0.07 ${h})`);
+        root.style.setProperty("--rose-soft", `oklch(0.93 0.04 ${h})`);
+        root.style.setProperty("--rose-deep", `oklch(0.58 0.13 ${h})`);
+        root.style.setProperty("--mauve", `oklch(0.32 0.05 ${h})`);
+        root.style.setProperty("--foreground", `oklch(0.32 0.05 ${h})`);
+        root.style.setProperty("--glow", `oklch(0.78 0.12 ${h})`);
+        root.style.setProperty("--primary", `oklch(0.58 0.13 ${h})`);
+        root.style.setProperty("--secondary", `oklch(0.93 0.04 ${h})`);
+        root.style.setProperty("--accent", `oklch(0.86 0.07 ${h})`);
+        root.style.setProperty("--border", `oklch(0.9 0.035 ${h})`);
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -66,11 +85,13 @@ export function ColorScroll() {
       root.style.removeProperty("--rose-soft");
       root.style.removeProperty("--rose-deep");
       root.style.removeProperty("--mauve");
+      root.style.removeProperty("--foreground");
       root.style.removeProperty("--glow");
       root.style.removeProperty("--primary");
       root.style.removeProperty("--secondary");
       root.style.removeProperty("--accent");
       root.style.removeProperty("--border");
+      root.style.removeProperty("--card");
     };
   }, []);
 

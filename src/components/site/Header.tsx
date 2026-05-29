@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { HeartIcon, SparkleMark } from "./Decor";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X, Globe, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navKeys = [
@@ -18,6 +18,24 @@ export function Header() {
   const { t, lang, setLang } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [themeMode, setThemeMode] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = localStorage.getItem("gv-theme-mode") as "light" | "dark" | null;
+    const initialMode = saved || "light";
+    setThemeMode(initialMode);
+    document.documentElement.setAttribute("data-theme-mode", initialMode);
+    window.dispatchEvent(new Event("scroll"));
+  }, []);
+
+  const toggleThemeMode = () => {
+    const nextMode = themeMode === "light" ? "dark" : "light";
+    setThemeMode(nextMode);
+    document.documentElement.setAttribute("data-theme-mode", nextMode);
+    localStorage.setItem("gv-theme-mode", nextMode);
+    window.dispatchEvent(new Event("scroll"));
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -59,6 +77,14 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={toggleThemeMode}
+              className="flex items-center justify-center w-9 h-9 rounded-full text-[color:var(--mauve)] bg-white/70 hover:bg-white transition border border-[color:var(--border)] shadow-sm active:scale-95"
+              aria-label="Toggle theme mode"
+              title={themeMode === "light" ? (lang === "ar" ? "تفعيل الوضع المظلم المخملي" : "Switch to Velvet Dark") : (lang === "ar" ? "تفعيل الوضع المضيء" : "Switch to Pastel Light")}
+            >
+              {themeMode === "light" ? <Moon className="w-4.5 h-4.5" /> : <Sun className="w-4.5 h-4.5 text-amber-400" />}
+            </button>
             <button
               onClick={() => setLang(lang === "ar" ? "en" : "ar")}
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-[color:var(--mauve)] bg-white/70 hover:bg-white transition border border-[color:var(--border)]"
@@ -115,8 +141,15 @@ export function Header() {
                 </a>
               ))}
               <button
+                onClick={toggleThemeMode}
+                className="mt-4 self-start flex items-center gap-2 px-4 py-2 rounded-full bg-white border font-medium text-sm text-[color:var(--mauve)]"
+              >
+                {themeMode === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-amber-400" />}
+                {themeMode === "light" ? (lang === "ar" ? "الوضع المظلم المخملي" : "Velvet Dark Mode") : (lang === "ar" ? "الوضع المضيء" : "Pastel Light Mode")}
+              </button>
+              <button
                 onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-                className="mt-4 self-start flex items-center gap-2 px-4 py-2 rounded-full bg-white border"
+                className="mt-2 self-start flex items-center gap-2 px-4 py-2 rounded-full bg-white border"
               >
                 <Globe className="w-4 h-4" />
                 {lang === "ar" ? "English" : "العربية"}
