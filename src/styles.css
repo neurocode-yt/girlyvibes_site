@@ -39,6 +39,7 @@
   --color-cream: var(--cream);
   --color-mauve: var(--mauve);
   --color-glow: var(--glow);
+  --color-white: var(--card);
 
   --font-display: "Fraunces", "Playfair Display", ui-serif, serif;
   --font-arabic: "Tajawal", "Cairo", system-ui, sans-serif;
@@ -83,10 +84,10 @@
   --mauve: oklch(0.32 0.05 20);
   --glow: oklch(0.78 0.12 0);
 
-  --gradient-hero: radial-gradient(ellipse at top, oklch(0.93 0.06 5 / 0.7), transparent 60%),
-                   linear-gradient(180deg, oklch(0.985 0.012 25) 0%, oklch(0.95 0.04 5) 100%);
-  --gradient-rose: linear-gradient(135deg, oklch(0.78 0.12 0), oklch(0.58 0.13 5));
-  --gradient-glass: linear-gradient(135deg, oklch(1 0 0 / 0.7), oklch(0.93 0.04 5 / 0.4));
+  --gradient-hero: radial-gradient(ellipse at top, var(--accent) / 0.4, transparent 65%),
+                   linear-gradient(180deg, var(--background) 0%, var(--rose-soft) 100%);
+  --gradient-rose: linear-gradient(135deg, var(--glow), var(--rose-deep));
+  --gradient-glass: linear-gradient(135deg, var(--card) / 0.8, var(--rose-soft) / 0.35);
   --shadow-soft: 0 10px 40px -10px oklch(0.58 0.13 5 / 0.18);
   --shadow-glow: 0 0 60px oklch(0.78 0.12 0 / 0.35);
   --shadow-card: 0 8px 30px -12px oklch(0.58 0.13 5 / 0.15);

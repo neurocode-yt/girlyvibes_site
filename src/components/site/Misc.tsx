@@ -63,10 +63,12 @@ const applyTheme = (themeName: string | null) => {
     root.style.setProperty("--primary", th.c[2]);
     root.style.setProperty("--border", th.c[1]);
     if (th.n === "Black Velvet") {
+      root.classList.add("dark");
       root.style.setProperty("--mauve", "#fbe4ec");
       root.style.setProperty("--foreground", "#fbe4ec");
       root.style.setProperty("--card", "#3c2933");
     } else {
+      root.classList.remove("dark");
       root.style.setProperty("--mauve", "#321d28");
       root.style.setProperty("--foreground", "#321d28");
       root.style.setProperty("--card", "#ffffff");

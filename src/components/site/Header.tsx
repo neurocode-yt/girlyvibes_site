@@ -26,6 +26,11 @@ export function Header() {
     const initialMode = saved || "light";
     setThemeMode(initialMode);
     document.documentElement.setAttribute("data-theme-mode", initialMode);
+    if (initialMode === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
     window.dispatchEvent(new Event("scroll"));
   }, []);
 
@@ -33,6 +38,11 @@ export function Header() {
     const nextMode = themeMode === "light" ? "dark" : "light";
     setThemeMode(nextMode);
     document.documentElement.setAttribute("data-theme-mode", nextMode);
+    if (nextMode === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
     localStorage.setItem("gv-theme-mode", nextMode);
     window.dispatchEvent(new Event("scroll"));
   };
