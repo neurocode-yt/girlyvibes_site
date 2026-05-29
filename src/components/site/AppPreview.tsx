@@ -58,7 +58,7 @@ function LeaderboardMock({ isAr }: { isAr: boolean }) {
         ].map((u, i) => (
           <div key={i} className="text-center">
             <div className="mx-auto w-8 h-8 rounded-full bg-rose-gradient grid place-items-center text-white text-xs">{u.n}</div>
-            <div className={`${u.h} mt-1 rounded-t-lg bg-[#FBE4EC] grid place-items-center text-[10px]`}>#{u.r}</div>
+            <div className={`${u.h} mt-1 rounded-t-lg bg-[#FBE4EC] dark:bg-[#4a2f3a] grid place-items-center text-[10px]`}>#{u.r}</div>
           </div>
         ))}
       </div>

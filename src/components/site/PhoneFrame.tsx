@@ -9,9 +9,9 @@ type Props = {
 };
 
 const notchClass: Record<NonNullable<Props["notch"]>, string> = {
-  rose: "bg-gradient-to-br from-[#FDE8EF] to-[#FBC4D6]",
-  cream: "bg-gradient-to-br from-[#FFF9F7] to-[#FBE4EC]",
-  blush: "bg-gradient-to-br from-[#F7C9D9] to-[#E59DB8]",
+  rose: "bg-gradient-to-br from-[#FDE8EF] to-[#FBC4D6] dark:from-[#3a2230] dark:to-[#5a2f44]",
+  cream: "bg-gradient-to-br from-[#FFF9F7] to-[#FBE4EC] dark:from-[#3a2230] dark:to-[#5a2f44]",
+  blush: "bg-gradient-to-br from-[#F7C9D9] to-[#E59DB8] dark:from-[#3a2230] dark:to-[#5a2f44]",
   dark: "bg-gradient-to-br from-[#3a2230] to-[#5a2f44]",
 };
 
