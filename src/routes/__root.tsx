@@ -12,6 +12,8 @@ import appCss from "../styles.css?url";
 import { CursorTrail } from "@/components/site/CursorTrail";
 import { Scroll3D } from "@/components/site/Scroll3D";
 import { ColorScroll } from "@/components/site/ColorScroll";
+import { CozyAudioPlayer } from "@/components/site/CozyAudioPlayer";
+import { I18nProvider } from "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -112,10 +114,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <CursorTrail />
-      <Scroll3D />
-      <ColorScroll />
+      <I18nProvider>
+        <Outlet />
+        <CursorTrail />
+        <Scroll3D />
+        <ColorScroll />
+        <CozyAudioPlayer />
+      </I18nProvider>
     </QueryClientProvider>
   );
 }

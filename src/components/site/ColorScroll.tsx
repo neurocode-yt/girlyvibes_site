@@ -5,6 +5,8 @@ export function ColorScroll() {
     if (typeof window === "undefined") return;
 
     const handleScroll = () => {
+      if (document.documentElement.getAttribute("data-selected-theme")) return;
+
       const scrollY = window.scrollY;
       const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       const progress = Math.min(1, Math.max(0, scrollY / maxScroll));

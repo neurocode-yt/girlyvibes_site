@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { I18nProvider } from "@/lib/i18n";
 import { Header } from "@/components/site/Header";
 import { Hero } from "@/components/site/Hero";
 import { About, Features } from "@/components/site/About";
 import { AppPreview } from "@/components/site/AppPreview";
+import { StickerPlayground } from "@/components/site/StickerPlayground";
 import { CalmRoom } from "@/components/site/CalmRoom";
 import { GlowPoints } from "@/components/site/GlowPoints";
 import { YouTubeHub } from "@/components/site/YouTubeHub";
@@ -31,27 +31,26 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <I18nProvider>
-      <div className="min-h-screen bg-[color:var(--background)] text-[color:var(--mauve)] overflow-x-hidden relative">
-        <div className="relative z-10">
-          <Header />
-          <main>
-            <Hero />
-            <About />
-            <Features />
-            <AppPreview />
-            <CalmRoom />
-            <GlowPoints />
-            <YouTubeHub />
-            <Themes />
-            <Widgets />
-            <Updates />
-            <DownloadCTA />
-            <FAQ />
-          </main>
-          <Footer />
-        </div>
+    <div className="min-h-screen bg-[color:var(--background)] text-[color:var(--mauve)] overflow-x-hidden relative">
+      <div className="relative z-10">
+        <Header />
+        <main>
+          <Hero />
+          <About />
+          <Features />
+          <AppPreview />
+          <StickerPlayground />
+          <CalmRoom />
+          <GlowPoints />
+          <YouTubeHub />
+          <Themes />
+          <Widgets />
+          <Updates />
+          <DownloadCTA />
+          <FAQ />
+        </main>
+        <Footer />
       </div>
-    </I18nProvider>
+    </div>
   );
 }

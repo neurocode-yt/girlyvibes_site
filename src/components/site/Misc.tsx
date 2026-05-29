@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Section } from "./Decor";
 import { ChevronDown, Sparkles } from "lucide-react";
 
 const themes = [
   { n: "Classic Pink", c: ["#FBE4EC", "#F7C9D9", "#B55B72"] },
-  { n: "Premium", c: ["#FBEFE0", "#E4C28E", "#9A6B2F"] },
+  { n: "Premium Gold", c: ["#FBEFE0", "#E4C28E", "#9A6B2F"] },
   { n: "Aqua Orchid", c: ["#E0F5F2", "#A8D8D6", "#6B8AA8"] },
   { n: "Fresh Garden", c: ["#E8F3DA", "#B8D898", "#5A7A3B"] },
   { n: "Soft Rose", c: ["#FDE8EE", "#F5BCCD", "#C0738C"] },
@@ -32,8 +32,72 @@ const updates = [
   { t: "Notes redesigned softly", ta: "تصميم جديد للملاحظات", date: "v2.0" },
 ];
 
+const applyTheme = (themeName: string | null) => {
+  if (typeof window === "undefined") return;
+  const root = document.documentElement;
+  if (!themeName) {
+    root.removeAttribute("data-selected-theme");
+    root.style.removeProperty("--background");
+    root.style.removeProperty("--secondary");
+    root.style.removeProperty("--accent");
+    root.style.removeProperty("--blush");
+    root.style.removeProperty("--rose-soft");
+    root.style.removeProperty("--rose-deep");
+    root.style.removeProperty("--primary");
+    root.style.removeProperty("--border");
+    root.style.removeProperty("--mauve");
+    root.style.removeProperty("--foreground");
+    root.style.removeProperty("--card");
+    localStorage.removeItem("gv-selected-theme");
+    window.dispatchEvent(new Event("scroll"));
+  } else {
+    const th = themes.find((t) => t.n === themeName);
+    if (!th) return;
+    root.setAttribute("data-selected-theme", themeName);
+    root.style.setProperty("--background", th.c[0]);
+    root.style.setProperty("--secondary", th.c[0]);
+    root.style.setProperty("--accent", th.c[1]);
+    root.style.setProperty("--blush", th.c[1]);
+    root.style.setProperty("--rose-soft", th.c[0]);
+    root.style.setProperty("--rose-deep", th.c[2]);
+    root.style.setProperty("--primary", th.c[2]);
+    root.style.setProperty("--border", th.c[1]);
+    if (th.n === "Black Velvet") {
+      root.style.setProperty("--mauve", "#fbe4ec");
+      root.style.setProperty("--foreground", "#fbe4ec");
+      root.style.setProperty("--card", "#3c2933");
+    } else {
+      root.style.setProperty("--mauve", "#321d28");
+      root.style.setProperty("--foreground", "#321d28");
+      root.style.setProperty("--card", "#ffffff");
+    }
+    localStorage.setItem("gv-selected-theme", themeName);
+  }
+};
+
 export function Themes() {
   const { t, lang } = useI18n();
+  const isAr = lang === "ar";
+  const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("gv-selected-theme");
+    if (saved) {
+      setSelectedTheme(saved);
+      applyTheme(saved);
+    }
+  }, []);
+
+  const handleThemeClick = (themeName: string) => {
+    setSelectedTheme(themeName);
+    applyTheme(themeName);
+  };
+
+  const handleResetClick = () => {
+    setSelectedTheme(null);
+    applyTheme(null);
+  };
+
   return (
     <Section id="themes">
       <div className="text-center mb-12">
@@ -41,31 +105,54 @@ export function Themes() {
         <h2 className="mt-3 text-3xl md:text-5xl font-semibold text-[color:var(--mauve)]">{t("themes.title")}</h2>
         <p className="mt-3 text-[color:var(--mauve)]/70">{t("themes.lead")}</p>
       </div>
+
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-5">
-        {themes.map((th, i) => (
-          <motion.div
-            key={th.n}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.04 }}
-            whileHover={{ y: -4 }}
-            className="group relative p-5 rounded-3xl bg-white shadow-card border border-[color:var(--border)] overflow-hidden"
-          >
-            <div className="flex gap-1.5">
-              {th.c.map((color) => (
-                <div key={color} className="flex-1 h-20 rounded-2xl relative overflow-hidden" style={{ background: color }}>
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity shimmer" />
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 font-display text-[color:var(--mauve)]">{th.n}</p>
-          </motion.div>
-        ))}
+        {themes.map((th, i) => {
+          const isActive = selectedTheme === th.n;
+          return (
+            <motion.div
+              key={th.n}
+              onClick={() => handleThemeClick(th.n)}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.04 }}
+              whileHover={{ y: -4 }}
+              className={`group relative p-5 rounded-3xl bg-white shadow-card border cursor-pointer overflow-hidden transition-all duration-300 ${
+                isActive ? "border-[color:var(--rose-deep)] scale-[1.03] ring-2 ring-[color:var(--rose-deep)]/20" : "border-[color:var(--border)]"
+              }`}
+            >
+              <div className="flex gap-1.5">
+                {th.c.map((color) => (
+                  <div key={color} className="flex-1 h-20 rounded-2xl relative overflow-hidden" style={{ background: color }}>
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity shimmer" />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex items-center justify-between">
+                <p className="font-display text-[color:var(--mauve)] font-semibold text-sm sm:text-base">{th.n}</p>
+                {isActive && <span className="text-xs font-bold text-[color:var(--rose-deep)] bg-[color:var(--rose-soft)] px-2.5 py-0.5 rounded-full">✓</span>}
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
-      <p className="text-center text-xs text-[color:var(--mauve)]/50 mt-6">
-        {lang === "ar" ? "9 ثيمات داخل التطبيق" : "9 in-app themes"}
-      </p>
+
+      <div className="flex flex-col items-center gap-3 mt-8">
+        <button
+          onClick={handleResetClick}
+          className={`px-6 py-3 rounded-full text-xs font-semibold shadow-soft border transition-all duration-300 active:scale-95 ${
+            selectedTheme === null
+              ? "bg-[color:var(--rose-soft)] border-[color:var(--rose-deep)]/40 text-[color:var(--rose-deep)] cursor-default opacity-85"
+              : "bg-white border-[color:var(--border)] hover:bg-[color:var(--rose-soft)] text-[color:var(--mauve)]"
+          }`}
+        >
+          🌈 {isAr ? "تفعيل تدفق الألوان التلقائي (قوس قزح)" : "Enable Dynamic Rainbow Hue-Morphing"}
+        </button>
+        <p className="text-center text-[10px] text-[color:var(--mauve)]/50">
+          {lang === "ar" ? "9 ثيمات داخل التطبيق" : "9 in-app themes"}
+        </p>
+      </div>
     </Section>
   );
 }
