@@ -49,30 +49,49 @@
 :root {
   --radius: 1.25rem;
 
-  /* Pink girly palette in oklch */
+  /* HSL Fallbacks for older/mobile browser compatibility */
+  --background: hsl(25, 80%, 98.5%);
+  --foreground: hsl(20, 15%, 32%);
+  --card: hsl(25, 40%, 99.5%);
+  --card-foreground: hsl(20, 15%, 32%);
+  --popover: hsl(25, 40%, 99.5%);
+  --popover-foreground: hsl(20, 15%, 32%);
+  --primary: hsl(5, 40%, 58%);
+  --primary-foreground: hsl(25, 30%, 99%);
+  --secondary: hsl(5, 60%, 93%);
+  --secondary-foreground: hsl(10, 25%, 38%);
+  --muted: hsl(20, 30%, 95%);
+  --muted-foreground: hsl(15, 20%, 50%);
+  --accent: hsl(5, 75%, 86%);
+  --accent-foreground: hsl(10, 20%, 32%);
+  --border: hsl(5, 30%, 90%);
+  --input: hsl(5, 30%, 92%);
+  --ring: hsl(5, 40%, 70%);
+
+  --blush: hsl(5, 75%, 86%);
+  --rose-soft: hsl(5, 60%, 93%);
+  --rose-deep: hsl(5, 40%, 58%);
+  --cream: hsl(25, 80%, 98.5%);
+  --mauve: hsl(20, 15%, 32%);
+  --glow: hsl(0, 75%, 78%);
+
+  /* OKLCH Pink palette overrides (modern browsers) */
   --background: oklch(0.985 0.012 25);          /* #FFF9F7 ivory pink */
   --foreground: oklch(0.32 0.05 20);            /* mauve brown */
-
   --card: oklch(0.995 0.008 25);
   --card-foreground: oklch(0.32 0.05 20);
   --popover: oklch(0.995 0.008 25);
   --popover-foreground: oklch(0.32 0.05 20);
-
   --primary: oklch(0.58 0.13 5);                /* #B55B72 deep rose */
   --primary-foreground: oklch(0.99 0.005 25);
-
   --secondary: oklch(0.93 0.04 5);              /* #FBE4EC soft card */
   --secondary-foreground: oklch(0.38 0.07 10);
-
   --muted: oklch(0.95 0.025 20);
   --muted-foreground: oklch(0.5 0.04 15);
-
   --accent: oklch(0.86 0.07 5);                 /* #F7C9D9 blush */
   --accent-foreground: oklch(0.32 0.07 10);
-
   --destructive: oklch(0.55 0.2 22);
   --destructive-foreground: oklch(0.99 0.005 25);
-
   --border: oklch(0.9 0.035 5);
   --input: oklch(0.92 0.03 5);
   --ring: oklch(0.7 0.1 5);
@@ -94,6 +113,24 @@
 }
 
 .dark {
+  /* HSL Fallbacks */
+  --background: hsl(10, 15%, 15%);
+  --foreground: hsl(20, 20%, 95%);
+  --card: hsl(10, 15%, 22%);
+  --card-foreground: hsl(20, 20%, 95%);
+  --primary: hsl(0, 70%, 75%);
+  --primary-foreground: hsl(10, 15%, 15%);
+  --secondary: hsl(10, 15%, 27%);
+  --secondary-foreground: hsl(20, 20%, 95%);
+  --muted: hsl(10, 15%, 27%);
+  --muted-foreground: hsl(15, 20%, 75%);
+  --accent: hsl(5, 25%, 35%);
+  --accent-foreground: hsl(20, 20%, 95%);
+  --border: hsla(20, 20%, 95%, 0.12);
+  --input: hsla(20, 20%, 95%, 0.15);
+  --ring: hsl(5, 70%, 75%);
+
+  /* OKLCH Overrides */
   --background: oklch(0.2 0.03 10);
   --foreground: oklch(0.95 0.02 20);
   --card: oklch(0.25 0.04 10);
