@@ -3,15 +3,17 @@ import { useI18n } from "@/lib/i18n";
 import { HeartIcon, SparkleMark } from "./Decor";
 import { Menu, X, Globe, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 
 const navKeys = [
-  { key: "nav.home", id: "home" },
-  { key: "nav.features", id: "features" },
-  { key: "nav.calm", id: "calm" },
-  { key: "nav.glow", id: "glow" },
-  { key: "nav.youtube", id: "youtube" },
-  { key: "nav.updates", id: "updates" },
-  { key: "nav.faq", id: "faq" },
+  { key: "nav.home", id: "home", isHash: true },
+  { key: "nav.features", id: "features", isHash: true },
+  { key: "nav.calm", id: "calm", isHash: true },
+  { key: "nav.glow", id: "glow", isHash: true },
+  { key: "nav.youtube", id: "youtube", isHash: true },
+  { key: "nav.updates", id: "updates", isHash: true },
+  { key: "nav.faq", id: "faq", isHash: true },
+  { key: "nav.games", id: "games", isHash: false, to: "/games" },
 ];
 
 export function Header() {
@@ -59,24 +61,37 @@ export function Header() {
             scrolled ? "glass" : "bg-transparent"
           }`}
         >
-          <a href="#home" className="flex items-center gap-2 font-display text-xl font-semibold text-[color:var(--rose-deep)]">
+          <Link to="/" className="flex items-center gap-2 font-display text-xl font-semibold text-[color:var(--rose-deep)]">
             <span className="relative inline-flex w-8 h-8 items-center justify-center rounded-full bg-rose-gradient text-white shadow-glow">
               <HeartIcon className="w-4 h-4" />
               <SparkleMark className="absolute -top-1 -right-1 w-3 h-3 text-[color:var(--glow)] sparkle-spin" />
             </span>
             Girly Vibes
-          </a>
+          </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
-            {navKeys.map((n) => (
-              <a
-                key={n.id}
-                href={`#${n.id}`}
-                className="px-3 py-1.5 rounded-full text-sm text-[color:var(--mauve)]/80 hover:text-[color:var(--rose-deep)] hover:bg-white/60 transition"
-              >
-                {t(n.key)}
-              </a>
-            ))}
+            {navKeys.map((n) => {
+              if (n.isHash) {
+                return (
+                  <a
+                    key={n.id}
+                    href={`/#${n.id}`}
+                    className="px-3 py-1.5 rounded-full text-sm text-[color:var(--mauve)]/80 hover:text-[color:var(--rose-deep)] hover:bg-white/60 transition"
+                  >
+                    {t(n.key)}
+                  </a>
+                );
+              }
+              return (
+                <Link
+                  key={n.id}
+                  to={n.to}
+                  className="px-3 py-1.5 rounded-full text-sm text-[color:var(--rose-deep)] bg-[color:var(--rose-soft)]/50 border border-[color:var(--rose-soft)] hover:scale-[1.03] transition font-medium"
+                >
+                  {t(n.key)}
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-2">
@@ -123,7 +138,12 @@ export function Header() {
             className="fixed inset-0 z-50 bg-[color:var(--background)]/95 backdrop-blur-xl lg:hidden"
           >
             <div className="flex items-center justify-between p-5">
-              <span className="font-display text-xl text-[color:var(--rose-deep)]">Girly Vibes</span>
+              <Link to="/" onClick={() => setOpen(false)} className="flex items-center gap-2 font-display text-xl text-[color:var(--rose-deep)] font-semibold">
+                <span className="w-8 h-8 rounded-full bg-rose-gradient grid place-items-center text-white">
+                  <HeartIcon className="w-4 h-4" />
+                </span>
+                Girly Vibes
+              </Link>
               <button
                 onClick={() => setOpen(false)}
                 className="w-9 h-9 inline-flex items-center justify-center rounded-full bg-white/70 border"
@@ -133,16 +153,31 @@ export function Header() {
               </button>
             </div>
             <nav className="flex flex-col px-6 gap-2 mt-4">
-              {navKeys.map((n) => (
-                <a
-                  key={n.id}
-                  href={`#${n.id}`}
-                  onClick={() => setOpen(false)}
-                  className="py-3 text-xl font-display text-[color:var(--mauve)] border-b border-[color:var(--border)]"
-                >
-                  {t(n.key)}
-                </a>
-              ))}
+              {navKeys.map((n) => {
+                if (n.isHash) {
+                  return (
+                    <a
+                      key={n.id}
+                      href={`/#${n.id}`}
+                      onClick={() => setOpen(false)}
+                      className="py-3 text-xl font-display text-[color:var(--mauve)] border-b border-[color:var(--border)]"
+                    >
+                      {t(n.key)}
+                    </a>
+                  );
+                }
+                return (
+                  <Link
+                    key={n.id}
+                    to={n.to}
+                    onClick={() => setOpen(false)}
+                    className="py-3 text-xl font-display text-[color:var(--rose-deep)] font-semibold border-b border-[color:var(--border)] flex items-center justify-between"
+                  >
+                    <span>{t(n.key)}</span>
+                    <span className="text-xs bg-rose-gradient px-2 py-0.5 rounded-full text-white">New ✨</span>
+                  </Link>
+                );
+              })}
               <button
                 onClick={toggleThemeMode}
                 className="mt-4 self-start flex items-center gap-2 px-4 py-2 rounded-full bg-white border font-medium text-sm text-[color:var(--mauve)]"
