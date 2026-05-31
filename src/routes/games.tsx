@@ -451,8 +451,8 @@ function GamesPage() {
     };
 
     // 4. Base Chibi Body Parts with Elegant Chibi (Nendoroid) Proportions
-    // Beautiful fair porcelain skin tone
-    const SKIN_COLOR = 0xffebd6;
+    // Pure white doll skin tone
+    const SKIN_COLOR = 0xffffff;
 
     // Head Sphere (gorgeous warm Arab skin tone)
     const headMesh = new THREE.Mesh(
