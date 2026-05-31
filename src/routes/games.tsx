@@ -602,26 +602,26 @@ function GamesPage() {
       
       const blushOpacity = expression === "sleepy" ? 0.15 : (expression === "heart-eyes" ? 0.5 : 0.35);
       const blushL = new THREE.Mesh(
-        new THREE.CircleGeometry(0.15, 16),
+        new THREE.CircleGeometry(0.12, 16),
         new THREE.MeshBasicMaterial({ color: 0xff99a8, transparent: true, opacity: blushOpacity })
       );
-      blushL.position.set(-0.55, -0.18, 1.10);
-      blushL.rotation.y = 0.4;
+      blushL.position.set(-0.35, -0.15, 1.09);
+      blushL.rotation.y = 0.3;
       blushL.rotation.x = -0.1;
       const blushR = blushL.clone();
-      blushR.position.set(0.55, -0.18, 1.10);
-      blushR.rotation.y = -0.4;
+      blushR.position.set(0.35, -0.15, 1.09);
+      blushR.rotation.y = -0.3;
       activeFace.add(blushL, blushR);
 
       // Mouth
       let mouthGeometry: THREE.BufferGeometry;
-      let mouthPos = new THREE.Vector3(0, -0.26, 1.21);
+      let mouthPos = new THREE.Vector3(0, -0.22, 1.13);
       if (expression === "surprised") {
-        mouthGeometry = new THREE.TorusGeometry(0.04, 0.02, 8, 16); // small "O"
+        mouthGeometry = new THREE.TorusGeometry(0.03, 0.015, 8, 16); // small "O"
       } else if (expression === "sleepy") {
-        mouthGeometry = new THREE.TorusGeometry(0.04, 0.015, 8, 16, Math.PI); // tiny neutral mouth
+        mouthGeometry = new THREE.TorusGeometry(0.03, 0.01, 8, 16, Math.PI); // tiny neutral mouth
       } else {
-        mouthGeometry = new THREE.TorusGeometry(0.075, 0.02, 8, 16, Math.PI); // happy smile
+        mouthGeometry = new THREE.TorusGeometry(0.05, 0.015, 8, 16, Math.PI); // happy smile
       }
       const mouth = new THREE.Mesh(
         mouthGeometry,
@@ -634,25 +634,24 @@ function GamesPage() {
       // Left Eye
       if (expression === "winking") {
         const winkL = new THREE.Mesh(
-          new THREE.TorusGeometry(0.15, 0.03, 8, 16, Math.PI),
+          new THREE.TorusGeometry(0.12, 0.025, 8, 16, Math.PI),
           new THREE.MeshStandardMaterial({ color: 0x221a24 })
         );
-        winkL.position.set(-0.45, -0.05, 1.16);
-        winkL.rotation.y = 0.36;
-        winkL.rotation.x = -0.02;
+        winkL.position.set(-0.25, -0.05, 1.12);
+        winkL.rotation.y = 0.2;
+        winkL.rotation.x = -0.05;
         winkL.rotation.z = Math.PI; // curved up
         activeFace.add(winkL);
       } else if (expression === "sleepy") {
         const sleepyL = new THREE.Mesh(
-          new THREE.TorusGeometry(0.15, 0.03, 8, 16, Math.PI),
+          new THREE.TorusGeometry(0.12, 0.025, 8, 16, Math.PI),
           new THREE.MeshStandardMaterial({ color: 0x221a24 })
         );
-        sleepyL.position.set(-0.45, -0.02, 1.16);
-        sleepyL.rotation.y = 0.36;
-        sleepyL.rotation.x = -0.02; // curved down
+        sleepyL.position.set(-0.25, -0.05, 1.12);
+        sleepyL.rotation.y = 0.2;
+        sleepyL.rotation.x = -0.05; // curved down
         activeFace.add(sleepyL);
       } else if (expression === "heart-eyes") {
-        // Build custom 3D heart shape using ShapeGeometry for eyes
         const x = 0, y = 0;
         const heartShape = new THREE.Shape();
         heartShape.moveTo( x + .5, y + .5 );
@@ -667,35 +666,34 @@ function GamesPage() {
           new THREE.ShapeGeometry(heartShape),
           new THREE.MeshBasicMaterial({ color: 0xff3b6b, side: THREE.DoubleSide })
         );
-        heartL.scale.set(0.18, 0.18, 0.18);
-        heartL.position.set(-0.55, 0.15, 1.16);
-        heartL.rotation.y = 0.36;
+        heartL.scale.set(0.12, 0.12, 0.12);
+        heartL.position.set(-0.32, 0.08, 1.11);
+        heartL.rotation.y = 0.2;
         heartL.rotation.z = Math.PI; // upside down in threejs coords usually
         activeFace.add(heartL);
       } else {
-        // Standard Happy Eye Left
-        const lashL = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), new THREE.MeshStandardMaterial({ color: 0x221a24, roughness: 0.5 }));
-        lashL.position.set(-0.45, -0.02, 1.15); lashL.scale.set(1.25, 0.88, 0.05); lashL.rotation.y = 0.36; lashL.rotation.x = -0.02; lashL.rotation.z = -0.08;
-        const irisL = new THREE.Mesh(new THREE.SphereGeometry(0.26, 16, 16), new THREE.MeshStandardMaterial({ color: 0x5b92e5, roughness: 0.2, metalness: 0.1 }));
-        irisL.position.set(-0.45, -0.02, 1.16); irisL.scale.set(1.0, 1.0, 0.05); irisL.rotation.y = 0.36; irisL.rotation.x = -0.02;
-        const pupilL = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1a0a05, roughness: 0.2 }));
-        pupilL.position.set(-0.45, -0.02, 1.17); pupilL.scale.set(0.9, 0.9, 0.05); pupilL.rotation.y = 0.36; pupilL.rotation.x = -0.02;
-        const shineL1 = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-        shineL1.position.set(-0.38, 0.05, 1.18);
-        const shineL2 = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-        shineL2.position.set(-0.51, -0.09, 1.18);
+        const lashL = new THREE.Mesh(new THREE.SphereGeometry(0.20, 16, 16), new THREE.MeshStandardMaterial({ color: 0x221a24, roughness: 0.5 }));
+        lashL.position.set(-0.25, -0.05, 1.11); lashL.scale.set(1.25, 0.88, 0.05); lashL.rotation.y = 0.2; lashL.rotation.x = -0.05; lashL.rotation.z = -0.08;
+        const irisL = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), new THREE.MeshStandardMaterial({ color: 0x5b92e5, roughness: 0.2, metalness: 0.1 }));
+        irisL.position.set(-0.25, -0.05, 1.12); irisL.scale.set(1.0, 1.0, 0.05); irisL.rotation.y = 0.2; irisL.rotation.x = -0.05;
+        const pupilL = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1a0a05, roughness: 0.2 }));
+        pupilL.position.set(-0.25, -0.05, 1.13); pupilL.scale.set(0.9, 0.9, 0.05); pupilL.rotation.y = 0.2; pupilL.rotation.x = -0.05;
+        const shineL1 = new THREE.Mesh(new THREE.SphereGeometry(0.04, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        shineL1.position.set(-0.20, 0.0, 1.14);
+        const shineL2 = new THREE.Mesh(new THREE.SphereGeometry(0.02, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        shineL2.position.set(-0.29, -0.10, 1.14);
         activeFace.add(lashL, irisL, pupilL, shineL1, shineL2);
       }
 
       // Right Eye
       if (expression === "sleepy") {
         const sleepyR = new THREE.Mesh(
-          new THREE.TorusGeometry(0.15, 0.03, 8, 16, Math.PI),
+          new THREE.TorusGeometry(0.12, 0.025, 8, 16, Math.PI),
           new THREE.MeshStandardMaterial({ color: 0x221a24 })
         );
-        sleepyR.position.set(0.45, -0.02, 1.16);
-        sleepyR.rotation.y = -0.36;
-        sleepyR.rotation.x = -0.02; 
+        sleepyR.position.set(0.25, -0.05, 1.12);
+        sleepyR.rotation.y = -0.2;
+        sleepyR.rotation.x = -0.05; 
         activeFace.add(sleepyR);
       } else if (expression === "heart-eyes") {
         const x = 0, y = 0;
@@ -712,29 +710,25 @@ function GamesPage() {
           new THREE.ShapeGeometry(heartShape),
           new THREE.MeshBasicMaterial({ color: 0xff3b6b, side: THREE.DoubleSide })
         );
-        heartR.scale.set(0.18, 0.18, 0.18);
-        heartR.position.set(0.35, 0.15, 1.16);
-        heartR.rotation.y = -0.36;
+        heartR.scale.set(0.12, 0.12, 0.12);
+        heartR.position.set(0.18, 0.08, 1.11);
+        heartR.rotation.y = -0.2;
         heartR.rotation.z = Math.PI;
         activeFace.add(heartR);
       } else {
-        // Standard Happy Eye Right
-        const lashR = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), new THREE.MeshStandardMaterial({ color: 0x221a24, roughness: 0.5 }));
-        lashR.position.set(0.45, -0.02, 1.15); lashR.scale.set(1.25, 0.88, 0.05); lashR.rotation.y = -0.36; lashR.rotation.x = -0.02; lashR.rotation.z = 0.08;
-        const irisR = new THREE.Mesh(new THREE.SphereGeometry(0.26, 16, 16), new THREE.MeshStandardMaterial({ color: 0x5b92e5, roughness: 0.2, metalness: 0.1 }));
-        irisR.position.set(0.45, -0.02, 1.16); irisR.scale.set(1.0, 1.0, 0.05); irisR.rotation.y = -0.36; irisR.rotation.x = -0.02;
-        const pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1a0a05, roughness: 0.2 }));
-        pupilR.position.set(0.45, -0.02, 1.17); pupilR.scale.set(0.9, 0.9, 0.05); pupilR.rotation.y = -0.36; pupilR.rotation.x = -0.02;
-        const shineR1 = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-        shineR1.position.set(0.52, 0.05, 1.18); 
-        const shineR2 = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-        shineR2.position.set(0.39, -0.09, 1.18);
+        const lashR = new THREE.Mesh(new THREE.SphereGeometry(0.20, 16, 16), new THREE.MeshStandardMaterial({ color: 0x221a24, roughness: 0.5 }));
+        lashR.position.set(0.25, -0.05, 1.11); lashR.scale.set(1.25, 0.88, 0.05); lashR.rotation.y = -0.2; lashR.rotation.x = -0.05; lashR.rotation.z = 0.08;
+        const irisR = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), new THREE.MeshStandardMaterial({ color: 0x5b92e5, roughness: 0.2, metalness: 0.1 }));
+        irisR.position.set(0.25, -0.05, 1.12); irisR.scale.set(1.0, 1.0, 0.05); irisR.rotation.y = -0.2; irisR.rotation.x = -0.05;
+        const pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1a0a05, roughness: 0.2 }));
+        pupilR.position.set(0.25, -0.05, 1.13); pupilR.scale.set(0.9, 0.9, 0.05); pupilR.rotation.y = -0.2; pupilR.rotation.x = -0.05;
+        const shineR1 = new THREE.Mesh(new THREE.SphereGeometry(0.04, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        shineR1.position.set(0.30, 0.0, 1.14); 
+        const shineR2 = new THREE.Mesh(new THREE.SphereGeometry(0.02, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        shineR2.position.set(0.21, -0.10, 1.14);
         activeFace.add(lashR, irisR, pupilR, shineR1, shineR2);
       }
 
-      // Make the face cute and clustered by scaling it down and pushing it forward so it doesn't sink into the sphere
-      activeFace.scale.set(0.68, 0.68, 0.68);
-      activeFace.position.set(0, -0.15, 0.40);
       headMesh.add(activeFace);
 
       if (hair === "buns") hijabColor = 0x1d3557; // Sports Hijab — deep navy
@@ -745,12 +739,12 @@ function GamesPage() {
       // === HIJAB BASE CAP (Covers the entire top & back of head, frames the face oval!) ===
       // Full head covering sphere (slightly larger than head to sit on top)
       const hijabCap = new THREE.Mesh(
-        new THREE.SphereGeometry(1.30, 32, 32),
+        new THREE.SphereGeometry(1.18, 32, 32),
         new THREE.MeshStandardMaterial({ color: hijabColor, roughness: 0.7, metalness: 0.02 })
       );
       // Clip the front so face is exposed: scale Z slightly to push back, shift back
-      hijabCap.position.set(0, 0.08, -0.15);
-      hijabCap.scale.set(1.06, 1.08, 1.05);
+      hijabCap.position.set(0, 0.08, -0.12);
+      hijabCap.scale.set(1.02, 1.04, 1.01);
       activeHair.add(hijabCap);
 
       // Hijab under-chin wrap (frames the face beautifully from below)
@@ -804,14 +798,8 @@ function GamesPage() {
         goldBorder.rotation.z = Math.PI;
         activeHair.add(goldBorder);
       } else if (hair === "waves") {
-        // Chiffon Wrap — Layered, flowing, with a sheer overlay layer
-        const sheerOverlay = new THREE.Mesh(
-          new THREE.SphereGeometry(1.35, 24, 24),
-          new THREE.MeshStandardMaterial({ color: 0xfff5e1, transparent: true, opacity: 0.3, roughness: 0.5 })
-        );
-        sheerOverlay.position.set(0, 0.08, -0.15);
-        sheerOverlay.scale.set(1.08, 1.1, 1.07);
-        activeHair.add(sheerOverlay);
+        // Chiffon Wrap — Layered, flowing
+        // Removed sheer overlay as it created a gray globe effect
 
         // Chiffon layers cascading down one side
         const chiffonSideDrape = new THREE.Mesh(
