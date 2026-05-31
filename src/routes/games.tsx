@@ -456,7 +456,7 @@ function GamesPage() {
 
     // Head Sphere (gorgeous warm Arab skin tone)
     const headMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(1.22, 32, 32),
+      new THREE.SphereGeometry(1.15, 32, 32),
       new THREE.MeshStandardMaterial({ color: SKIN_COLOR, roughness: 0.9, metalness: 0.0 })
     );
     headMesh.position.set(0, 1.6, 0);
@@ -590,6 +590,7 @@ function GamesPage() {
       // Setup Hijab Colors & Styles
       activeHair = new THREE.Group();
       activeHair.position.set(0, 1.6, 0); // attach to Head position
+      activeHair.scale.set(0.94, 0.94, 0.94); // scale down to match smaller head
       dollGroup.add(activeHair);
 
       // Hijab color palette — gorgeous, rich, and culturally beautiful!
@@ -731,6 +732,9 @@ function GamesPage() {
         activeFace.add(lashR, irisR, pupilR, shineR1, shineR2);
       }
 
+      // Make the face cute and clustered by scaling it down and pushing it forward so it doesn't sink into the sphere
+      activeFace.scale.set(0.68, 0.68, 0.68);
+      activeFace.position.set(0, -0.15, 0.40);
       headMesh.add(activeFace);
 
       if (hair === "buns") hijabColor = 0x1d3557; // Sports Hijab — deep navy
