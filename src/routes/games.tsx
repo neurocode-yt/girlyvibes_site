@@ -25,9 +25,11 @@ export const Route = createFileRoute("/games")({
   }),
 });
 
+let globalIsSoundMuted = false;
+
 // Sound synthesis helper (safely runs in browser context)
 function playSynthSound(type: "click" | "pet" | "feed" | "pop" | "sleep" | "win" | "fail" | "buy") {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || globalIsSoundMuted) return;
   try {
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioCtx) return;
@@ -125,6 +127,8 @@ const HAIR_OPTIONS = [
   { id: "waves", labelEn: "Chiffon Wrap 🌙", labelAr: "لفة شيفون 🌙" },
   { id: "buns", labelEn: "Sports Hijab 💪", labelAr: "حجاب رياضي 💪" },
   { id: "bob", labelEn: "Crown Turban ✨", labelAr: "توربان ملكي ✨" },
+  { id: "crinkle", labelEn: "Crinkled Cotton 🌸", labelAr: "قطن مجعد 🌸" },
+  { id: "floral", labelEn: "Floral Wrap 🌺", labelAr: "لفة زهرية 🌺" },
 ];
 
 const TOP_OPTIONS = [
@@ -132,6 +136,8 @@ const TOP_OPTIONS = [
   { id: "strawberry", labelEn: "Henna Knit 🌿", labelAr: "حياكة حنّاء 🌿" },
   { id: "hoodie", labelEn: "Cozy Kaftan 🧸", labelAr: "قفطان دافئ 🧸" },
   { id: "tank", labelEn: "Modest Blouse 🌸", labelAr: "بلوزة محتشمة 🌸" },
+  { id: "shrug", labelEn: "Embroidered Shrug ✨", labelAr: "سترة مطرزة ✨" },
+  { id: "blazer", labelEn: "Modest Crop Blazer 🧥", labelAr: "بليزر قصير 🧥" },
 ];
 
 const BOTTOM_OPTIONS = [
@@ -139,6 +145,8 @@ const BOTTOM_OPTIONS = [
   { id: "overalls", labelEn: "Palazzo Pants 👖", labelAr: "بنطلون واسع 👖" },
   { id: "jeans", labelEn: "Modest Jeans 👖", labelAr: "جينز محتشم 👖" },
   { id: "shorts", labelEn: "Culottes 🍭", labelAr: "كيلوتات 🍭" },
+  { id: "pleated", labelEn: "Pleated Skirt 🌟", labelAr: "تنورة ذات ثنيات 🌟" },
+  { id: "linen", labelEn: "Ruffled Linen 🌬️", labelAr: "كتان مكشكش 🌬️" },
 ];
 
 const ACC_OPTIONS = [
@@ -147,6 +155,15 @@ const ACC_OPTIONS = [
   { id: "ears", labelEn: "Misbaha مسبحة", labelAr: "مسبحة 📿" },
   { id: "headphones", labelEn: "Arabic Coffee ☕", labelAr: "قهوة عربية ☕" },
   { id: "milk", labelEn: "Henna Hand 🌿", labelAr: "يد حنّاء 🌿" },
+  { id: "necklace", labelEn: "Gold Necklaces 👑", labelAr: "قلائد ذهبية 👑" },
+];
+
+const EXPRESSION_OPTIONS = [
+  { id: "happy", labelEn: "Happy ^◡^", labelAr: "سعيد ^◡^" },
+  { id: "winking", labelEn: "Winking *◡<", labelAr: "يغمز *◡<" },
+  { id: "surprised", labelEn: "Surprised 😮", labelAr: "متفاجئ 😮" },
+  { id: "heart-eyes", labelEn: "Heart-Eyes ♥◡♥", labelAr: "عيون القلب ♥◡♥" },
+  { id: "sleepy", labelEn: "Sleepy -◡-", labelAr: "نعسان -◡-" },
 ];
 
 const BG_OPTIONS = [
@@ -190,7 +207,8 @@ const BOUTIQUE_ITEMS = [
   { id: "macaron", nameEn: "Strawberry Macaron 🍰", nameAr: "ماكارون فراولة 🍰", cost: 20, type: "food", value: 10 },
   { id: "candycorn", nameEn: "Magic Star Candy 🍬", nameAr: "حلوى النجم السحرية 🍬", cost: 40, type: "food", value: 25 },
   { id: "lights", nameEn: "Fairy Lights ✨", nameAr: "سلك أضواء براقة ✨", cost: 80, type: "decor", bgElement: "lights" },
-  { id: "rug", nameEn: "Fluffy Pink Rug 🧶", nameAr: "سجادة وردية ناعمة 🧶", cost: 100, type: "decor", bgElement: "rug" },
+  { id: "rug", nameEn: "Vintage Persian Rug 🧶", nameAr: "سجادة فارسية عتيقة 🧶", cost: 100, type: "decor", bgElement: "rug" },
+  { id: "plushie", nameEn: "Plushie Collection 🧸", nameAr: "مجموعة دمى محشوة 🧸", cost: 130, type: "decor", bgElement: "plushie" },
   { id: "wings", nameEn: "Angel Wings Skin 👼", nameAr: "أجنحة ملاك لطيفة 👼", cost: 150, type: "cosmetic", skin: "wings" },
   { id: "detective", nameEn: "Detective Hat Skin 🕵️", nameAr: "قبعة محققة كلاسيكية 🕵️", cost: 120, type: "cosmetic", skin: "hat" },
 ];
@@ -272,6 +290,19 @@ function GamesPage() {
     } catch (e) {
       console.warn("Failed to load xp", e);
     }
+
+    // Load shareable states from URL
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("hair")) setHair(params.get("hair")!);
+      if (params.has("top")) setTop(params.get("top")!);
+      if (params.has("bottom")) setBottom(params.get("bottom")!);
+      if (params.has("acc")) setAcc(params.get("acc")!);
+      if (params.has("bg")) setBg(params.get("bg")!);
+      if (params.has("expression")) setExpression(params.get("expression")!);
+    } catch (e) {
+      console.warn("Failed to read URL params", e);
+    }
   }, []);
 
   // Save helpers
@@ -314,6 +345,7 @@ function GamesPage() {
   const [bottom, setBottom] = useState("skirt");
   const [acc, setAcc] = useState("none");
   const [bg, setBg] = useState("pink-room");
+  const [expression, setExpression] = useState("happy");
   const [scrapbookCaption, setScrapbookCaption] = useState("");
 
   // Style Runway state
@@ -330,6 +362,7 @@ function GamesPage() {
   
   const [equippedSkin, setEquippedSkin] = useState<string>("none");
   const [activeBgDecor, setActiveBgDecor] = useState<string[]>([]);
+  const [isSoundMuted, setIsSoundMuted] = useState(false);
 
   // Emitters
   const [emitters, setEmitters] = useState<{ id: number; char: string; x: number; y: number }[]>([]);
@@ -341,6 +374,7 @@ function GamesPage() {
   const accRef = useRef(acc);
   const bgRef = useRef(bg);
   const equippedSkinRef = useRef(equippedSkin);
+  const expressionRef = useRef(expression);
 
   useEffect(() => { hairRef.current = hair; }, [hair]);
   useEffect(() => { topRef.current = top; }, [top]);
@@ -348,6 +382,7 @@ function GamesPage() {
   useEffect(() => { accRef.current = acc; }, [acc]);
   useEffect(() => { bgRef.current = bg; }, [bg]);
   useEffect(() => { equippedSkinRef.current = equippedSkin; }, [equippedSkin]);
+  useEffect(() => { expressionRef.current = expression; }, [expression]);
 
   // --- THREE.JS WEBGL REAL 3D CHIBI-DOLL SCENE INITIALIZER ---
   useEffect(() => {
@@ -441,138 +476,8 @@ function GamesPage() {
     earR.rotation.y = -0.2;
     headMesh.add(earL, earR);
 
-    // Expressive, Multi-layered 3D Anime Eyes (Large, Low, & Sparkling!)
-    // Left Eyelash Backing (Beautiful oval shape)
-    const lashL = new THREE.Mesh(
-      new THREE.SphereGeometry(0.28, 16, 16),
-      new THREE.MeshStandardMaterial({ color: 0x221a24, roughness: 0.5 })
-    );
-    lashL.position.set(-0.45, -0.02, 1.15);
-    lashL.scale.set(1.25, 0.88, 0.05);
-    lashL.rotation.y = 0.36;
-    lashL.rotation.x = -0.02;
-    lashL.rotation.z = -0.08;
-
-    // Left Iris (Warm Dark Brown — Beautiful Arab Eyes!)
-    const irisL = new THREE.Mesh(
-      new THREE.SphereGeometry(0.26, 16, 16),
-      new THREE.MeshStandardMaterial({ color: 0x6b3a2a, roughness: 0.2, metalness: 0.1 })
-    );
-    irisL.position.set(-0.45, -0.02, 1.16);
-    irisL.scale.set(1.0, 1.0, 0.05);
-    irisL.rotation.y = 0.36;
-    irisL.rotation.x = -0.02;
-
-    // Left Pupil (Dark Inner Core)
-    const pupilL = new THREE.Mesh(
-      new THREE.SphereGeometry(0.15, 16, 16),
-      new THREE.MeshStandardMaterial({ color: 0x1a0a05, roughness: 0.2 })
-    );
-    pupilL.position.set(-0.45, -0.02, 1.17);
-    pupilL.scale.set(0.9, 0.9, 0.05);
-    pupilL.rotation.y = 0.36;
-    pupilL.rotation.x = -0.02;
-
-    // Eye Twinkles (Triple Sparkles for high-fidelity look!)
-    const shineL1 = new THREE.Mesh(
-      new THREE.SphereGeometry(0.06, 12, 12),
-      new THREE.MeshBasicMaterial({ color: 0xffffff })
-    );
-    shineL1.position.set(-0.38, 0.05, 1.18);
-
-    const shineL2 = new THREE.Mesh(
-      new THREE.SphereGeometry(0.035, 8, 8),
-      new THREE.MeshBasicMaterial({ color: 0xffffff })
-    );
-    shineL2.position.set(-0.51, -0.09, 1.18);
-
-    const shineL3 = new THREE.Mesh(
-      new THREE.SphereGeometry(0.02, 8, 8),
-      new THREE.MeshBasicMaterial({ color: 0xffffff })
-    );
-    shineL3.position.set(-0.49, 0.06, 1.18);
-
-    headMesh.add(lashL, irisL, pupilL, shineL1, shineL2, shineL3);
-
-    // Right Eye Parts (Mirrored perfectly with consistent light highlight angles)
-    const lashR = new THREE.Mesh(
-      new THREE.SphereGeometry(0.28, 16, 16),
-      new THREE.MeshStandardMaterial({ color: 0x221a24, roughness: 0.5 })
-    );
-    lashR.position.set(0.45, -0.02, 1.15);
-    lashR.scale.set(1.25, 0.88, 0.05);
-    lashR.rotation.y = -0.36;
-    lashR.rotation.x = -0.02;
-    lashR.rotation.z = 0.08;
-
-    const irisR = new THREE.Mesh(
-      new THREE.SphereGeometry(0.26, 16, 16),
-      new THREE.MeshStandardMaterial({ color: 0x6b3a2a, roughness: 0.2, metalness: 0.1 })
-    );
-    irisR.position.set(0.45, -0.02, 1.16);
-    irisR.scale.set(1.0, 1.0, 0.05);
-    irisR.rotation.y = -0.36;
-    irisR.rotation.x = -0.02;
-
-    const pupilR = new THREE.Mesh(
-      new THREE.SphereGeometry(0.15, 16, 16),
-      new THREE.MeshStandardMaterial({ color: 0x1a0a05, roughness: 0.2 })
-    );
-    pupilR.position.set(0.45, -0.02, 1.17);
-    pupilR.scale.set(0.9, 0.9, 0.05);
-    pupilR.rotation.y = -0.36;
-    pupilR.rotation.x = -0.02;
-
-    const shineR1 = new THREE.Mesh(
-      new THREE.SphereGeometry(0.06, 12, 12),
-      new THREE.MeshBasicMaterial({ color: 0xffffff })
-    );
-    shineR1.position.set(0.52, 0.05, 1.18); // both eyes shine from standard same side
-
-    const shineR2 = new THREE.Mesh(
-      new THREE.SphereGeometry(0.035, 8, 8),
-      new THREE.MeshBasicMaterial({ color: 0xffffff })
-    );
-    shineR2.position.set(0.39, -0.09, 1.18);
-
-    const shineR3 = new THREE.Mesh(
-      new THREE.SphereGeometry(0.02, 8, 8),
-      new THREE.MeshBasicMaterial({ color: 0xffffff })
-    );
-    shineR3.position.set(0.41, 0.06, 1.18);
-
-    headMesh.add(lashR, irisR, pupilR, shineR1, shineR2, shineR3);
-
-    // Cute Tiny Button Nose (Sits beautifully on standard sphere surface)
-    const tinyNose = new THREE.Mesh(
-      new THREE.SphereGeometry(0.048, 8, 8),
-      new THREE.MeshStandardMaterial({ color: 0xc9956b, roughness: 0.9 })
-    );
-    tinyNose.position.set(0, -0.16, 1.23);
-    headMesh.add(tinyNose);
-
-    // Cute Soft Flat Cheek Blush (Disk Geometry - Beautiful, NOT creepy Jigsaw red lumpy warts!)
-    const blushL = new THREE.Mesh(
-      new THREE.CircleGeometry(0.15, 16),
-      new THREE.MeshBasicMaterial({ color: 0xd4886b, transparent: true, opacity: 0.35 })
-    );
-    blushL.position.set(-0.55, -0.18, 1.10);
-    blushL.rotation.y = 0.4;
-    blushL.rotation.x = -0.1;
-    
-    const blushR = blushL.clone();
-    blushR.position.set(0.55, -0.18, 1.10);
-    blushR.rotation.y = -0.4;
-    headMesh.add(blushL, blushR);
-
-    // Happy Open Smile Mouth (Sits beautifully on standard sphere surface)
-    const smileMouth = new THREE.Mesh(
-      new THREE.TorusGeometry(0.075, 0.02, 8, 16, Math.PI),
-      new THREE.MeshStandardMaterial({ color: 0xc96b6b, roughness: 0.5 })
-    );
-    smileMouth.position.set(0, -0.26, 1.21);
-    smileMouth.rotation.x = Math.PI; // smile shape
-    headMesh.add(smileMouth);
+    // 5. Dynamic Wardrobe & Face Mesh Group Instantiators
+    let activeFace: THREE.Group | null = null;
 
     // Torso Cylinder (Beautiful warm Arab skin tone)
     const torsoMesh = new THREE.Mesh(
@@ -656,7 +561,6 @@ function GamesPage() {
     legR.position.set(0.2, -0.75, 0);
     dollGroup.add(legL, legR);
 
-    // 5. Dynamic Wardrobe Mesh Group Instantiators
     let activeHair: THREE.Group | null = null;
     let activeTop: THREE.Group | null = null;
     let activeBottom: THREE.Group | null = null;
@@ -672,7 +576,10 @@ function GamesPage() {
       const acc = accRef.current;
       const equippedSkin = equippedSkinRef.current;
 
+      const expression = expressionRef.current;
+
       // Clear standard previous meshes
+      if (activeFace) headMesh.remove(activeFace);
       if (activeHair) dollGroup.remove(activeHair);
       if (activeTop) dollGroup.remove(activeTop);
       if (activeBottom) dollGroup.remove(activeBottom);
@@ -688,8 +595,148 @@ function GamesPage() {
       // Hijab color palette — gorgeous, rich, and culturally beautiful!
       let hijabColor = 0xc8a2c8; // Classic Silk — dusty rose-lavender
       if (hair === "waves") hijabColor = 0xfff5e1; // Chiffon Wrap — ivory cream
+      
+      // Build Dynamic Face based on Expression
+      activeFace = new THREE.Group();
+      
+      const blushOpacity = expression === "sleepy" ? 0.15 : (expression === "heart-eyes" ? 0.5 : 0.35);
+      const blushL = new THREE.Mesh(
+        new THREE.CircleGeometry(0.15, 16),
+        new THREE.MeshBasicMaterial({ color: 0xd4886b, transparent: true, opacity: blushOpacity })
+      );
+      blushL.position.set(-0.55, -0.18, 1.10);
+      blushL.rotation.y = 0.4;
+      blushL.rotation.x = -0.1;
+      const blushR = blushL.clone();
+      blushR.position.set(0.55, -0.18, 1.10);
+      blushR.rotation.y = -0.4;
+      activeFace.add(blushL, blushR);
+
+      // Mouth
+      let mouthGeometry: THREE.BufferGeometry;
+      let mouthPos = new THREE.Vector3(0, -0.26, 1.21);
+      if (expression === "surprised") {
+        mouthGeometry = new THREE.TorusGeometry(0.04, 0.02, 8, 16); // small "O"
+      } else if (expression === "sleepy") {
+        mouthGeometry = new THREE.TorusGeometry(0.04, 0.015, 8, 16, Math.PI); // tiny neutral mouth
+      } else {
+        mouthGeometry = new THREE.TorusGeometry(0.075, 0.02, 8, 16, Math.PI); // happy smile
+      }
+      const mouth = new THREE.Mesh(
+        mouthGeometry,
+        new THREE.MeshStandardMaterial({ color: 0xc96b6b, roughness: 0.5 })
+      );
+      mouth.position.copy(mouthPos);
+      if (expression !== "surprised") mouth.rotation.x = Math.PI; 
+      activeFace.add(mouth);
+
+      // Left Eye
+      if (expression === "winking") {
+        const winkL = new THREE.Mesh(
+          new THREE.TorusGeometry(0.15, 0.03, 8, 16, Math.PI),
+          new THREE.MeshStandardMaterial({ color: 0x221a24 })
+        );
+        winkL.position.set(-0.45, -0.05, 1.16);
+        winkL.rotation.y = 0.36;
+        winkL.rotation.x = -0.02;
+        winkL.rotation.z = Math.PI; // curved up
+        activeFace.add(winkL);
+      } else if (expression === "sleepy") {
+        const sleepyL = new THREE.Mesh(
+          new THREE.TorusGeometry(0.15, 0.03, 8, 16, Math.PI),
+          new THREE.MeshStandardMaterial({ color: 0x221a24 })
+        );
+        sleepyL.position.set(-0.45, -0.02, 1.16);
+        sleepyL.rotation.y = 0.36;
+        sleepyL.rotation.x = -0.02; // curved down
+        activeFace.add(sleepyL);
+      } else if (expression === "heart-eyes") {
+        // Build custom 3D heart shape using ShapeGeometry for eyes
+        const x = 0, y = 0;
+        const heartShape = new THREE.Shape();
+        heartShape.moveTo( x + .5, y + .5 );
+        heartShape.bezierCurveTo( x + .5, y + .5, x + .4, y, x, y );
+        heartShape.bezierCurveTo( x - .6, y, x - .6, y + .7,x - .6, y + .7 );
+        heartShape.bezierCurveTo( x - .6, y + 1.1, x - .3, y + 1.54, x + .5, y + 1.9 );
+        heartShape.bezierCurveTo( x + 1.2, y + 1.54, x + 1.6, y + 1.1, x + 1.6, y + .7 );
+        heartShape.bezierCurveTo( x + 1.6, y + .7, x + 1.6, y, x + 1.0, y );
+        heartShape.bezierCurveTo( x + .7, y, x + .5, y + .5, x + .5, y + .5 );
+
+        const heartL = new THREE.Mesh(
+          new THREE.ShapeGeometry(heartShape),
+          new THREE.MeshBasicMaterial({ color: 0xff3b6b, side: THREE.DoubleSide })
+        );
+        heartL.scale.set(0.18, 0.18, 0.18);
+        heartL.position.set(-0.55, 0.15, 1.16);
+        heartL.rotation.y = 0.36;
+        heartL.rotation.z = Math.PI; // upside down in threejs coords usually
+        activeFace.add(heartL);
+      } else {
+        // Standard Happy Eye Left
+        const lashL = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), new THREE.MeshStandardMaterial({ color: 0x221a24, roughness: 0.5 }));
+        lashL.position.set(-0.45, -0.02, 1.15); lashL.scale.set(1.25, 0.88, 0.05); lashL.rotation.y = 0.36; lashL.rotation.x = -0.02; lashL.rotation.z = -0.08;
+        const irisL = new THREE.Mesh(new THREE.SphereGeometry(0.26, 16, 16), new THREE.MeshStandardMaterial({ color: 0x6b3a2a, roughness: 0.2, metalness: 0.1 }));
+        irisL.position.set(-0.45, -0.02, 1.16); irisL.scale.set(1.0, 1.0, 0.05); irisL.rotation.y = 0.36; irisL.rotation.x = -0.02;
+        const pupilL = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1a0a05, roughness: 0.2 }));
+        pupilL.position.set(-0.45, -0.02, 1.17); pupilL.scale.set(0.9, 0.9, 0.05); pupilL.rotation.y = 0.36; pupilL.rotation.x = -0.02;
+        const shineL1 = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        shineL1.position.set(-0.38, 0.05, 1.18);
+        const shineL2 = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        shineL2.position.set(-0.51, -0.09, 1.18);
+        activeFace.add(lashL, irisL, pupilL, shineL1, shineL2);
+      }
+
+      // Right Eye
+      if (expression === "sleepy") {
+        const sleepyR = new THREE.Mesh(
+          new THREE.TorusGeometry(0.15, 0.03, 8, 16, Math.PI),
+          new THREE.MeshStandardMaterial({ color: 0x221a24 })
+        );
+        sleepyR.position.set(0.45, -0.02, 1.16);
+        sleepyR.rotation.y = -0.36;
+        sleepyR.rotation.x = -0.02; 
+        activeFace.add(sleepyR);
+      } else if (expression === "heart-eyes") {
+        const x = 0, y = 0;
+        const heartShape = new THREE.Shape();
+        heartShape.moveTo( x + .5, y + .5 );
+        heartShape.bezierCurveTo( x + .5, y + .5, x + .4, y, x, y );
+        heartShape.bezierCurveTo( x - .6, y, x - .6, y + .7,x - .6, y + .7 );
+        heartShape.bezierCurveTo( x - .6, y + 1.1, x - .3, y + 1.54, x + .5, y + 1.9 );
+        heartShape.bezierCurveTo( x + 1.2, y + 1.54, x + 1.6, y + 1.1, x + 1.6, y + .7 );
+        heartShape.bezierCurveTo( x + 1.6, y + .7, x + 1.6, y, x + 1.0, y );
+        heartShape.bezierCurveTo( x + .7, y, x + .5, y + .5, x + .5, y + .5 );
+
+        const heartR = new THREE.Mesh(
+          new THREE.ShapeGeometry(heartShape),
+          new THREE.MeshBasicMaterial({ color: 0xff3b6b, side: THREE.DoubleSide })
+        );
+        heartR.scale.set(0.18, 0.18, 0.18);
+        heartR.position.set(0.35, 0.15, 1.16);
+        heartR.rotation.y = -0.36;
+        heartR.rotation.z = Math.PI;
+        activeFace.add(heartR);
+      } else {
+        // Standard Happy Eye Right
+        const lashR = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), new THREE.MeshStandardMaterial({ color: 0x221a24, roughness: 0.5 }));
+        lashR.position.set(0.45, -0.02, 1.15); lashR.scale.set(1.25, 0.88, 0.05); lashR.rotation.y = -0.36; lashR.rotation.x = -0.02; lashR.rotation.z = 0.08;
+        const irisR = new THREE.Mesh(new THREE.SphereGeometry(0.26, 16, 16), new THREE.MeshStandardMaterial({ color: 0x6b3a2a, roughness: 0.2, metalness: 0.1 }));
+        irisR.position.set(0.45, -0.02, 1.16); irisR.scale.set(1.0, 1.0, 0.05); irisR.rotation.y = -0.36; irisR.rotation.x = -0.02;
+        const pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1a0a05, roughness: 0.2 }));
+        pupilR.position.set(0.45, -0.02, 1.17); pupilR.scale.set(0.9, 0.9, 0.05); pupilR.rotation.y = -0.36; pupilR.rotation.x = -0.02;
+        const shineR1 = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        shineR1.position.set(0.52, 0.05, 1.18); 
+        const shineR2 = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        shineR2.position.set(0.39, -0.09, 1.18);
+        activeFace.add(lashR, irisR, pupilR, shineR1, shineR2);
+      }
+
+      headMesh.add(activeFace);
+
       if (hair === "buns") hijabColor = 0x1d3557; // Sports Hijab — deep navy
       if (hair === "bob") hijabColor = 0x2d6a4f; // Crown Turban — emerald green
+      if (hair === "crinkle") hijabColor = 0xffdab9; // Crinkled Cotton — peach
+      if (hair === "floral") hijabColor = 0xd1e8e2; // Floral Wrap — mint
 
       // === HIJAB BASE CAP (Covers the entire top & back of head, frames the face oval!) ===
       // Full head covering sphere (slightly larger than head to sit on top)
@@ -833,6 +880,44 @@ function GamesPage() {
         );
         broochRing.position.set(0, 0.65, 1.14);
         activeHair.add(broochRing);
+      } else if (hair === "crinkle") {
+        // Crinkled Cotton Wrap
+        const crinkles = new THREE.Mesh(
+          new THREE.SphereGeometry(1.28, 32, 32),
+          new THREE.MeshStandardMaterial({ color: hijabColor, roughness: 0.9, bumpScale: 0.05 }) // High roughness for cotton
+        );
+        crinkles.position.set(0, 0, -0.05);
+        
+        // Add random bumps to simulate crinkles
+        const posAttr = crinkles.geometry.attributes.position;
+        for(let i = 0; i < posAttr.count; i++) {
+            const z = posAttr.getZ(i);
+            if (z > 0) posAttr.setZ(i, z + (Math.random() - 0.5) * 0.04);
+        }
+        crinkles.geometry.computeVertexNormals();
+        activeHair.add(crinkles);
+      } else if (hair === "floral") {
+        // Floral wrap with a flower accessory on the side
+        const flower = new THREE.Group();
+        for (let i = 0; i < 5; i++) {
+          const petal = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.04, 0.01, 0.15, 8),
+            new THREE.MeshStandardMaterial({ color: 0xffa3c4 })
+          );
+          petal.rotation.x = Math.PI / 2;
+          petal.position.x = Math.cos((i / 5) * Math.PI * 2) * 0.1;
+          petal.position.y = Math.sin((i / 5) * Math.PI * 2) * 0.1;
+          flower.add(petal);
+        }
+        const center = new THREE.Mesh(
+          new THREE.SphereGeometry(0.06, 8, 8),
+          new THREE.MeshStandardMaterial({ color: 0xffd700 })
+        );
+        flower.add(center);
+        flower.position.set(-1.0, 0.5, 0.8);
+        flower.rotation.y = -0.5;
+        flower.rotation.x = 0.2;
+        activeHair.add(flower);
       }
 
       // --- 3D TOPS GEOMETRIES WITH PREMIUM RICH DETAIL ---
@@ -1096,6 +1181,67 @@ function GamesPage() {
         heartG.add(hp1, hp2, hp3);
         heartG.position.set(0, 0.32, 0.45);
         activeTop.add(heartG);
+      } else if (top === "shrug") {
+        // Embroidered Shrug Top
+        const shrugChest = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.44, 0.44, 0.7, 16),
+          new THREE.MeshStandardMaterial({ color: 0xffd166, roughness: 0.6 })
+        );
+        shrugChest.position.y = 0.4;
+        activeTop.add(shrugChest);
+        
+        // Puffy Sleeves
+        const slL = new THREE.Mesh(
+          new THREE.SphereGeometry(0.2, 16, 16),
+          new THREE.MeshStandardMaterial({ color: 0xffd166, roughness: 0.6 })
+        );
+        slL.position.set(-0.52, 0.5, 0);
+        slL.scale.set(1, 1.2, 1);
+        const slR = slL.clone();
+        slR.position.x = 0.52;
+        activeTop.add(slL, slR);
+
+        // Gold embroidery dots
+        for (let i = 0; i < 6; i++) {
+          const dot = new THREE.Mesh(
+            new THREE.SphereGeometry(0.04, 8, 8),
+            new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8 })
+          );
+          dot.position.set(Math.cos(i) * 0.3, 0.3 + (i*0.05), 0.45);
+          activeTop.add(dot);
+        }
+      } else if (top === "blazer") {
+        // Modest Crop Blazer
+        const blazerChest = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.46, 0.46, 0.8, 16),
+          new THREE.MeshStandardMaterial({ color: 0x118ab2, roughness: 0.8 })
+        );
+        blazerChest.position.y = 0.38;
+        activeTop.add(blazerChest);
+
+        // Long straight sleeves
+        const slL = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.14, 0.14, 0.9, 16),
+          new THREE.MeshStandardMaterial({ color: 0x118ab2, roughness: 0.8 })
+        );
+        slL.position.set(-0.55, 0.3, 0);
+        slL.rotation.z = Math.PI / 12;
+        const slR = slL.clone();
+        slR.position.x = 0.55;
+        slR.rotation.z = -Math.PI / 12;
+        activeTop.add(slL, slR);
+
+        // Blazer Lapels
+        const lapelL = new THREE.Mesh(
+          new THREE.BoxGeometry(0.15, 0.6, 0.05),
+          new THREE.MeshStandardMaterial({ color: 0x073b4c, roughness: 0.8 })
+        );
+        lapelL.position.set(-0.15, 0.4, 0.46);
+        lapelL.rotation.z = -0.2;
+        const lapelR = lapelL.clone();
+        lapelR.position.x = 0.15;
+        lapelR.rotation.z = 0.2;
+        activeTop.add(lapelL, lapelR);
       }
 
       // --- 3D BOTTOMS GEOMETRIES WITH PLEATS AND CUFFS ---
@@ -1238,6 +1384,66 @@ function GamesPage() {
         sLegR.position.x = 0.18;
 
         activeBottom.add(sTop, sLegL, sLegR);
+      } else if (bottom === "pleated") {
+        // Pleated Skirt
+        const skirtMain = new THREE.Mesh(
+          new THREE.ConeGeometry(0.85, 0.7, 32, 1, true),
+          new THREE.MeshStandardMaterial({ color: 0xee9b00, roughness: 0.7 })
+        );
+        skirtMain.position.y = -0.35;
+        activeBottom.add(skirtMain);
+
+        // Dense pleats
+        for (let i = 0; i < 24; i++) {
+          const angle = (i / 24) * Math.PI * 2;
+          const pleat = new THREE.Mesh(
+            new THREE.BoxGeometry(0.04, 0.7, 0.03),
+            new THREE.MeshStandardMaterial({ color: 0xca6702, roughness: 0.7 })
+          );
+          pleat.position.set(Math.sin(angle) * 0.6, -0.35, Math.cos(angle) * 0.6);
+          pleat.rotation.y = -angle;
+          pleat.rotation.x = 0.18; 
+          activeBottom.add(pleat);
+        }
+      } else if (bottom === "linen") {
+        // Ruffled Linen Pants
+        const pLegL = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.28, 0.45, 1.1, 16),
+          new THREE.MeshStandardMaterial({ color: 0xedede9, roughness: 0.9 })
+        );
+        pLegL.position.set(-0.25, -0.65, 0);
+        
+        // Ruffle at bottom
+        const pRuffleL = new THREE.Mesh(
+          new THREE.TorusGeometry(0.48, 0.05, 8, 24),
+          new THREE.MeshStandardMaterial({ color: 0xd6ccc2, roughness: 0.9 })
+        );
+        pRuffleL.position.set(0, -0.5, 0);
+        pRuffleL.rotation.x = Math.PI / 2;
+        pLegL.add(pRuffleL);
+
+        const pLegR = pLegL.clone();
+        pLegR.position.x = 0.25;
+
+        const pantsTop = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.48, 0.55, 0.45, 16),
+          new THREE.MeshStandardMaterial({ color: 0xedede9, roughness: 0.9 })
+        );
+        pantsTop.position.y = -0.18;
+        
+        // Waist tie
+        const tieL = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.02, 0.02, 0.3, 8),
+          new THREE.MeshStandardMaterial({ color: 0xd6ccc2 })
+        );
+        tieL.position.set(-0.05, 0.05, 0.5);
+        tieL.rotation.z = -0.3;
+        const tieR = tieL.clone();
+        tieR.position.x = 0.05;
+        tieR.rotation.z = 0.3;
+        pantsTop.add(tieL, tieR);
+
+        activeBottom.add(pLegL, pLegR, pantsTop);
       }
 
       // --- 3D ACCESSORIES GEOMETRIES ---
@@ -1357,6 +1563,30 @@ function GamesPage() {
         hennaGroup.add(hennaFlower);
 
         activeAcc.add(hennaGroup);
+      } else if (acc === "necklace") {
+        // Layered Gold Necklaces
+        const chain1 = new THREE.Mesh(
+          new THREE.TorusGeometry(0.46, 0.015, 8, 24),
+          new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8, roughness: 0.2 })
+        );
+        chain1.position.set(0, 0.5, 0);
+        chain1.rotation.x = Math.PI / 2 + 0.2;
+
+        const chain2 = new THREE.Mesh(
+          new THREE.TorusGeometry(0.49, 0.01, 8, 24),
+          new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8, roughness: 0.2 })
+        );
+        chain2.position.set(0, 0.45, 0);
+        chain2.rotation.x = Math.PI / 2 + 0.3;
+
+        const pendant = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.04, 0.04, 0.02, 16),
+          new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.4, roughness: 0.2 }) // Pearl pendant
+        );
+        pendant.position.set(0, 0.33, 0.47);
+        pendant.rotation.x = Math.PI / 2;
+
+        activeAcc.add(chain1, chain2, pendant);
       }
 
       // --- COSMETIC SKINS INTEGRATION ---
@@ -1462,7 +1692,7 @@ function GamesPage() {
     if (canvasRef.current && (canvasRef.current as any).rebuildDoll) {
       (canvasRef.current as any).rebuildDoll();
     }
-  }, [hair, top, bottom, acc, equippedSkin]);
+  }, [hair, top, bottom, acc, equippedSkin, expression]);
 
   // --- TAMAGOTCHI INTERACTION HANDLERS ---
   const handlePetBunny = () => {
@@ -1700,6 +1930,36 @@ function GamesPage() {
     triggerEmitter("📸 Scrapbook Saved!");
   };
 
+  const handleDownloadPolaroid = (item: any) => {
+    if (!item.image) {
+      triggerEmitter("❌ Polaroid image not found!");
+      return;
+    }
+    const a = document.createElement("a");
+    a.href = item.image;
+    a.download = `GirlyVibes_Scrapbook_${item.id}.png`;
+    a.click();
+    triggerEmitter("💾 Downloaded!");
+  };
+
+  const handleShareState = () => {
+    playSynthSound("click");
+    const url = new URL(window.location.href);
+    url.searchParams.set("hair", hair);
+    url.searchParams.set("top", top);
+    url.searchParams.set("bottom", bottom);
+    url.searchParams.set("acc", acc);
+    url.searchParams.set("bg", bg);
+    url.searchParams.set("expression", expression);
+    
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      triggerEmitter("🔗 Link Copied!");
+    }).catch((e) => {
+      console.warn("Failed to copy link", e);
+      triggerEmitter("❌ Failed to copy link");
+    });
+  };
+
   const handleDeleteScrapbookItem = (id: string) => {
     playSynthSound("click");
     const updated = scrapbook.filter((item) => item.id !== id);
@@ -1713,6 +1973,7 @@ function GamesPage() {
     setBottom("skirt");
     setAcc("none");
     setBg("pink-room");
+    setExpression("happy");
     setRunwayPhase("idle");
     setRotationY(0);
     playSynthSound("click");
@@ -1942,6 +2203,27 @@ function GamesPage() {
 
                       <div>
                         <span className="text-xs font-bold text-[color:var(--rose-deep)] uppercase tracking-wider block mb-2">
+                          {lang === "ar" ? "تعبير الوجه" : "Face Expression"}
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          {EXPRESSION_OPTIONS.map((item) => (
+                            <button
+                              key={item.id}
+                              onClick={() => { playSynthSound("click"); setExpression(item.id); }}
+                              className={`px-3 py-2 rounded-xl text-xs font-medium border transition-all cursor-pointer ${
+                                expression === item.id 
+                                  ? "bg-[color:var(--rose-soft)] border-[color:var(--rose-deep)] text-[color:var(--rose-deep)] scale-[1.03] shadow-sm font-semibold" 
+                                  : "bg-white/40 hover:bg-white/80 border-[color:var(--border)]"
+                              }`}
+                            >
+                              {lang === "ar" ? item.labelAr : item.labelEn}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <span className="text-xs font-bold text-[color:var(--rose-deep)] uppercase tracking-wider block mb-2">
                           {t("games.dressup.tops")}
                         </span>
                         <div className="flex flex-wrap gap-2">
@@ -2087,9 +2369,21 @@ function GamesPage() {
                                 )}
                               </div>
                               <span className="text-[10px] font-semibold text-center italic text-[color:var(--mauve)] leading-relaxed px-1">"{item.caption}"</span>
+                              <button
+                                onClick={() => handleDownloadPolaroid(item)}
+                                className="mt-2 w-full py-1 text-[10px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded transition-colors cursor-pointer flex items-center justify-center gap-1"
+                              >
+                                ⬇️ {lang === "ar" ? "تحميل الصورة" : "Download"}
+                              </button>
                             </div>
                           ))}
                         </div>
+                        <button
+                          onClick={handleShareState}
+                          className="mt-4 w-full py-2 rounded-xl bg-white border border-[color:var(--border)] font-bold text-xs text-[color:var(--rose-deep)] shadow-sm hover:bg-slate-50 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                        >
+                          🔗 {lang === "ar" ? "نسخ رابط الإطلالة للمشاركة" : "Copy Link to Share Outfit"}
+                        </button>
                       </div>
                     )}
                   </div>
@@ -2174,9 +2468,22 @@ function GamesPage() {
 
                       <div className="w-full flex justify-between px-2 mb-3 text-[10px] uppercase font-bold text-[color:var(--rose-deep)] dark:text-pink-200">
                         <span>📟 Coco Pet Room v2.0</span>
-                        <span className="bg-rose-gradient px-2 py-0.5 rounded-full text-white">
-                          Lv.{bunnyLevel} Cozy Kit
-                        </span>
+                        <div className="flex gap-2 items-center">
+                          <button 
+                            onClick={() => {
+                              const newMuted = !isSoundMuted;
+                              setIsSoundMuted(newMuted);
+                              globalIsSoundMuted = newMuted;
+                              playSynthSound("click");
+                            }}
+                            className="bg-white/50 px-2 py-0.5 rounded-full cursor-pointer hover:bg-white"
+                          >
+                            {isSoundMuted ? "🔇" : "🔊"}
+                          </button>
+                          <span className="bg-rose-gradient px-2 py-0.5 rounded-full text-white">
+                            Lv.{bunnyLevel} Cozy Kit
+                          </span>
+                        </div>
                       </div>
 
                       {/* Console Screen Box */}
@@ -2196,6 +2503,11 @@ function GamesPage() {
                         )}
                         {bunnyState !== "sleeping" && activeBgDecor.includes("rug") && (
                           <div className="absolute bottom-6 w-24 h-4 bg-pink-300 dark:bg-pink-900/60 rounded-full blur-[2px] z-0 select-none pointer-events-none" />
+                        )}
+                        {bunnyState !== "sleeping" && activeBgDecor.includes("plushie") && (
+                          <div className="absolute bottom-6 left-4 text-2xl select-none pointer-events-none z-0">
+                            🧸
+                          </div>
                         )}
 
                         {/* Floating particles */}
