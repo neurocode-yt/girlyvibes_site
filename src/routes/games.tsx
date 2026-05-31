@@ -451,8 +451,8 @@ function GamesPage() {
     };
 
     // 4. Base Chibi Body Parts with Elegant Chibi (Nendoroid) Proportions
-    // Beautiful warm honey-wheat Arab skin tone
-    const SKIN_COLOR = 0xdeb896;
+    // Beautiful fair porcelain skin tone
+    const SKIN_COLOR = 0xffebd6;
 
     // Head Sphere (gorgeous warm Arab skin tone)
     const headMesh = new THREE.Mesh(
@@ -602,7 +602,7 @@ function GamesPage() {
       const blushOpacity = expression === "sleepy" ? 0.15 : (expression === "heart-eyes" ? 0.5 : 0.35);
       const blushL = new THREE.Mesh(
         new THREE.CircleGeometry(0.15, 16),
-        new THREE.MeshBasicMaterial({ color: 0xd4886b, transparent: true, opacity: blushOpacity })
+        new THREE.MeshBasicMaterial({ color: 0xff99a8, transparent: true, opacity: blushOpacity })
       );
       blushL.position.set(-0.55, -0.18, 1.10);
       blushL.rotation.y = 0.4;
@@ -675,7 +675,7 @@ function GamesPage() {
         // Standard Happy Eye Left
         const lashL = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), new THREE.MeshStandardMaterial({ color: 0x221a24, roughness: 0.5 }));
         lashL.position.set(-0.45, -0.02, 1.15); lashL.scale.set(1.25, 0.88, 0.05); lashL.rotation.y = 0.36; lashL.rotation.x = -0.02; lashL.rotation.z = -0.08;
-        const irisL = new THREE.Mesh(new THREE.SphereGeometry(0.26, 16, 16), new THREE.MeshStandardMaterial({ color: 0x6b3a2a, roughness: 0.2, metalness: 0.1 }));
+        const irisL = new THREE.Mesh(new THREE.SphereGeometry(0.26, 16, 16), new THREE.MeshStandardMaterial({ color: 0x5b92e5, roughness: 0.2, metalness: 0.1 }));
         irisL.position.set(-0.45, -0.02, 1.16); irisL.scale.set(1.0, 1.0, 0.05); irisL.rotation.y = 0.36; irisL.rotation.x = -0.02;
         const pupilL = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1a0a05, roughness: 0.2 }));
         pupilL.position.set(-0.45, -0.02, 1.17); pupilL.scale.set(0.9, 0.9, 0.05); pupilL.rotation.y = 0.36; pupilL.rotation.x = -0.02;
@@ -720,7 +720,7 @@ function GamesPage() {
         // Standard Happy Eye Right
         const lashR = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), new THREE.MeshStandardMaterial({ color: 0x221a24, roughness: 0.5 }));
         lashR.position.set(0.45, -0.02, 1.15); lashR.scale.set(1.25, 0.88, 0.05); lashR.rotation.y = -0.36; lashR.rotation.x = -0.02; lashR.rotation.z = 0.08;
-        const irisR = new THREE.Mesh(new THREE.SphereGeometry(0.26, 16, 16), new THREE.MeshStandardMaterial({ color: 0x6b3a2a, roughness: 0.2, metalness: 0.1 }));
+        const irisR = new THREE.Mesh(new THREE.SphereGeometry(0.26, 16, 16), new THREE.MeshStandardMaterial({ color: 0x5b92e5, roughness: 0.2, metalness: 0.1 }));
         irisR.position.set(0.45, -0.02, 1.16); irisR.scale.set(1.0, 1.0, 0.05); irisR.rotation.y = -0.36; irisR.rotation.x = -0.02;
         const pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1a0a05, roughness: 0.2 }));
         pupilR.position.set(0.45, -0.02, 1.17); pupilR.scale.set(0.9, 0.9, 0.05); pupilR.rotation.y = -0.36; pupilR.rotation.x = -0.02;
