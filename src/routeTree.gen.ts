@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TestDollRouteImport } from './routes/test-doll'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as GamesRouteImport } from './routes/games'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TestDollRoute = TestDollRouteImport.update({
+  id: '/test-doll',
+  path: '/test-doll',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/games': typeof GamesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/test-doll': typeof TestDollRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/games': typeof GamesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/test-doll': typeof TestDollRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/games': typeof GamesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/test-doll': typeof TestDollRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/games' | '/sitemap.xml'
+  fullPaths: '/' | '/games' | '/sitemap.xml' | '/test-doll'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/games' | '/sitemap.xml'
-  id: '__root__' | '/' | '/games' | '/sitemap.xml'
+  to: '/' | '/games' | '/sitemap.xml' | '/test-doll'
+  id: '__root__' | '/' | '/games' | '/sitemap.xml' | '/test-doll'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GamesRoute: typeof GamesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TestDollRoute: typeof TestDollRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/test-doll': {
+      id: '/test-doll'
+      path: '/test-doll'
+      fullPath: '/test-doll'
+      preLoaderRoute: typeof TestDollRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GamesRoute: GamesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TestDollRoute: TestDollRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
