@@ -506,15 +506,46 @@ function GamesPage() {
     };
 
     // 4. Base Chibi Body Parts with Elegant Chibi (Nendoroid) Proportions
-    // Pure white doll skin tone
-    const SKIN_COLOR = 0xffffff;
+    // Gorgeous warm Arab honey porcelain skin tone!
+    const SKIN_COLOR = 0xfce0d1;
 
-    // Head Sphere (gorgeous warm Arab skin tone)
+    // Stage Podium Pedestal under the doll!
+    const stagePodium = new THREE.Mesh(
+      new THREE.CylinderGeometry(2.2, 2.4, 0.2, 32),
+      new THREE.MeshStandardMaterial({ color: 0xffe4e6, roughness: 0.3, metalness: 0.1 })
+    );
+    stagePodium.position.set(0, -1.48, 0);
+    dollGroup.add(stagePodium);
+
+    // Glowing Neon Ring on Stage
+    const stageRing = new THREE.Mesh(
+      new THREE.TorusGeometry(2.15, 0.035, 12, 32),
+      new THREE.MeshBasicMaterial({ color: 0xff6584 })
+    );
+    stageRing.position.set(0, -1.37, 0);
+    stageRing.rotation.x = Math.PI / 2;
+    dollGroup.add(stageRing);
+
+    // Floating Orbiting Star Particles
+    const starParticlesGroup = new THREE.Group();
+    for (let i = 0; i < 6; i++) {
+      const angle = (i / 6) * Math.PI * 2;
+      const star = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.1, 0),
+        new THREE.MeshBasicMaterial({ color: 0xfcb4d5 })
+      );
+      star.position.set(Math.cos(angle) * 2.2, 0.5 + Math.sin(i * 2) * 0.4, Math.sin(angle) * 2.2);
+      starParticlesGroup.add(star);
+    }
+    scene.add(starParticlesGroup);
+
+    // Head Base (gorgeous warm Arab skin tone with soft chibi contour)
     const headMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(1.15, 32, 32),
-      new THREE.MeshStandardMaterial({ color: SKIN_COLOR, roughness: 0.9, metalness: 0.0 })
+      new THREE.SphereGeometry(1.18, 36, 36),
+      new THREE.MeshStandardMaterial({ color: SKIN_COLOR, roughness: 0.6, metalness: 0.02 })
     );
     headMesh.position.set(0, 1.6, 0);
+    headMesh.scale.set(1.02, 0.98, 1.04);
     dollGroup.add(headMesh);
 
     // Cute Rounded Ears on the Sides of Head (will be mostly hidden by hijab)
@@ -1692,6 +1723,9 @@ function GamesPage() {
       // Soft idle breathe
       dollGroup.position.y = 0.22 + Math.sin(elapsed * 2.1) * 0.055;
       headMesh.rotation.z = Math.sin(elapsed * 1.6) * 0.026;
+      
+      // Orbiting sparkles rotation
+      starParticlesGroup.rotation.y = elapsed * 0.4;
       
       // Swaying cute slender arms wiggles
       armL.rotation.z = Math.PI / 10 + Math.sin(elapsed * 2.1) * 0.035;
