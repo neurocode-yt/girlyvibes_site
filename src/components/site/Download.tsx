@@ -104,10 +104,22 @@ export function Footer() {
         </div>
         <div className="mt-8 pt-6 border-t border-[color:var(--border)] flex flex-wrap items-center justify-between gap-3 text-xs text-[color:var(--mauve)]/60">
           <p>{t("footer.rights")} 🩷</p>
-          <div className="flex gap-4">
-            <Link to="/privacy">{t("footer.privacy")}</Link>
-            <Link to="/delete-account">Delete account</Link>
-            <a href="#">{t("footer.terms")}</a>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <Link
+              to="/privacy"
+              className="inline-flex items-center rounded-full border border-[color:var(--border)] bg-[color:var(--rose-soft)]/60 px-3 py-1 text-[color:var(--rose-deep)] transition hover:bg-[color:var(--rose-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--rose-deep)]"
+            >
+              {lang === "ar" ? "سياسة الخصوصية" : "Privacy Policy"}
+            </Link>
+            <Link
+              to="/delete-account"
+              className="inline-flex items-center rounded-full border border-[color:var(--border)] bg-[color:var(--rose-soft)]/60 px-3 py-1 text-[color:var(--rose-deep)] transition hover:bg-[color:var(--rose-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--rose-deep)]"
+            >
+              {lang === "ar" ? "حذف الحساب" : "Delete Account"}
+            </Link>
+            <a className="hover:text-[color:var(--rose-deep)]" href="#">
+              {t("footer.terms")}
+            </a>
           </div>
         </div>
       </div>
