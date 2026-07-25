@@ -50,7 +50,10 @@ export const Route = createFileRoute("/delete-account")({
 
 function DeleteAccountPage() {
   return (
-    <div className="min-h-screen bg-[color:var(--background)] text-[color:var(--mauve)]">
+    <div
+      className="min-h-screen bg-[color:var(--background)] text-left text-[color:var(--mauve)]"
+      dir="ltr"
+    >
       <header className="border-b border-[color:var(--border)] bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
           <Link
