@@ -106,6 +106,7 @@ export function Footer() {
           <p>{t("footer.rights")} 🩷</p>
           <div className="flex gap-4">
             <Link to="/privacy">{t("footer.privacy")}</Link>
+            <Link to="/delete-account">Delete account</Link>
             <a href="#">{t("footer.terms")}</a>
           </div>
         </div>
