@@ -120,4 +120,56 @@ npm run preview
 
 ---
 
+## Production Deployment and Git Handoff
+
+The production website is hosted on Vercel:
+
+- Vercel project: `girlyvibesyt`
+- Production domain: `https://girly-vibes.com`
+- GitHub repository: `https://github.com/neurocode-yt/girlyvibes_site`
+- Production branch: `main`
+- Privacy policy: `https://girly-vibes.com/privacy`
+
+### Standard deployment
+
+Run from `G:\0\G\GirlyVibesSite`:
+
+```powershell
+npm run build
+npx vercel link --yes --project girlyvibesyt
+npx vercel --prod --yes
+```
+
+The successful deployment must finish with:
+
+```text
+Aliased https://girly-vibes.com
+```
+
+After deployment, verify both URLs return HTTP 200:
+
+```powershell
+(Invoke-WebRequest -UseBasicParsing "https://girly-vibes.com/").StatusCode
+(Invoke-WebRequest -UseBasicParsing "https://girly-vibes.com/privacy").StatusCode
+```
+
+The TanStack configuration must keep prerendering enabled, and `vercel.json`
+must keep `outputDirectory` set to `dist/client`. If Vercel accepts a deployment
+but direct routes return 404, confirm that `dist/client/index.html` and
+`dist/client/privacy/index.html` exist after `npm run build` before deploying
+again.
+
+### Git rule for assistant-made changes
+
+After a requested change is complete:
+
+1. Build or test it.
+2. Review the diff.
+3. Commit only the verified files belonging to the task.
+4. Push the commit to the appropriate GitHub branch.
+5. Never include secrets, generated credentials, unrelated user edits, or
+   unfinished local work.
+6. For production website changes, deploy after the GitHub push and verify the
+   affected live URLs.
+
 *Made with 💗 for girls who deserve a soft space to glow up and breathe.*
