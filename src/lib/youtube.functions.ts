@@ -47,44 +47,6 @@ export type YTPayload = {
 
 const API = "https://www.googleapis.com/youtube/v3";
 
-async function yt<T>(key: string, path: string, params: Record<string, string>): Promise<T> {
-  const url = new URL(`${API}/${path}`);
-  Object.entries({ ...params, key }).forEach(([k, v]) => url.searchParams.set(k, v));
-  const res = await fetch(url.toString());
-  if (!res.ok) throw new Error(`YT ${path} ${res.status}: ${await res.text()}`);
-  return res.json() as Promise<T>;
-}
-
-export const getChannelData = createServerFn({ method: "GET" }).handler(async (): Promise<YTPayload> => {
-  try {
-    let key: string | undefined = undefined;
-
-    // 1. Try local process.env (Vite/Node)
-    if (typeof process !== "undefined" && process.env?.YOUTUBE_API_KEY) {
-      key = process.env.YOUTUBE_API_KEY;
-    }
-
-    // 2. Try Vinxi/Cloudflare context (Only compiles on server, stripped from client bundle!)
-    if (typeof window === "undefined" && !key) {
-      try {
-        // Construct dynamic module string and use vite-ignore to prevent compile-time Rollup resolution
-        const vinxiHttp = "vin" + "xi/http";
-        const { getEvent } = await import(/* @vite-ignore */ vinxiHttp);
-        const event = getEvent();
-        const cfEnv = (event?.context as any)?.cloudflare?.env;
-        if (cfEnv?.YOUTUBE_API_KEY) {
-          key = cfEnv.YOUTUBE_API_KEY;
-        }
-      } catch (e) {
-        // Ignore error
-      }
-    }
-
-    // 3. Try Cloudflare global binding
-    if (typeof globalThis !== "undefined" && (globalThis as any).YOUTUBE_API_KEY && !key) {
-      key = (globalThis as any).YOUTUBE_API_KEY;
-    }
-
 const FALLBACK_YOUTUBE_DATA: YTPayload = {
   channel: {
     id: "girlyvibes0",
@@ -189,6 +151,14 @@ const FALLBACK_YOUTUBE_DATA: YTPayload = {
   ],
 };
 
+async function yt<T>(key: string, path: string, params: Record<string, string>): Promise<T> {
+  const url = new URL(`${API}/${path}`);
+  Object.entries({ ...params, key }).forEach(([k, v]) => url.searchParams.set(k, v));
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`YT ${path} ${res.status}: ${await res.text()}`);
+  return res.json() as Promise<T>;
+}
+
 export const getChannelData = createServerFn({ method: "GET" }).handler(async (): Promise<YTPayload> => {
   try {
     let key: string | undefined = undefined;
@@ -198,7 +168,7 @@ export const getChannelData = createServerFn({ method: "GET" }).handler(async ()
       key = process.env.YOUTUBE_API_KEY;
     }
 
-    // 2. Try Vinxi/Cloudflare context (Only compiles on server, stripped from client bundle!)
+    // 2. Try Vinxi/Cloudflare context
     if (typeof window === "undefined" && !key) {
       try {
         const vinxiHttp = "vin" + "xi/http";
@@ -283,7 +253,6 @@ export const getChannelData = createServerFn({ method: "GET" }).handler(async ()
       url: `https://www.youtube.com/playlist?list=${p.id}`,
     }));
 
-    // Cache 1h at edge ONLY for successful responses
     setResponseHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
 
     return {
