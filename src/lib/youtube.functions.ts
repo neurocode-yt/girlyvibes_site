@@ -47,7 +47,7 @@ export type YTPayload = {
 
 const API = "https://www.googleapis.com/youtube/v3";
 
-const FALLBACK_YOUTUBE_DATA: YTPayload = {
+export const FALLBACK_YOUTUBE_DATA: YTPayload = {
   channel: {
     id: "girlyvibes0",
     title: "Girly Vibes 🩷",
@@ -159,33 +159,15 @@ async function yt<T>(key: string, path: string, params: Record<string, string>):
   return res.json() as Promise<T>;
 }
 
-export const getChannelData = createServerFn({ method: "GET" }).handler(async (): Promise<YTPayload> => {
+export async function fetchChannelData(): Promise<YTPayload> {
   try {
     let key: string | undefined = undefined;
 
-    // 1. Try local process.env (Vite/Node)
     if (typeof process !== "undefined" && process.env?.YOUTUBE_API_KEY) {
       key = process.env.YOUTUBE_API_KEY;
     }
-
-    // 2. Try Vinxi/Cloudflare context
-    if (typeof window === "undefined" && !key) {
-      try {
-        const vinxiHttp = "vin" + "xi/http";
-        const { getEvent } = await import(/* @vite-ignore */ vinxiHttp);
-        const event = getEvent();
-        const cfEnv = (event?.context as any)?.cloudflare?.env;
-        if (cfEnv?.YOUTUBE_API_KEY) {
-          key = cfEnv.YOUTUBE_API_KEY;
-        }
-      } catch (e) {
-        // Ignore error
-      }
-    }
-
-    // 3. Try Cloudflare global binding
-    if (typeof globalThis !== "undefined" && (globalThis as any).YOUTUBE_API_KEY && !key) {
-      key = (globalThis as any).YOUTUBE_API_KEY;
+    if (!key && typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_YOUTUBE_API_KEY) {
+      key = (import.meta as any).env.VITE_YOUTUBE_API_KEY;
     }
 
     if (!key || key === "your_youtube_api_key_here") {
@@ -253,8 +235,6 @@ export const getChannelData = createServerFn({ method: "GET" }).handler(async ()
       url: `https://www.youtube.com/playlist?list=${p.id}`,
     }));
 
-    setResponseHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
-
     return {
       channel: {
         id: channelId,
@@ -269,8 +249,17 @@ export const getChannelData = createServerFn({ method: "GET" }).handler(async ()
       playlists: playlists.length ? playlists : FALLBACK_YOUTUBE_DATA.playlists,
     };
   } catch (e: any) {
-    console.error("[youtube] fetch failed", e);
-    setResponseHeader("Cache-Control", "no-store, must-revalidate");
+    console.warn("[youtube] fetch failed:", e);
     return FALLBACK_YOUTUBE_DATA;
   }
+}
+
+export const getChannelData = createServerFn({ method: "GET" }).handler(async (): Promise<YTPayload> => {
+  const data = await fetchChannelData();
+  if (data.channel?.id !== "girlyvibes0") {
+    setResponseHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
+  } else {
+    setResponseHeader("Cache-Control", "no-store, must-revalidate");
+  }
+  return data;
 });

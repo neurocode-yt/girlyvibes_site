@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useI18n } from "@/lib/i18n";
 import { Section } from "./Decor";
 import { Play, Youtube as YT, Eye, Clock, Users, Loader2 } from "lucide-react";
-import { getChannelData, type YTVideo, type YTPlaylist } from "@/lib/youtube.functions";
+import { getChannelData, fetchChannelData, FALLBACK_YOUTUBE_DATA, type YTVideo, type YTPlaylist } from "@/lib/youtube.functions";
 
 const CHANNEL_URL = "https://www.youtube.com/@girlyvibes0";
 
@@ -52,9 +52,18 @@ export function YouTubeHub() {
   const { t, lang } = useI18n();
   const isAr = lang === "ar";
   const fetchFn = useServerFn(getChannelData);
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["yt-channel"],
-    queryFn: () => fetchFn(),
+    queryFn: async () => {
+      try {
+        const res = await fetchFn();
+        if (res && res.videos && res.videos.length > 0) return res;
+      } catch (e) {
+        // Fallback for static browser client
+      }
+      return fetchChannelData();
+    },
+    initialData: FALLBACK_YOUTUBE_DATA,
     staleTime: 1000 * 60 * 30,
   });
   const [filter, setFilter] = useState<FilterKey>("latest");
