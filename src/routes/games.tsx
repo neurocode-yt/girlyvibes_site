@@ -202,21 +202,76 @@ const FASHION_CHALLENGES = [
 ];
 
 // Virtual Pet Boutique Items
-const BOUTIQUE_ITEMS = [
-  { id: "boba", nameEn: "Cozy Boba Tea 🧋", nameAr: "شاي بوبا دافئ 🧋", cost: 30, type: "food", value: 15 },
-  { id: "macaron", nameEn: "Strawberry Macaron 🍰", nameAr: "ماكارون فراولة 🍰", cost: 20, type: "food", value: 10 },
-  { id: "candycorn", nameEn: "Magic Star Candy 🍬", nameAr: "حلوى النجم السحرية 🍬", cost: 40, type: "food", value: 25 },
-  { id: "lights", nameEn: "Fairy Lights ✨", nameAr: "سلك أضواء براقة ✨", cost: 80, type: "decor", bgElement: "lights" },
-  { id: "rug", nameEn: "Vintage Persian Rug 🧶", nameAr: "سجادة فارسية عتيقة 🧶", cost: 100, type: "decor", bgElement: "rug" },
-  { id: "plushie", nameEn: "Plushie Collection 🧸", nameAr: "مجموعة دمى محشوة 🧸", cost: 130, type: "decor", bgElement: "plushie" },
-  { id: "wings", nameEn: "Angel Wings Skin 👼", nameAr: "أجنحة ملاك لطيفة 👼", cost: 150, type: "cosmetic", skin: "wings" },
-  { id: "detective", nameEn: "Detective Hat Skin 🕵️", nameAr: "قبعة محققة كلاسيكية 🕵️", cost: 120, type: "cosmetic", skin: "hat" },
+const HALLMARK_TEMPLATES = [
+  {
+    id: "eid",
+    nameEn: "Eid & Celebration 🌸",
+    nameAr: "بطاقة العيد والمناسبات 🌸",
+    bgGradient: "from-amber-100 via-rose-100 to-pink-200 dark:from-amber-950 dark:via-rose-950 dark:to-pink-900",
+    borderColor: "border-amber-400",
+    headerEn: "CELEBRATION GREETINGS",
+    headerAr: "بطاقة تهنئة ومعايدة",
+    defaultTitleEn: "Warm Eid Mubarak Wishes! 🌙",
+    defaultTitleAr: "عيد مبارك وكل عام وأنتم بخير 🌙",
+    defaultMsgEn: "May your day be filled with happiness, sweet treats, and glowing moments!",
+    defaultMsgAr: "أتمنى لكِ يوماً مليئاً بالسعادة، والحلويات، واللحظات المتألقة!",
+    seal: "🌙 EID & JOY"
+  },
+  {
+    id: "magazine",
+    nameEn: "Glow Magazine Cover ✨",
+    nameAr: "غلاف مجلة التألق ✨",
+    bgGradient: "from-pink-100 via-purple-100 to-rose-200 dark:from-pink-950 dark:via-purple-950 dark:to-rose-900",
+    borderColor: "border-pink-400",
+    headerEn: "GIRLY VIBES MAGAZINE",
+    headerAr: "مجلة جيرلي فايبس",
+    defaultTitleEn: "The Ultimate Glow-Up Edition ✨",
+    defaultTitleAr: "إصدار التألق والأناقة المذهلة ✨",
+    defaultMsgEn: "Unstoppable confidence, cozy routines, and endless sweetness!",
+    defaultMsgAr: "ثقة لا تتوقف، روتين دافئ، وحلاوة لا تنتهي!",
+    seal: "⭐ ISSUE #1"
+  },
+  {
+    id: "besties",
+    nameEn: "Besties & Birthday 🎂",
+    nameAr: "أصدقاء وعيد ميلاد 🎂",
+    bgGradient: "from-rose-100 via-amber-50 to-pink-100 dark:from-rose-950 dark:via-zinc-900 dark:to-pink-950",
+    borderColor: "border-rose-300",
+    headerEn: "BESTIES FOREVER",
+    headerAr: "صديقاتي للأبد",
+    defaultTitleEn: "Happiest Birthday Sunshine! 🎂",
+    defaultTitleAr: "عيد ميلاد سعيد يا أحلى نهار! 🎂",
+    defaultMsgEn: "Thank you for bringing light and joy to every single day!",
+    defaultMsgAr: "شكراً لأنكِ تملئين كل يوم بالنور والبهجة والضحك!",
+    seal: "💗 WITH LOVE"
+  },
+  {
+    id: "garden",
+    nameEn: "Pastel Garden 🌺",
+    nameAr: "حديقة الورد 🌺",
+    bgGradient: "from-emerald-100 via-teal-50 to-rose-100 dark:from-emerald-950 dark:via-teal-950 dark:to-rose-950",
+    borderColor: "border-emerald-300",
+    headerEn: "FLOWERS & SUNSHINE",
+    headerAr: "ورد وإشراق",
+    defaultTitleEn: "Bloom With Grace & Love 🌸",
+    defaultTitleAr: "أزهري بلطف وحب دائماً 🌸",
+    defaultMsgEn: "Take a deep breath, smile brightly, and blossom everywhere you go.",
+    defaultMsgAr: "خذي نفساً عميقاً، ابتسمي بصفاء، وأزهري في كل مكان.",
+    seal: "🌸 BLOOM & GLOW"
+  }
 ];
 
 function GamesPage() {
   const { t, lang } = useI18n();
-  const [activeTab, setActiveTab] = useState<"dressup" | "tamagotchi">("dressup");
+  const [activeTab, setActiveTab] = useState<"dressup" | "tamagotchi" | "hallmark">("dressup");
   const [isMounted, setIsMounted] = useState(false);
+
+  // Hallmark State
+  const [hallmarkTemplate, setHallmarkTemplate] = useState("eid");
+  const [hallmarkTitle, setHallmarkTitle] = useState("Warm Eid Mubarak Wishes! 🌙");
+  const [hallmarkMessage, setHallmarkMessage] = useState("May your day be filled with happiness, sweet treats, and glowing moments!");
+  const [hallmarkRecipient, setHallmarkRecipient] = useState("To My Dearest Bestie 💖");
+  const [hallmarkStickers, setHallmarkStickers] = useState<string[]>(["🎀", "✨", "🌸", "📮"]);
 
   // --- THREE.JS REAL 3D RENDERING SYSTEM REFS ---
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -386,7 +441,7 @@ function GamesPage() {
 
   // --- THREE.JS WEBGL REAL 3D CHIBI-DOLL SCENE INITIALIZER ---
   useEffect(() => {
-    if (!isMounted || activeTab !== "dressup" || !canvasRef.current) return;
+    if (!isMounted || (activeTab !== "dressup" && activeTab !== "hallmark") || !canvasRef.current) return;
 
     // 1. Initialize Scene, Camera, WebGLRenderer with Dynamic Sizing
     const parent = canvasRef.current.parentElement;
@@ -2000,7 +2055,7 @@ function GamesPage() {
               <span>{lang === "ar" ? "عملات الجزر 🪙: " : "Carrot Coins 🪙: "} {carrotCoins}</span>
             </div>
 
-            <div className="mt-8 flex justify-center gap-4 bg-[color:var(--rose-soft)]/40 p-1.5 rounded-full border border-[color:var(--border)] max-w-sm mx-auto shadow-sm">
+            <div className="mt-8 flex justify-center gap-2 bg-[color:var(--rose-soft)]/40 p-1.5 rounded-full border border-[color:var(--border)] max-w-md mx-auto shadow-sm">
               <button
                 onClick={() => { playSynthSound("click"); setActiveTab("dressup"); }}
                 className={`flex-1 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all ${
@@ -2010,6 +2065,16 @@ function GamesPage() {
                 }`}
               >
                 👗 {lang === "ar" ? "ستوديو التلبيس 3D" : "3D Doll Studio"}
+              </button>
+              <button
+                onClick={() => { playSynthSound("click"); setActiveTab("hallmark"); }}
+                className={`flex-1 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all ${
+                  activeTab === "hallmark" 
+                    ? "bg-rose-gradient text-white shadow-soft" 
+                    : "text-[color:var(--mauve)]/70 hover:text-[color:var(--rose-deep)]"
+                }`}
+              >
+                💌 {lang === "ar" ? "بطاقات Hallmark" : "Hallmark Studio"}
               </button>
               <button
                 onClick={() => { playSynthSound("click"); setActiveTab("tamagotchi"); }}
@@ -2026,6 +2091,227 @@ function GamesPage() {
 
           <div className="w-full max-w-5xl flex justify-center">
             <AnimatePresence mode="wait">
+              {activeTab === "hallmark" && (
+                <motion.div
+                  key="hallmark"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 100 }}
+                  className="w-full grid lg:grid-cols-[1.1fr_1.3fr] gap-8 bg-white/70 dark:bg-zinc-950/70 p-6 md:p-8 rounded-[36px] border border-[color:var(--border)] backdrop-blur shadow-glow"
+                >
+                  {/* Left Column: Live Hallmark Greeting Card Preview Frame */}
+                  <div className="relative flex flex-col items-center">
+                    <div className="w-full justify-between flex items-center mb-3 text-xs text-[color:var(--mauve)]/70 font-semibold px-2">
+                      <span className="flex items-center gap-1">💌 HALLMARK PHOTO BOOTH CARD 💌</span>
+                      <span className="text-[10px] bg-rose-gradient px-2 py-0.5 rounded-full text-white font-bold">Official Hallmark Studio</span>
+                    </div>
+
+                    {/* Ornate Hallmark Card Outer Container */}
+                    {(() => {
+                      const selectedTmpl = HALLMARK_TEMPLATES.find((t) => t.id === hallmarkTemplate) || HALLMARK_TEMPLATES[0];
+                      return (
+                        <div
+                          className={`relative w-full max-w-[360px] aspect-[4/5] rounded-[32px] p-5 shadow-2xl border-4 ${selectedTmpl.borderColor} bg-gradient-to-b ${selectedTmpl.bgGradient} flex flex-col justify-between overflow-hidden select-none`}
+                        >
+                          {/* Card Top Banner Header */}
+                          <div className="text-center pt-1 pb-2 border-b border-black/10 dark:border-white/10">
+                            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-rose-600 dark:text-rose-400">
+                              {lang === "ar" ? selectedTmpl.headerAr : selectedTmpl.headerEn}
+                            </p>
+                            <h3 className="font-display font-bold text-lg text-slate-800 dark:text-slate-100 mt-0.5 leading-tight">
+                              {hallmarkTitle}
+                            </h3>
+                          </div>
+
+                          {/* Middle Frame: 3D Doll Canvas Viewport */}
+                          <div className="relative my-2 w-full h-[210px] rounded-2xl overflow-hidden border-2 border-white/80 dark:border-white/20 shadow-inner bg-gradient-to-b from-white/40 to-white/10 flex items-center justify-center">
+                            <canvas
+                              ref={canvasRef}
+                              onPointerDown={handlePointerDown}
+                              onPointerMove={handlePointerMove}
+                              onPointerUp={handlePointerUp}
+                              onPointerLeave={handlePointerUp}
+                              className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
+                            />
+
+                            {/* Floating Customizable Hallmark Stickers */}
+                            <div className="absolute inset-0 pointer-events-none p-3 flex flex-wrap justify-between items-start">
+                              {hallmarkStickers.map((st, i) => (
+                                <motion.span
+                                  key={i}
+                                  animate={{ y: [0, -4, 0], rotate: [0, i % 2 === 0 ? 8 : -8, 0] }}
+                                  transition={{ duration: 2 + i * 0.5, repeat: Infinity, ease: "easeInOut" }}
+                                  className="text-2xl filter drop-shadow-md"
+                                >
+                                  {st}
+                                </motion.span>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Bottom Section: Greeting Message & Hallmark Seal */}
+                          <div className="pt-2 border-t border-black/10 dark:border-white/10 flex flex-col justify-between gap-2">
+                            <div className="bg-white/70 dark:bg-black/40 p-2.5 rounded-xl border border-white/60 dark:border-white/10">
+                              <p className="text-xs font-bold text-rose-500 dark:text-rose-300">{hallmarkRecipient}</p>
+                              <p className="text-xs font-medium text-slate-700 dark:text-slate-200 mt-1 leading-snug italic">
+                                "{hallmarkMessage}"
+                              </p>
+                            </div>
+
+                            {/* Official Hallmark Watermark & Barcode */}
+                            <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 dark:text-slate-400">
+                              <span className="font-bold bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-md">
+                                {selectedTmpl.seal}
+                              </span>
+                              <span>GIRLY VIBES HALLMARK 2026</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Right Column: Hallmark Card Customizer Controls */}
+                  <div className="flex flex-col gap-5 justify-between">
+                    <div>
+                      <h3 className="text-xl font-display font-bold text-[color:var(--rose-deep)] flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-amber-400" />
+                        {lang === "ar" ? "صانع بطاقات الهدايا والمعايدات (Hallmark Studio)" : "Hallmark Photo Booth Studio 💌"}
+                      </h3>
+                      <p className="text-xs text-[color:var(--mauve)]/75 mt-1">
+                        {lang === "ar"
+                          ? "نسقي دميتك الـ 3D، واختاري قالب البطاقة، واكتبي إهداءك الخاص ثم احفظي بطاقة Hallmark عالية الجودة!"
+                          : "Customize your 3D doll, pick a Hallmark greeting template, add stickers, and create stunning personalized holiday cards!"}
+                      </p>
+                    </div>
+
+                    {/* 1. Template Selector */}
+                    <div>
+                      <label className="text-xs font-bold text-[color:var(--rose-deep)] uppercase tracking-wider block mb-2">
+                        {lang === "ar" ? "1. اختر قالب البطاقة 🎨" : "1. Choose Hallmark Template 🎨"}
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {HALLMARK_TEMPLATES.map((tmpl) => {
+                          const isSel = hallmarkTemplate === tmpl.id;
+                          return (
+                            <button
+                              key={tmpl.id}
+                              onClick={() => {
+                                playSynthSound("click");
+                                setHallmarkTemplate(tmpl.id);
+                                setHallmarkTitle(lang === "ar" ? tmpl.defaultTitleAr : tmpl.defaultTitleEn);
+                                setHallmarkMessage(lang === "ar" ? tmpl.defaultMsgAr : tmpl.defaultMsgEn);
+                              }}
+                              className={`p-3 rounded-2xl border text-xs font-semibold flex flex-col gap-1 text-start transition-all cursor-pointer ${
+                                isSel
+                                  ? "bg-rose-gradient text-white border-transparent shadow-soft scale-[1.02]"
+                                  : "bg-white/80 dark:bg-zinc-900/80 border-[color:var(--border)] text-[color:var(--mauve)] hover:border-[color:var(--rose-deep)]"
+                              }`}
+                            >
+                              <span>{lang === "ar" ? tmpl.nameAr : tmpl.nameEn}</span>
+                              <span className={`text-[10px] opacity-80 ${isSel ? "text-white" : "text-[color:var(--mauve)]/60"}`}>
+                                {tmpl.seal}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 2. Custom Message & Title Input */}
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs font-bold text-[color:var(--rose-deep)] uppercase tracking-wider block mb-1">
+                          {lang === "ar" ? "2. إهداء إلى / Recipient 💌" : "2. Recipient Name 💌"}
+                        </label>
+                        <input
+                          type="text"
+                          value={hallmarkRecipient}
+                          onChange={(e) => setHallmarkRecipient(e.target.value)}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-[color:var(--border)] bg-white/80 dark:bg-zinc-900/80 text-[color:var(--mauve)] focus:outline-none focus:ring-2 focus:ring-[color:var(--rose-deep)]"
+                          placeholder="To My Dearest Bestie 💖"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold text-[color:var(--rose-deep)] uppercase tracking-wider block mb-1">
+                          {lang === "ar" ? "العنوان الرئيسي / Card Title ✍️" : "Card Main Title ✍️"}
+                        </label>
+                        <input
+                          type="text"
+                          value={hallmarkTitle}
+                          onChange={(e) => setHallmarkTitle(e.target.value)}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-[color:var(--border)] bg-white/80 dark:bg-zinc-900/80 text-[color:var(--mauve)] focus:outline-none focus:ring-2 focus:ring-[color:var(--rose-deep)]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold text-[color:var(--rose-deep)] uppercase tracking-wider block mb-1">
+                          {lang === "ar" ? "رسالة التهنئة / Personalized Wish 🌸" : "Personalized Greeting Message 🌸"}
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={hallmarkMessage}
+                          onChange={(e) => setHallmarkMessage(e.target.value)}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-[color:var(--border)] bg-white/80 dark:bg-zinc-900/80 text-[color:var(--mauve)] focus:outline-none focus:ring-2 focus:ring-[color:var(--rose-deep)] resize-none"
+                        />
+                      </div>
+                    </div>
+
+                    {/* 3. Sticker Toggles & Pose */}
+                    <div>
+                      <label className="text-xs font-bold text-[color:var(--rose-deep)] uppercase tracking-wider block mb-2">
+                        {lang === "ar" ? "3. ملصقات وإكسسوارات البطاقة 🎀" : "3. Hallmark Card Stickers 🎀"}
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {["🎀", "✨", "🌸", "📮", "🎂", "👑", "🧋", "💗"].map((st) => {
+                          const active = hallmarkStickers.includes(st);
+                          return (
+                            <button
+                              key={st}
+                              onClick={() => {
+                                playSynthSound("click");
+                                if (active) {
+                                  setHallmarkStickers(hallmarkStickers.filter((s) => s !== st));
+                                } else {
+                                  setHallmarkStickers([...hallmarkStickers, st]);
+                                }
+                              }}
+                              className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center border transition-all cursor-pointer ${
+                                active
+                                  ? "bg-rose-100 dark:bg-rose-900 border-rose-400 scale-110 shadow-xs"
+                                  : "bg-white/60 dark:bg-zinc-900/60 border-[color:var(--border)] opacity-60 hover:opacity-100"
+                              }`}
+                            >
+                              {st}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 4. Hallmark Card Actions */}
+                    <div className="pt-3 border-t border-[color:var(--border)] flex flex-col sm:flex-row gap-3">
+                      <button
+                        onClick={handleSaveToScrapbook}
+                        className="flex-1 py-3 px-4 rounded-2xl bg-rose-gradient text-white font-bold text-xs shadow-soft hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <Camera className="w-4 h-4" />
+                        {lang === "ar" ? "تحميل بطاقة Hallmark 📸" : "Download Hallmark Card 📸"}
+                      </button>
+                      <button
+                        onClick={handleSaveHallmarkToScrapbook}
+                        className="py-3 px-4 rounded-2xl bg-amber-500 text-white font-bold text-xs shadow-soft hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <Coins className="w-4 h-4 fill-white" />
+                        {lang === "ar" ? "حفظ للقصاصات (+50 عملة)" : "Save (+50 Coins)"}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               {activeTab === "dressup" ? (
                 // --- DESIGN LAB 1: INTERACTIVE 3D DOLL DRESS-UP STUDIO ---
                 <motion.div
