@@ -1,8 +1,10 @@
 {
+  "outputDirectory": "dist/client",
+  "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/privacy",
-      "destination": "/"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
