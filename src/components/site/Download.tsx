@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { Section, Blob, HeartIcon } from "./Decor";
 import { Download, Apple } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 const GOOGLE_PLAY_URL = "GOOGLE_PLAY_URL_HERE";
 const APP_STORE_URL = "APP_STORE_URL_HERE";
@@ -97,14 +98,14 @@ export function Footer() {
               <li><a href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noreferrer">YouTube</a></li>
               <li><a href="#" >Instagram</a></li>
               <li><a href="#" >TikTok</a></li>
-              <li><a href="mailto:hello@girlyvibes.app">{t("footer.contact")}</a></li>
+              <li><a href="mailto:hello@girly-vibes.com">{t("footer.contact")}</a></li>
             </ul>
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-[color:var(--border)] flex flex-wrap items-center justify-between gap-3 text-xs text-[color:var(--mauve)]/60">
           <p>{t("footer.rights")} 🩷</p>
           <div className="flex gap-4">
-            <a href="#">{t("footer.privacy")}</a>
+            <Link to="/privacy">{t("footer.privacy")}</Link>
             <a href="#">{t("footer.terms")}</a>
           </div>
         </div>
