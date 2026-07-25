@@ -5,6 +5,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Download";
 import { Section, Blob, HeartIcon, SparkleMark } from "@/components/site/Decor";
 import { motion, AnimatePresence } from "framer-motion";
+import { Heart, Zap, Sparkles, Smile, RefreshCw, Star, Camera, BookOpen, Box, Award, Coins } from "lucide-react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
