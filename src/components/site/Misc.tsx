@@ -4,17 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { Section } from "./Decor";
 import { ChevronDown, Sparkles } from "lucide-react";
 
-const themes = [
-  { n: "Classic Pink", c: ["#FBE4EC", "#F7C9D9", "#B55B72"] },
-  { n: "Premium Gold", c: ["#FBEFE0", "#E4C28E", "#9A6B2F"] },
-  { n: "Aqua Orchid", c: ["#E0F5F2", "#A8D8D6", "#6B8AA8"] },
-  { n: "Fresh Garden", c: ["#E8F3DA", "#B8D898", "#5A7A3B"] },
-  { n: "Soft Rose", c: ["#FDE8EE", "#F5BCCD", "#C0738C"] },
-  { n: "Pearl Blush", c: ["#FBF0EC", "#E8C8C2", "#A88078"] },
-  { n: "Lilac Cream", c: ["#F0EAF8", "#C9B3E0", "#8A6BB0"] },
-  { n: "Mint Petal", c: ["#E4F3EC", "#A8D6BF", "#5A8A75"] },
-  { n: "Black Velvet", c: ["#2a1f25", "#4a2f3a", "#C88AA0"] },
-];
+import { themes, applyTheme } from "@/lib/theme";
 
 const widgets = [
   { t: "Glow Points", ta: "نقاط الجلو", v: "340 ✨" },
@@ -31,51 +21,6 @@ const updates = [
   { t: "More Arabic reads added", ta: "قراءات عربية جديدة", date: "v2.1" },
   { t: "Notes redesigned softly", ta: "تصميم جديد للملاحظات", date: "v2.0" },
 ];
-
-const applyTheme = (themeName: string | null) => {
-  if (typeof window === "undefined") return;
-  const root = document.documentElement;
-  if (!themeName) {
-    root.removeAttribute("data-selected-theme");
-    root.style.removeProperty("--background");
-    root.style.removeProperty("--secondary");
-    root.style.removeProperty("--accent");
-    root.style.removeProperty("--blush");
-    root.style.removeProperty("--rose-soft");
-    root.style.removeProperty("--rose-deep");
-    root.style.removeProperty("--primary");
-    root.style.removeProperty("--border");
-    root.style.removeProperty("--mauve");
-    root.style.removeProperty("--foreground");
-    root.style.removeProperty("--card");
-    localStorage.removeItem("gv-selected-theme");
-    window.dispatchEvent(new Event("scroll"));
-  } else {
-    const th = themes.find((t) => t.n === themeName);
-    if (!th) return;
-    root.setAttribute("data-selected-theme", themeName);
-    root.style.setProperty("--background", th.c[0]);
-    root.style.setProperty("--secondary", th.c[0]);
-    root.style.setProperty("--accent", th.c[1]);
-    root.style.setProperty("--blush", th.c[1]);
-    root.style.setProperty("--rose-soft", th.c[0]);
-    root.style.setProperty("--rose-deep", th.c[2]);
-    root.style.setProperty("--primary", th.c[2]);
-    root.style.setProperty("--border", th.c[1]);
-    if (th.n === "Black Velvet") {
-      root.classList.add("dark");
-      root.style.setProperty("--mauve", "#fbe4ec");
-      root.style.setProperty("--foreground", "#fbe4ec");
-      root.style.setProperty("--card", "#3c2933");
-    } else {
-      root.classList.remove("dark");
-      root.style.setProperty("--mauve", "#321d28");
-      root.style.setProperty("--foreground", "#321d28");
-      root.style.setProperty("--card", "#ffffff");
-    }
-    localStorage.setItem("gv-selected-theme", themeName);
-  }
-};
 
 export function Themes() {
   const { t, lang } = useI18n();

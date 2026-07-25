@@ -16,6 +16,8 @@ const navKeys = [
   { key: "nav.games", id: "games", isHash: false, to: "/games" },
 ];
 
+import { applyTheme } from "@/lib/theme";
+
 export function Header() {
   const { t, lang, setLang } = useI18n();
   const [scrolled, setScrolled] = useState(false);
@@ -31,15 +33,18 @@ export function Header() {
 
   const toggleThemeMode = () => {
     const nextMode = themeMode === "light" ? "dark" : "light";
+    const isDark = nextMode === "dark";
     setThemeMode(nextMode);
     document.documentElement.setAttribute("data-theme-mode", nextMode);
-    if (nextMode === "dark") {
+    if (isDark) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
     localStorage.setItem("gv-theme-mode", nextMode);
-    window.dispatchEvent(new Event("scroll"));
+
+    const currentTheme = localStorage.getItem("gv-selected-theme");
+    applyTheme(currentTheme, isDark);
   };
 
   useEffect(() => {
