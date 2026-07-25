@@ -52,7 +52,7 @@ export function YouTubeHub() {
   const { t, lang } = useI18n();
   const isAr = lang === "ar";
   const fetchFn = useServerFn(getChannelData);
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["yt-channel"],
     queryFn: async () => {
       try {
