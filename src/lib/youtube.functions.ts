@@ -2,14 +2,17 @@ import { createServerFn } from "@tanstack/react-start";
 import { setResponseHeader } from "@tanstack/react-start/server";
 
 if (typeof window === "undefined") {
-  import("node:dns").then((dns) => {
-    if (typeof dns.setDefaultResultOrder === "function") {
-      dns.setDefaultResultOrder("ipv4first");
-    }
-  }).catch(() => {});
+  import("node:dns")
+    .then((dns) => {
+      if (typeof dns.setDefaultResultOrder === "function") {
+        dns.setDefaultResultOrder("ipv4first");
+      }
+    })
+    .catch(() => {});
 }
 
 const HANDLE = "girlyvibes0";
+const CHANNEL_ID = "UCH8YtfoeO4rZuvkH3B4X2hg";
 
 export type YTVideo = {
   id: string;
@@ -42,6 +45,7 @@ export type YTPayload = {
   } | null;
   videos: YTVideo[];
   playlists: YTPlaylist[];
+  isFallback?: boolean;
   error?: string;
 };
 
@@ -49,106 +53,111 @@ const API = "https://www.googleapis.com/youtube/v3";
 
 export const FALLBACK_YOUTUBE_DATA: YTPayload = {
   channel: {
-    id: "girlyvibes0",
-    title: "Girly Vibes 🩷",
-    thumbnail: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
-    subscribers: 12500,
-    videoCount: 24,
-    viewCount: 450000,
+    id: CHANNEL_ID,
+    title: "Girly Vibes",
+    thumbnail:
+      "https://yt3.ggpht.com/68uhiTNcz27QF9wbORndN7WWsfZVciwBvHVsf3xyBoTeyLUHd6iX4ghXdUVMKeAiDMzKTHw_Rg=s800-c-k-c0x00ffffff-no-rj",
+    subscribers: 228000,
+    videoCount: 374,
+    viewCount: 27252506,
     url: `https://www.youtube.com/@${HANDLE}`,
   },
   videos: [
     {
-      id: "fallback-1",
-      title: "روتين الصباح الكامل للجلو أب 🌸 | Full Morning Glow Up Routine",
-      description: "خطوات روتين الصباح اللطيف لتحسي بالانتعاش والنشاط كل يوم. عناية بالبشرة، تنظيم، وهدوء.",
-      thumbnail: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80",
-      publishedAt: "2026-06-15T12:00:00Z",
-      views: 48200,
-      duration: "PT8M45S",
-      url: `https://www.youtube.com/@${HANDLE}`,
+      id: "WuC-f8bCU4Q",
+      title: "لو عمرك بين 10 ل 18 سنة لازم تشوفي الفيديو دا 🎀 نصائح مهمة للمراهقات 💖 part 2 💖",
+      description: "",
+      thumbnail: "https://i.ytimg.com/vi/WuC-f8bCU4Q/maxresdefault.jpg",
+      publishedAt: "2026-07-13T13:45:25Z",
+      views: 67379,
+      duration: "PT11M6S",
+      url: "https://www.youtube.com/watch?v=WuC-f8bCU4Q",
     },
     {
-      id: "fallback-2",
-      title: "5 نصائح ذهبية للعناية بالبشرة لسن المراهقة ✨ | Teen Skincare Tips",
-      description: "عناية بسيطة وطبيعية للبشرة بدون تعقيد، مناسبة للبنات اليومية.",
-      thumbnail: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&auto=format&fit=crop&q=80",
-      publishedAt: "2026-06-10T14:30:00Z",
-      views: 32100,
-      duration: "PT6M12S",
-      url: `https://www.youtube.com/@${HANDLE}`,
+      id: "SuLtHDYE7O8",
+      title:
+        "جلو اب كامل في فيديو واحد ! 👑💖 ( نصائح، روتين ، تمارين ، وصفات ، تسريحات ولفات حجاب والمزيد ! )✨",
+      description: "",
+      thumbnail: "https://i.ytimg.com/vi/SuLtHDYE7O8/maxresdefault.jpg",
+      publishedAt: "2026-06-24T09:46:39Z",
+      views: 87373,
+      duration: "PT24M36S",
+      url: "https://www.youtube.com/watch?v=SuLtHDYE7O8",
     },
     {
-      id: "fallback-3",
-      title: "جلسة هدوء وتنفس لمحو القلق والتوتر 🫧 | Calm & Breathing Session",
-      description: "خذي نفس عميق واسترخي مع صوت المطر والكلمات المشجعة.",
-      thumbnail: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&auto=format&fit=crop&q=80",
-      publishedAt: "2026-05-28T18:00:00Z",
-      views: 29500,
-      duration: "PT10M00S",
-      url: `https://www.youtube.com/@${HANDLE}`,
+      id: "GOss_2lU-0U",
+      title:
+        "15 فكرة ممتعة تكسر ملل العطلة بعيداً عن الهاتف والسوشيال ميديا 🤭💖✨ لازم تجربيهم ! 🫢",
+      description: "",
+      thumbnail: "https://i.ytimg.com/vi/GOss_2lU-0U/maxresdefault.jpg",
+      publishedAt: "2026-06-09T11:31:50Z",
+      views: 183647,
+      duration: "PT13M50S",
+      url: "https://www.youtube.com/watch?v=GOss_2lU-0U",
     },
     {
-      id: "fallback-4",
-      title: "طريقة تنظيم الوقت والدراسة بدون ضغط 📖 | Study & Time Management",
-      description: "نصائح تنظيم الدفاتر والدراسة بأسلوب مريح ولطيف.",
-      thumbnail: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=80",
-      publishedAt: "2026-05-18T10:15:00Z",
-      views: 54100,
-      duration: "PT12M30S",
-      url: `https://www.youtube.com/@${HANDLE}`,
+      id: "l0y9ugOCx_U",
+      title:
+        "اشياء ما قالوها لنا امهاتنا في مرحلة المراهقة ! 🤫 - نصائح للبنات فقط بدون خجل 👌🏻🎀✨",
+      description: "",
+      thumbnail: "https://i.ytimg.com/vi/l0y9ugOCx_U/maxresdefault.jpg",
+      publishedAt: "2026-05-22T11:23:22Z",
+      views: 426745,
+      duration: "PT19M38S",
+      url: "https://www.youtube.com/watch?v=l0y9ugOCx_U",
     },
     {
-      id: "fallback-5",
-      title: "أفكار أنشطة ممتعة لمواجهة الملل في البيت 🎀 | Fun Home Activities",
-      description: "أفكار أنشطة أوفلاين لطيفة لمواجهة الملل واستثمار وقتك.",
-      thumbnail: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=800&auto=format&fit=crop&q=80",
-      publishedAt: "2026-05-02T16:45:00Z",
-      views: 21800,
-      duration: "PT7M50S",
-      url: `https://www.youtube.com/@${HANDLE}`,
+      id: "dE0xP_VtMLM",
+      title: "وأخيرا فيديو الأسئلة Q&A 🤭🎀✨ أسئلة محرجة واجابات صريحة 😬💯",
+      description: "",
+      thumbnail: "https://i.ytimg.com/vi/dE0xP_VtMLM/maxresdefault.jpg",
+      publishedAt: "2026-04-25T08:28:59Z",
+      views: 41680,
+      duration: "PT39M22S",
+      url: "https://www.youtube.com/watch?v=dE0xP_VtMLM",
     },
     {
-      id: "fallback-6",
-      title: "روتين المساء والشاور قبل النوم لليلة هادئة 🌙 | Night Routine & Shower",
-      description: "أفضل روتين للاسترخاء قبل النوم ولنوم عميق ومريح.",
-      thumbnail: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800&auto=format&fit=crop&q=80",
-      publishedAt: "2026-04-20T20:00:00Z",
-      views: 61400,
-      duration: "PT9M15S",
-      url: `https://www.youtube.com/@${HANDLE}`,
+      id: "fd_-tLUinn0",
+      title: "خطة عملية هتخليكي واثقة في نفسك بجد👌🏻❤️",
+      description: "",
+      thumbnail: "https://i.ytimg.com/vi/fd_-tLUinn0/maxresdefault.jpg",
+      publishedAt: "2026-04-17T11:25:11Z",
+      views: 47218,
+      duration: "PT14M16S",
+      url: "https://www.youtube.com/watch?v=fd_-tLUinn0",
     },
   ],
   playlists: [
     {
-      id: "pl-1",
-      title: "روتينات الجلو أب 🌸",
-      thumbnail: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80",
-      itemCount: 8,
-      url: `https://www.youtube.com/@${HANDLE}`,
+      id: "PLm5K2tBe_c7dt3IEFzInR4bGfAtyvtCq8",
+      title: "shorts",
+      thumbnail: "https://i.ytimg.com/vi/QV2o1RBunRo/hqdefault.jpg",
+      itemCount: 250,
+      url: "https://www.youtube.com/playlist?list=PLm5K2tBe_c7dt3IEFzInR4bGfAtyvtCq8",
     },
     {
-      id: "pl-2",
-      title: "عناية بالبشرة والجمال ✨",
-      thumbnail: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&auto=format&fit=crop&q=80",
-      itemCount: 6,
-      url: `https://www.youtube.com/@${HANDLE}`,
+      id: "PLm5K2tBe_c7eOIWmFlbf3q_RhQqwHQjgF",
+      title: "سلسلة الGLOW UP 💕✨",
+      thumbnail: "https://i.ytimg.com/vi/hVc4FhFXjLQ/hqdefault.jpg",
+      itemCount: 9,
+      url: "https://www.youtube.com/playlist?list=PLm5K2tBe_c7eOIWmFlbf3q_RhQqwHQjgF",
     },
     {
-      id: "pl-3",
-      title: "غرفة الهدوء والاسترخاء 🫧",
-      thumbnail: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&auto=format&fit=crop&q=80",
-      itemCount: 5,
-      url: `https://www.youtube.com/@${HANDLE}`,
+      id: "PLm5K2tBe_c7e_UxM9QOaEJt2YMZZsaMPL",
+      title: "نصايح للبنات وتطوير الذات 💖",
+      thumbnail: "https://i.ytimg.com/vi/-X1tzsLAFIg/hqdefault.jpg",
+      itemCount: 17,
+      url: "https://www.youtube.com/playlist?list=PLm5K2tBe_c7e_UxM9QOaEJt2YMZZsaMPL",
     },
     {
-      id: "pl-4",
-      title: "نصائح الدراسة والدفاتر 📖",
-      thumbnail: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=80",
-      itemCount: 5,
-      url: `https://www.youtube.com/@${HANDLE}`,
+      id: "PLm5K2tBe_c7cNy3v5U3yJol_wTygR7fns",
+      title: "العناية 🫣💕✨🫣",
+      thumbnail: "https://i.ytimg.com/vi/IxPK1F2nWdQ/hqdefault.jpg",
+      itemCount: 17,
+      url: "https://www.youtube.com/playlist?list=PLm5K2tBe_c7cNy3v5U3yJol_wTygR7fns",
     },
   ],
+  isFallback: true,
 };
 
 async function yt<T>(key: string, path: string, params: Record<string, string>): Promise<T> {
@@ -166,7 +175,11 @@ export async function fetchChannelData(): Promise<YTPayload> {
     if (typeof process !== "undefined" && process.env?.YOUTUBE_API_KEY) {
       key = process.env.YOUTUBE_API_KEY;
     }
-    if (!key && typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_YOUTUBE_API_KEY) {
+    if (
+      !key &&
+      typeof import.meta !== "undefined" &&
+      (import.meta as any).env?.VITE_YOUTUBE_API_KEY
+    ) {
       key = (import.meta as any).env.VITE_YOUTUBE_API_KEY;
     }
 
@@ -239,7 +252,8 @@ export async function fetchChannelData(): Promise<YTPayload> {
       channel: {
         id: channelId,
         title: channel.snippet.title,
-        thumbnail: channel.snippet.thumbnails?.high?.url || channel.snippet.thumbnails?.default?.url,
+        thumbnail:
+          channel.snippet.thumbnails?.high?.url || channel.snippet.thumbnails?.default?.url,
         subscribers: Number(channel.statistics?.subscriberCount ?? 0),
         videoCount: Number(channel.statistics?.videoCount ?? 0),
         viewCount: Number(channel.statistics?.viewCount ?? 0),
@@ -247,6 +261,7 @@ export async function fetchChannelData(): Promise<YTPayload> {
       },
       videos: videos.length ? videos : FALLBACK_YOUTUBE_DATA.videos,
       playlists: playlists.length ? playlists : FALLBACK_YOUTUBE_DATA.playlists,
+      isFallback: false,
     };
   } catch (e: any) {
     console.warn("[youtube] fetch failed:", e);
@@ -254,12 +269,14 @@ export async function fetchChannelData(): Promise<YTPayload> {
   }
 }
 
-export const getChannelData = createServerFn({ method: "GET" }).handler(async (): Promise<YTPayload> => {
-  const data = await fetchChannelData();
-  if (data.channel?.id !== "girlyvibes0") {
-    setResponseHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
-  } else {
-    setResponseHeader("Cache-Control", "no-store, must-revalidate");
-  }
-  return data;
-});
+export const getChannelData = createServerFn({ method: "GET" }).handler(
+  async (): Promise<YTPayload> => {
+    const data = await fetchChannelData();
+    if (!data.isFallback) {
+      setResponseHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
+    } else {
+      setResponseHeader("Cache-Control", "no-store, must-revalidate");
+    }
+    return data;
+  },
+);

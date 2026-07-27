@@ -5,7 +5,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { useI18n } from "@/lib/i18n";
 import { Section } from "./Decor";
 import { Play, Youtube as YT, Eye, Clock, Users, Loader2 } from "lucide-react";
-import { getChannelData, fetchChannelData, FALLBACK_YOUTUBE_DATA, type YTVideo, type YTPlaylist } from "@/lib/youtube.functions";
+import {
+  getChannelData,
+  FALLBACK_YOUTUBE_DATA,
+  type YTVideo,
+  type YTPlaylist,
+} from "@/lib/youtube.functions";
 
 const CHANNEL_URL = "https://www.youtube.com/@girlyvibes0";
 
@@ -14,10 +19,41 @@ type FilterKey = "latest" | "popular" | "skincare" | "advice" | "glow" | "calm";
 const FILTERS: { key: FilterKey; en: string; ar: string; kws: string[] }[] = [
   { key: "latest", en: "Latest", ar: "الأحدث", kws: [] },
   { key: "popular", en: "Most Watched", ar: "الأكثر مشاهدة", kws: [] },
-  { key: "skincare", en: "Skincare", ar: "العناية", kws: ["skin", "skincare", "face", "بشرة", "عناية", "وجه", "حب الشباب", "acne", "glow up", "جلو"] },
-  { key: "advice", en: "Advice", ar: "نصائح", kws: ["advice", "tips", "girl", "نصيح", "بنات", "حياة", "school", "مدرسة", "confidence", "ثقة"] },
-  { key: "glow", en: "Glow Up", ar: "جلو أب", kws: ["glow", "routine", "روتين", "transformation", "تغيير", "before", "after", "جلو"] },
-  { key: "calm", en: "Calm", ar: "الهدوء", kws: ["calm", "relax", "هدوء", "تأمل", "تنفس", "نوم", "sleep", "anxiety", "قلق"] },
+  {
+    key: "skincare",
+    en: "Skincare",
+    ar: "العناية",
+    kws: [
+      "skin",
+      "skincare",
+      "face",
+      "بشرة",
+      "عناية",
+      "وجه",
+      "حب الشباب",
+      "acne",
+      "glow up",
+      "جلو",
+    ],
+  },
+  {
+    key: "advice",
+    en: "Advice",
+    ar: "نصائح",
+    kws: ["advice", "tips", "girl", "نصيح", "بنات", "حياة", "school", "مدرسة", "confidence", "ثقة"],
+  },
+  {
+    key: "glow",
+    en: "Glow Up",
+    ar: "جلو أب",
+    kws: ["glow", "routine", "روتين", "transformation", "تغيير", "before", "after", "جلو"],
+  },
+  {
+    key: "calm",
+    en: "Calm",
+    ar: "الهدوء",
+    kws: ["calm", "relax", "هدوء", "تأمل", "تنفس", "نوم", "sleep", "anxiety", "قلق"],
+  },
 ];
 
 function formatDuration(iso: string) {
@@ -57,14 +93,27 @@ export function YouTubeHub() {
     queryFn: async () => {
       try {
         const res = await fetchFn();
-        if (res && res.videos && res.videos.length > 0) return res;
+        if (res && !res.isFallback && res.videos && res.videos.length > 0) return res;
       } catch (e) {
-        // Fallback for static browser client
+        // Static hosts do not expose the TanStack server function.
       }
-      return fetchChannelData();
+
+      try {
+        const response = await fetch("/api/youtube");
+        if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
+          const res = (await response.json()) as typeof FALLBACK_YOUTUBE_DATA;
+          if (res && !res.isFallback && res.videos && res.videos.length > 0) return res;
+        }
+      } catch (e) {
+        // The verified channel snapshot below keeps every link on the real channel.
+      }
+
+      return FALLBACK_YOUTUBE_DATA;
     },
     initialData: FALLBACK_YOUTUBE_DATA,
+    initialDataUpdatedAt: 0,
     staleTime: 1000 * 60 * 30,
+    refetchOnMount: "always",
   });
   const [filter, setFilter] = useState<FilterKey>("latest");
 
@@ -94,21 +143,33 @@ export function YouTubeHub() {
   return (
     <Section id="youtube">
       <div className="text-center mb-10">
-        <p className="text-xs font-medium tracking-widest uppercase text-[color:var(--rose-deep)]">✿ YouTube</p>
-        <h2 className="mt-3 text-3xl md:text-5xl font-semibold text-[color:var(--mauve)]">{t("youtube.title")}</h2>
+        <p className="text-xs font-medium tracking-widest uppercase text-[color:var(--rose-deep)]">
+          ✿ YouTube
+        </p>
+        <h2 className="mt-3 text-3xl md:text-5xl font-semibold text-[color:var(--mauve)]">
+          {t("youtube.title")}
+        </h2>
         <p className="mt-3 text-[color:var(--mauve)]/70">{t("youtube.lead")}</p>
 
         {channel && (
           <div className="mt-6 inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/80 border border-[color:var(--border)] shadow-sm">
             {channel.thumbnail && (
-              <img src={channel.thumbnail} alt={channel.title} className="w-9 h-9 rounded-full" loading="lazy" />
+              <img
+                src={channel.thumbnail}
+                alt={channel.title}
+                className="w-9 h-9 rounded-full"
+                loading="lazy"
+              />
             )}
             <div className="text-start">
               <p className="text-sm font-semibold text-[color:var(--mauve)]">{channel.title}</p>
               <p className="text-[11px] text-[color:var(--mauve)]/60 flex items-center gap-2">
-                <Users className="w-3 h-3" /> {formatViews(channel.subscribers)} {isAr ? "مشترك" : "subscribers"}
+                <Users className="w-3 h-3" /> {formatViews(channel.subscribers)}{" "}
+                {isAr ? "مشترك" : "subscribers"}
                 <span>·</span>
-                <span>{channel.videoCount} {isAr ? "فيديو" : "videos"}</span>
+                <span>
+                  {channel.videoCount} {isAr ? "فيديو" : "videos"}
+                </span>
               </p>
             </div>
             <a
@@ -127,7 +188,10 @@ export function YouTubeHub() {
       {featured && (
         <div className="relative p-3 rounded-[32px] bg-gradient-to-tr from-[#FFB2CB] via-[#FFF9F7] to-[#FCE5EE] border border-[#FFD6E3] shadow-soft mb-10 hover:shadow-glow hover:scale-[1.01] transition duration-300">
           {/* Large Floating Ribbon */}
-          <div className="absolute -top-3 -left-3.5 text-3xl z-20 select-none drop-shadow-md animate-bounce" style={{ animationDuration: "3s" }}>
+          <div
+            className="absolute -top-3 -left-3.5 text-3xl z-20 select-none drop-shadow-md animate-bounce"
+            style={{ animationDuration: "3s" }}
+          >
             💝
           </div>
           {/* Sparkles on opposite side */}
@@ -144,7 +208,11 @@ export function YouTubeHub() {
             viewport={{ once: true }}
             className="group relative block aspect-video rounded-[22px] overflow-hidden shadow-card"
           >
-            <img src={featured.thumbnail} alt={featured.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700" />
+            <img
+              src={featured.thumbnail}
+              alt={featured.title}
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
             <div className="absolute inset-0 grid place-items-center">
               <div className="w-20 h-20 rounded-full bg-white/95 grid place-items-center group-hover:scale-110 transition shadow-glow">
@@ -152,11 +220,19 @@ export function YouTubeHub() {
               </div>
             </div>
             <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-              <p className="text-xs uppercase tracking-widest opacity-80">⭐ {isAr ? "الأكثر مشاهدة" : "Most Watched"}</p>
-              <p className="mt-1 text-xl md:text-2xl font-display font-semibold line-clamp-2">{featured.title}</p>
+              <p className="text-xs uppercase tracking-widest opacity-80">
+                ⭐ {isAr ? "الأكثر مشاهدة" : "Most Watched"}
+              </p>
+              <p className="mt-1 text-xl md:text-2xl font-display font-semibold line-clamp-2">
+                {featured.title}
+              </p>
               <p className="mt-2 text-xs opacity-80 flex items-center gap-3">
-                <span className="inline-flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> {formatViews(featured.views)}</span>
-                <span className="inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {formatDuration(featured.duration)}</span>
+                <span className="inline-flex items-center gap-1">
+                  <Eye className="w-3.5 h-3.5" /> {formatViews(featured.views)}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5" /> {formatDuration(featured.duration)}
+                </span>
                 <span>{timeAgo(featured.publishedAt, isAr)}</span>
               </p>
             </div>
@@ -192,8 +268,12 @@ export function YouTubeHub() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-12 text-[color:var(--mauve)]/60">
           {data?.error
-            ? (isAr ? "تعذّر تحميل الفيديوهات." : "Couldn't load videos right now.")
-            : (isAr ? "لا توجد فيديوهات في هذا القسم بعد." : "No videos in this section yet.")}
+            ? isAr
+              ? "تعذّر تحميل الفيديوهات."
+              : "Couldn't load videos right now."
+            : isAr
+              ? "لا توجد فيديوهات في هذا القسم بعد."
+              : "No videos in this section yet."}
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -233,18 +313,24 @@ function VideoCard({ v, i, isAr }: { v: YTVideo; i: number; isAr: boolean }) {
       className="group relative p-2 rounded-[24px] bg-gradient-to-tr from-[#FFB2CB] via-[#FFF9F7] to-[#FCE5EE] border border-[#FFD6E3] hover:shadow-glow hover:scale-[1.02] transition duration-300 block"
     >
       {/* Cute Floating Ribbon decoration */}
-      <div className="absolute -top-2.5 -left-2.5 text-xl z-20 select-none drop-shadow-sm filter animate-pulse" style={{ animationDuration: "4s" }}>
+      <div
+        className="absolute -top-2.5 -left-2.5 text-xl z-20 select-none drop-shadow-sm filter animate-pulse"
+        style={{ animationDuration: "4s" }}
+      >
         🎀
       </div>
       {/* Cute Flower decoration on the bottom-right of frame */}
-      <div className="absolute -bottom-2 -right-2 text-lg z-20 select-none drop-shadow-sm">
-        🌸
-      </div>
+      <div className="absolute -bottom-2 -right-2 text-lg z-20 select-none drop-shadow-sm">🌸</div>
 
       {/* Inner Card Content */}
       <div className="rounded-[18px] overflow-hidden bg-white border border-[#FFD6E3]/40 shadow-sm h-full flex flex-col">
         <div className="relative aspect-video overflow-hidden bg-[color:var(--blush)]">
-          <img src={v.thumbnail} alt={v.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+          <img
+            src={v.thumbnail}
+            alt={v.title}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500"
+          />
           <div className="absolute bottom-2 end-2 px-1.5 py-0.5 rounded bg-black/80 text-white text-[10px] font-medium">
             {formatDuration(v.duration)}
           </div>
@@ -255,9 +341,13 @@ function VideoCard({ v, i, isAr }: { v: YTVideo; i: number; isAr: boolean }) {
           </div>
         </div>
         <div className="p-4 flex-1 flex flex-col justify-between">
-          <p className="font-medium text-sm text-[color:var(--mauve)] line-clamp-2 leading-snug">{v.title}</p>
+          <p className="font-medium text-sm text-[color:var(--mauve)] line-clamp-2 leading-snug">
+            {v.title}
+          </p>
           <div className="mt-2.5 flex items-center gap-3 text-[11px] text-[color:var(--mauve)]/60">
-            <span className="inline-flex items-center gap-1"><Eye className="w-3 h-3" /> {formatViews(v.views)}</span>
+            <span className="inline-flex items-center gap-1">
+              <Eye className="w-3 h-3" /> {formatViews(v.views)}
+            </span>
             <span>·</span>
             <span>{timeAgo(v.publishedAt, isAr)}</span>
           </div>
@@ -280,13 +370,16 @@ function PlaylistCard({ p, i, isAr }: { p: YTPlaylist; i: number; isAr: boolean 
       className="group relative p-1.5 rounded-[20px] bg-gradient-to-tr from-[#FFD6E3] via-[#FFF9F7] to-[#FCE5EE] border border-[#FFD6E3]/60 hover:shadow-glow hover:scale-[1.02] transition duration-300 block"
     >
       {/* Tiny Tulip emoji */}
-      <div className="absolute -top-1.5 -left-1.5 text-sm z-20 select-none">
-        🌷
-      </div>
+      <div className="absolute -top-1.5 -left-1.5 text-sm z-20 select-none">🌷</div>
       <div className="rounded-[14px] overflow-hidden bg-white border border-[#FFD6E3]/30 h-full flex flex-col">
         <div className="relative aspect-video overflow-hidden">
           {p.thumbnail ? (
-            <img src={p.thumbnail} alt={p.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+            <img
+              src={p.thumbnail}
+              alt={p.title}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-[#FFD6E3] to-[#F4A4C0]" />
           )}
@@ -296,7 +389,9 @@ function PlaylistCard({ p, i, isAr }: { p: YTPlaylist; i: number; isAr: boolean 
           </div>
         </div>
         <div className="p-3 flex-1 flex flex-col justify-between">
-          <p className="font-medium text-sm text-[color:var(--mauve)] line-clamp-2 leading-tight">{p.title}</p>
+          <p className="font-medium text-sm text-[color:var(--mauve)] line-clamp-2 leading-tight">
+            {p.title}
+          </p>
           <p className="text-[11px] text-[color:var(--mauve)]/60 mt-1.5">
             {p.itemCount} {isAr ? "فيديو" : "videos"}
           </p>
