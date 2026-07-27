@@ -25,13 +25,15 @@ export function AppPreview() {
         </h2>
       </div>
 
-      <div className="overflow-x-auto pb-6 -mx-5 px-5 scroll-pl-5 snap-x">
+      {/* overflow-y-hidden keeps the floating phones from making this container
+          vertically scrollable, which would trap page scrolling on wheel/touch */}
+      <div className="overflow-x-auto overflow-y-hidden overscroll-x-contain pt-2 pb-8 -mx-5 px-5 scroll-ps-5 snap-x">
         <div className="flex gap-6 min-w-max">
           {screens.map((s, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ delay: i * 0.08 }}
               className="snap-center"

@@ -1,13 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "";
+const BASE_URL = "https://girly-vibes.com";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const entries = [{ path: "/", changefreq: "weekly", priority: "1.0" }];
+        const entries = [
+          { path: "/", changefreq: "weekly", priority: "1.0" },
+          { path: "/games", changefreq: "weekly", priority: "0.8" },
+          { path: "/privacy", changefreq: "yearly", priority: "0.3" },
+          { path: "/terms", changefreq: "yearly", priority: "0.3" },
+        ];
         const urls = entries.map(
           (e) => `  <url><loc>${BASE_URL}${e.path}</loc><changefreq>${e.changefreq}</changefreq><priority>${e.priority}</priority></url>`,
         );

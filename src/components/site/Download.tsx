@@ -1,11 +1,14 @@
 import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { Section, Blob, HeartIcon } from "./Decor";
 import { Download, Apple } from "lucide-react";
 
-const GOOGLE_PLAY_URL = "GOOGLE_PLAY_URL_HERE";
-const APP_STORE_URL = "APP_STORE_URL_HERE";
-const YOUTUBE_CHANNEL_URL = "YOUTUBE_CHANNEL_URL_HERE";
+// Set these to the real store URLs once the app is published —
+// the buttons below automatically become clickable links.
+const GOOGLE_PLAY_URL = "";
+const APP_STORE_URL = "";
+const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@girlyvibes0";
 
 export function DownloadCTA() {
   const { t, lang } = useI18n();
@@ -31,33 +34,72 @@ export function DownloadCTA() {
         <p className="relative mt-4 text-white/85 max-w-md mx-auto">{t("download.lead")}</p>
 
         <div className="relative mt-8 flex flex-wrap justify-center gap-3">
-          <a
-            href={GOOGLE_PLAY_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-white text-[color:var(--rose-deep)] font-medium hover:scale-[1.04] transition shadow-soft"
-          >
-            <Download className="w-5 h-5" />
-            <div className="text-start">
-              <div className="text-[10px] opacity-70">{lang === "ar" ? "حمّلي على" : "Get it on"}</div>
-              <div className="text-sm font-semibold">{t("download.google")}</div>
-            </div>
-          </a>
-          <a
-            href={APP_STORE_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-white/15 backdrop-blur text-white font-medium border border-white/30 hover:bg-white/25 transition"
-          >
-            <Apple className="w-5 h-5" />
-            <div className="text-start">
-              <div className="text-[10px] opacity-80">App Store</div>
-              <div className="text-sm font-semibold">{t("download.apple")}</div>
-            </div>
-          </a>
+          <StoreButton
+            url={GOOGLE_PLAY_URL}
+            icon={<Download className="w-5 h-5" />}
+            eyebrow={lang === "ar" ? "حمّلي على" : "Get it on"}
+            label={t("download.google")}
+            soonLabel={lang === "ar" ? "قريبًا 🌸" : "soon 🌸"}
+            primary
+          />
+          <StoreButton
+            url={APP_STORE_URL}
+            icon={<Apple className="w-5 h-5" />}
+            eyebrow="App Store"
+            label={t("download.apple")}
+            soonLabel={lang === "ar" ? "قريبًا 🌸" : "soon 🌸"}
+          />
         </div>
       </div>
     </Section>
+  );
+}
+
+function StoreButton({
+  url,
+  icon,
+  eyebrow,
+  label,
+  soonLabel,
+  primary = false,
+}: {
+  url: string;
+  icon: React.ReactNode;
+  eyebrow: string;
+  label: string;
+  soonLabel: string;
+  primary?: boolean;
+}) {
+  const baseClass = primary
+    ? "relative inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-white text-[color:var(--rose-deep)] font-medium shadow-soft"
+    : "relative inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-white/15 backdrop-blur text-white font-medium border border-white/30";
+
+  const content = (
+    <>
+      {icon}
+      <div className="text-start">
+        <div className={`text-[10px] ${primary ? "opacity-70" : "opacity-80"}`}>{eyebrow}</div>
+        <div className="text-sm font-semibold">{label}</div>
+      </div>
+    </>
+  );
+
+  if (url) {
+    return (
+      <a href={url} target="_blank" rel="noreferrer" className={`${baseClass} hover:scale-[1.04] transition`}>
+        {content}
+      </a>
+    );
+  }
+
+  // No store URL yet — show a soft "coming soon" card instead of a broken link
+  return (
+    <div className={`${baseClass} cursor-default select-none`} aria-disabled="true">
+      {content}
+      <span className="absolute -top-2 -end-2 px-2 py-0.5 rounded-full bg-white text-[color:var(--rose-deep)] text-[10px] font-bold shadow-soft border border-[color:var(--rose-soft)]">
+        {soonLabel}
+      </span>
+    </div>
   );
 }
 
@@ -94,18 +136,18 @@ export function Footer() {
           <div className="text-sm">
             <p className="text-xs uppercase tracking-widest text-[color:var(--rose-deep)] mb-3">✿ Connect</p>
             <ul className="space-y-2 text-[color:var(--mauve)]/80">
-              <li><a href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noreferrer">YouTube</a></li>
-              <li><a href="#" >Instagram</a></li>
-              <li><a href="#" >TikTok</a></li>
-              <li><a href="mailto:hello@girlyvibes.app">{t("footer.contact")}</a></li>
+              <li><a href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noreferrer" className="hover:text-[color:var(--rose-deep)] transition">YouTube</a></li>
+              <li className="opacity-60 cursor-default">Instagram — {lang === "ar" ? "قريبًا" : "soon"} 🎀</li>
+              <li className="opacity-60 cursor-default">TikTok — {lang === "ar" ? "قريبًا" : "soon"} 🎀</li>
+              <li><a href="mailto:hello@girly-vibes.com" className="hover:text-[color:var(--rose-deep)] transition">{t("footer.contact")}</a></li>
             </ul>
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-[color:var(--border)] flex flex-wrap items-center justify-between gap-3 text-xs text-[color:var(--mauve)]/60">
           <p>{t("footer.rights")} 🩷</p>
           <div className="flex gap-4">
-            <a href="#">{t("footer.privacy")}</a>
-            <a href="#">{t("footer.terms")}</a>
+            <Link to="/privacy" className="hover:text-[color:var(--rose-deep)] transition">{t("footer.privacy")}</Link>
+            <Link to="/terms" className="hover:text-[color:var(--rose-deep)] transition">{t("footer.terms")}</Link>
           </div>
         </div>
       </div>
