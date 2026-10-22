@@ -129,6 +129,10 @@ The production website is hosted on Vercel:
 - GitHub repository: `https://github.com/neurocode-yt/girlyvibes_site`
 - Production branch: `main`
 - Privacy policy: `https://girly-vibes.com/privacy`
+- Account deletion: `https://girly-vibes.com/delete-account`
+
+The [22 October public-page record](docs/PUBLIC_PAGES_2026-10-22.md) tracks the
+updated disclosures, validation, deployment state and remaining email setup.
 
 ### Standard deployment
 

@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Globe, Heart, Mail, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { PRIVACY_CONTACT_EMAIL, PRIVACY_UPDATED, PUBLIC_SITE_URL } from "@/lib/legal";
 
-const CONTACT_EMAIL = "privacy@girly-vibes.com";
+const CONTACT_EMAIL = PRIVACY_CONTACT_EMAIL;
 
 export const Route = createFileRoute("/privacy")({
   component: PrivacyPolicy,
@@ -11,8 +12,7 @@ export const Route = createFileRoute("/privacy")({
       { title: "Privacy Policy | Girly Vibes" },
       {
         name: "description",
-        content:
-          "Learn how Girly Vibes collects, uses, stores, protects, and deletes information.",
+        content: "Learn how Girly Vibes collects, uses, stores, protects, and deletes information.",
       },
       { property: "og:title", content: "Girly Vibes Privacy Policy" },
       {
@@ -21,6 +21,7 @@ export const Route = createFileRoute("/privacy")({
       },
       { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: `${PUBLIC_SITE_URL}/privacy` }],
   }),
 });
 
@@ -72,9 +73,7 @@ function PrivacyPolicy() {
               )}
             </li>
             <li>
-              <strong>
-                {l("Profile and preferences:", "الملف الشخصي والتفضيلات:")}
-              </strong>{" "}
+              <strong>{l("Profile and preferences:", "الملف الشخصي والتفضيلات:")}</strong>{" "}
               {l(
                 "display name, profile photo or avatar, language, theme, and app settings.",
                 "الاسم المعروض، وصورة الملف الشخصي أو الصورة الرمزية، واللغة، والمظهر، وإعدادات التطبيق.",
@@ -90,8 +89,8 @@ function PrivacyPolicy() {
             <li>
               <strong>{l("AI chat:", "دردشة الذكاء الاصطناعي:")}</strong>{" "}
               {l(
-                "your message, recent chat context, optional display name and calm check-in context, supported tool requests, optional personalization memory, and bounded information submitted when you report an AI response.",
-                "رسالتك، وسياق الدردشة الأخير، والاسم المعروض الاختياري وسياق تسجيل الهدوء، وطلبات الأدوات المدعومة، وذاكرة التخصيص الاختيارية، ومعلومات محدودة تُقدَّم عند الإبلاغ عن رد من الذكاء الاصطناعي.",
+                "your messages, conversation transcripts and metadata synced to your account for recovery across devices and reinstalls, recent chat context, optional display name and calm check-in context, supported tool requests, optional personalization summaries, message-usage counters, and bounded information submitted when you report an AI response. Conversation history is available for signed-in accounts independently of plan and optional memory.",
+                "رسائلك ونصوص المحادثات وبياناتها الوصفية المتزامنة مع حسابك لاستعادتها عبر الأجهزة وبعد إعادة التثبيت، وسياق الدردشة الأخير، والاسم المعروض الاختياري وسياق تسجيل الهدوء، وطلبات الأدوات المدعومة، وملخّصات التخصيص الاختيارية، وعدّادات استخدام الرسائل، ومعلومات محدودة تُقدَّم عند الإبلاغ عن رد من الذكاء الاصطناعي. سجل المحادثات متاح للحسابات المسجّلة بصورة مستقلة عن الخطة والذاكرة الاختيارية.",
               )}
             </li>
             <li>
@@ -104,8 +103,14 @@ function PrivacyPolicy() {
           </ul>
           <p>
             {l(
-              "Maryam is blocked from accessing private diary and note content. Durable AI personalization memory is disabled by default and is saved only after you opt in. Opting out deletes that saved memory summary.",
-              "تُمنع Maryam من الوصول إلى محتوى اليوميات والملاحظات الخاصة. ذاكرة التخصيص الدائمة للذكاء الاصطناعي معطّلة افتراضيًا ولا تُحفظ إلا بعد موافقتك. وإلغاء الاشتراك يحذف ملخّص الذاكرة المحفوظ.",
+              "Maryam is blocked from accessing private diary and note content. Durable AI personalization memory is disabled by default and saved only after you opt in. Turning memory off deletes its saved summaries and personalization paragraph; it does not delete separate conversation history or submitted AI reports.",
+              "تُمنع Maryam من الوصول إلى محتوى اليوميات والملاحظات الخاصة. ذاكرة التخصيص الدائمة للذكاء الاصطناعي معطّلة افتراضيًا ولا تُحفظ إلا بعد موافقتك. إيقاف الذاكرة يحذف ملخّصاتها وفقرة التخصيص المحفوظة، ولا يحذف سجل المحادثات المنفصل أو بلاغات الذكاء الاصطناعي المقدّمة.",
+            )}
+          </p>
+          <p>
+            {l(
+              "The private-diary PIN is a device-local screen lock and is not synced. Synced diary content is not end-to-end encrypted; authorized operators and service providers may process it to operate and support the service.",
+              "رمز اليوميات الخاصة هو قفل شاشة محلي على الجهاز ولا تتم مزامنته. محتوى اليوميات المتزامن ليس مشفّرًا من طرف إلى طرف، وقد يعالجه المشغّلون المخوّلون ومقدّمو الخدمات لتشغيل الخدمة ودعمها.",
             )}
           </p>
           <p>
@@ -153,10 +158,7 @@ function PrivacyPolicy() {
       ),
     },
     {
-      title: l(
-        "4. Service providers and sharing",
-        "4. مقدّمو الخدمات والمشاركة",
-      ),
+      title: l("4. Service providers and sharing", "4. مقدّمو الخدمات والمشاركة"),
       content: (
         <>
           <p>
@@ -180,8 +182,8 @@ function PrivacyPolicy() {
                 "OpenAI أو مزوّد متوافق مع OpenAI لردود الذكاء الاصطناعي.",
               ),
               l(
-                "Resend for account confirmation and password-reset emails.",
-                "Resend لرسائل تأكيد الحساب وإعادة تعيين كلمة المرور.",
+                "Supabase Auth and its configured email-delivery provider for account confirmation and password-reset emails.",
+                "Supabase Auth ومقدّم تسليم البريد الإلكتروني المُعدّ لديه لرسائل تأكيد الحساب وإعادة تعيين كلمة المرور.",
               ),
               l(
                 "Hosting providers, Google Play, and Android operating-system services.",
@@ -201,10 +203,7 @@ function PrivacyPolicy() {
       ),
     },
     {
-      title: l(
-        "5. AI and wellness disclosures",
-        "5. إفصاحات الذكاء الاصطناعي والعافية",
-      ),
+      title: l("5. AI and wellness disclosures", "5. إفصاحات الذكاء الاصطناعي والعافية"),
       content: (
         <>
           <p>
@@ -247,9 +246,29 @@ function PrivacyPolicy() {
         <>
           <p>
             {l(
-              "We retain account and synced app data while your account is active or as needed to provide the service. You can permanently delete your account and associated synced data in Settings → Account → Delete account and data. The app requires your account password and an explicit DELETE confirmation.",
-              "نحتفظ ببيانات الحساب والتطبيق المتزامنة طالما حسابك نشط أو حسب الحاجة لتقديم الخدمة. يمكنك حذف حسابك والبيانات المتزامنة المرتبطة به بشكل دائم عبر الإعدادات ← الحساب ← حذف الحساب والبيانات. ويتطلّب التطبيق كلمة مرور الحساب وتأكيد DELETE صريحًا.",
+              "We retain account and synced app data while your account is active or as needed to provide the service. You can request permanent account erasure in Settings → Account → Delete account and data, using your account password and an explicit DELETE confirmation.",
+              "نحتفظ ببيانات الحساب والتطبيق المتزامنة طالما حسابك نشط أو حسب الحاجة لتقديم الخدمة. يمكنك طلب محو الحساب نهائيًا عبر الإعدادات ← الحساب ← حذف الحساب والبيانات، باستخدام كلمة مرور الحساب وتأكيد DELETE صريحًا.",
             )}
+          </p>
+          <p>
+            {l(
+              "Deleting a chat or clearing chat history removes the affected conversations from the app and this device's cache after server confirmation. Other devices clear their cached copies when they reconnect and synchronize. The full transcripts remain in a separate deleted-chat category for that user in Supabase, accessible to authorized administrators for security review, with no automatic expiry. These retained transcripts are not downloadable through the mobile app.",
+              "حذف محادثة أو مسح سجل الدردشة يزيل المحادثات المعنية من التطبيق وذاكرة هذا الجهاز بعد تأكيد الخادم. تزيل الأجهزة الأخرى نسخها المحلية عند إعادة الاتصال والمزامنة. تبقى النصوص الكاملة في فئة منفصلة للمحادثات المحذوفة لذلك المستخدم في Supabase، ويمكن للمشرفين المخوّلين مراجعتها لأغراض الأمن، دون انتهاء تلقائي للاحتفاظ بها. ولا يمكن تنزيل هذه النصوص المحتفظ بها عبر تطبيق الجوال.",
+            )}
+          </p>
+          <p>
+            {l(
+              "Clearing chat history does not also erase separate optional memory summaries, submitted AI reports, or provider backups. Full-account erasure removes the account's chat-history rows, including retained deleted transcripts, and its private uploaded media. If media cleanup is queued, it continues in the background; a pending result is not confirmation that erasure has finished.",
+              "مسح سجل الدردشة لا يمحو أيضًا ملخّصات الذاكرة الاختيارية المنفصلة أو بلاغات الذكاء الاصطناعي المقدّمة أو النسخ الاحتياطية لدى مقدّمي الخدمات. محو الحساب بالكامل يزيل صفوف سجل محادثاته، بما فيها النصوص المحذوفة المحتفظ بها، ووسائطه الخاصة المرفوعة. إذا وُضع تنظيف الوسائط في قائمة الانتظار، يستمر في الخلفية؛ والنتيجة المعلّقة ليست تأكيدًا على اكتمال المحو.",
+            )}
+          </p>
+          <p>
+            <Link to="/delete-account" className="font-semibold underline underline-offset-4">
+              {l(
+                "Account-deletion instructions and email request",
+                "تعليمات حذف الحساب وطلب الحذف بالبريد الإلكتروني",
+              )}
+            </Link>
           </p>
           <p>
             {l(
@@ -273,8 +292,8 @@ function PrivacyPolicy() {
       content: (
         <p>
           {l(
-            "Girly Vibes is offline-first. Some data is stored locally for speed and offline use. Local reminders and widget mutations are scoped to the signed-in user and cleared when the app detects an unusable or signed-out session. Uninstalling may remove local-only data; synced data remains until you delete your account or request deletion.",
-            "Girly Vibes مصمَّم للعمل أولًا دون اتصال. تُخزَّن بعض البيانات محليًا للسرعة والاستخدام دون إنترنت. التذكيرات المحلية وتغييرات الويدجت مرتبطة بالمستخدم المسجّل الدخول وتُمسح عندما يكتشف التطبيق جلسة غير صالحة أو تسجيل خروج. قد يزيل إلغاء التثبيت البيانات المحلية فقط؛ وتبقى البيانات المتزامنة إلى أن تحذف حسابك أو تطلب الحذف.",
+            "Girly Vibes is offline-first. Some data is stored locally for speed and offline use. Local reminders, widget mutations, and encrypted conversation caches are scoped to the signed-in user. Conversation history also syncs to your account separately from optional AI memory. Offline changes need a connection to finish syncing; uninstalling before a successful sync can lose device-only content. Synced data follows the retention and deletion rules above.",
+            "Girly Vibes مصمَّم للعمل أولًا دون اتصال. تُخزَّن بعض البيانات محليًا للسرعة والاستخدام دون إنترنت. ترتبط التذكيرات المحلية وتغييرات الويدجت وذاكرة المحادثات المشفّرة بالمستخدم المسجّل الدخول. كما تتم مزامنة سجل المحادثات مع حسابك بصورة منفصلة عن ذاكرة الذكاء الاصطناعي الاختيارية. تحتاج التغييرات دون اتصال إلى اتصال لإكمال المزامنة؛ وقد يؤدي إلغاء التثبيت قبل نجاح المزامنة إلى فقدان المحتوى الموجود على الجهاز فقط. تتبع البيانات المتزامنة قواعد الاحتفاظ والحذف المذكورة أعلاه.",
           )}
         </p>
       ),
@@ -306,7 +325,7 @@ function PrivacyPolicy() {
       content: (
         <p>
           {l(
-            'We may update this policy when features, providers, data practices, or legal requirements change. The latest version and effective date will always appear on this page.',
+            "We may update this policy when features, providers, data practices, or legal requirements change. The latest version and effective date will always appear on this page.",
             "قد نحدّث هذه السياسة عند تغيّر الميزات أو مقدّمي الخدمات أو ممارسات البيانات أو المتطلبات القانونية. وستظهر أحدث نسخة وتاريخ السريان دائمًا على هذه الصفحة.",
           )}
         </p>
@@ -347,13 +366,8 @@ function PrivacyPolicy() {
               aria-label={l("Back home", "العودة إلى الصفحة الرئيسية")}
               className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[color:var(--border)] bg-white px-3 py-2 text-sm font-semibold text-[color:var(--mauve)] transition hover:border-[color:var(--rose-deep)]"
             >
-              <ArrowLeft
-                className={`h-4 w-4 ${isAr ? "scale-x-[-1]" : ""}`}
-                aria-hidden="true"
-              />
-              <span className="hidden sm:inline">
-                {l("Back home", "العودة إلى الرئيسية")}
-              </span>
+              <ArrowLeft className={`h-4 w-4 ${isAr ? "scale-x-[-1]" : ""}`} aria-hidden="true" />
+              <span className="hidden sm:inline">{l("Back home", "العودة إلى الرئيسية")}</span>
             </Link>
           </div>
         </div>
@@ -376,13 +390,17 @@ function PrivacyPolicy() {
               )}
             </p>
             <p className="mt-4 text-sm font-semibold text-[color:var(--rose-deep)]">
-              {l("Effective July 26, 2026", "سارية اعتبارًا من 26 يوليو 2026")}
+              {l(`Effective ${PRIVACY_UPDATED.en}`, `سارية اعتبارًا من ${PRIVACY_UPDATED.ar}`)}
             </p>
           </div>
 
           <div className="space-y-10">
             {sections.map((section) => (
-              <section key={section.title} className="privacy-copy">
+              <section
+                key={section.title}
+                id={section.title.startsWith("7.") ? "retention-and-deletion" : undefined}
+                className="privacy-copy"
+              >
                 <h2 className="text-2xl font-semibold text-[color:var(--mauve)]">
                   {section.title}
                 </h2>
@@ -399,9 +417,7 @@ function PrivacyPolicy() {
                 <Mail className="h-5 w-5" aria-hidden="true" />
               </span>
               <div>
-                <h2 className="text-xl font-semibold">
-                  {l("Contact us", "تواصل معنا")}
-                </h2>
+                <h2 className="text-xl font-semibold">{l("Contact us", "تواصل معنا")}</h2>
                 <p className="mt-2 text-[color:var(--mauve)]/70">
                   {l(
                     "Privacy questions, data requests, and account-deletion requests:",
