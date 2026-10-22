@@ -156,8 +156,8 @@ function DeleteAccountPage() {
                   l("Go to Settings → Account.", "انتقل إلى الإعدادات ← الحساب."),
                   l("Select “Delete account and data.”", "اختر «حذف الحساب والبيانات»."),
                   l(
-                    "Enter your password and the requested DELETE confirmation.",
-                    "أدخل كلمة المرور وتأكيد DELETE المطلوب.",
+                    "Type DELETE and confirm with the same Google account when prompted.",
+                    "اكتب DELETE وأكّد باستخدام حساب Google نفسه عند الطلب.",
                   ),
                 ].map((step, index) => (
                   <li key={step} className="flex gap-3">

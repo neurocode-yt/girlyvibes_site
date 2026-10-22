@@ -68,8 +68,8 @@ function PrivacyPolicy() {
             <li>
               <strong>{l("Account information:", "معلومات الحساب:")}</strong>{" "}
               {l(
-                "email address, username, Supabase user ID, email-verification status, and authentication session information. Passwords are handled by Supabase Auth; Girly Vibes does not store or display your plain-text password.",
-                "عنوان البريد الإلكتروني، واسم المستخدم، ومعرّف مستخدم Supabase، وحالة التحقق من البريد، ومعلومات جلسة المصادقة. تُدار كلمات المرور عبر Supabase Auth؛ ولا تخزّن Girly Vibes كلمة مرورك بنص واضح ولا تعرضها.",
+                "Google account email, name/profile information you share, optional username, Supabase user ID, and authentication session information. Sign-in and account recovery use Google; Girly Vibes does not receive your Google password.",
+                "بريد حساب Google والاسم ومعلومات الملف التي تشاركها، واسم المستخدم الاختياري، ومعرّف مستخدم Supabase، ومعلومات جلسة المصادقة. يتم تسجيل الدخول واستعادة الوصول عبر Google؛ ولا تتلقى Girly Vibes كلمة مرور حساب Google.",
               )}
             </li>
             <li>
@@ -140,8 +140,8 @@ function PrivacyPolicy() {
               "تقديم ردود Maryam بالذكاء الاصطناعي والإجراءات المدعومة داخل التطبيق.",
             ),
             l(
-              "Send account verification and password-reset emails.",
-              "إرسال رسائل التحقق من الحساب وإعادة تعيين كلمة المرور.",
+              "Authenticate your Google account and maintain your app session.",
+              "مصادقة حساب Google والحفاظ على جلسة التطبيق.",
             ),
             l(
               "Deliver local reminders and user-scoped Android widgets.",
@@ -182,8 +182,8 @@ function PrivacyPolicy() {
                 "OpenAI أو مزوّد متوافق مع OpenAI لردود الذكاء الاصطناعي.",
               ),
               l(
-                "Supabase Auth and its configured email-delivery provider for account confirmation and password-reset emails.",
-                "Supabase Auth ومقدّم تسليم البريد الإلكتروني المُعدّ لديه لرسائل تأكيد الحساب وإعادة تعيين كلمة المرور.",
+                "Google for sign-in and account recovery, together with Supabase Auth for app sessions. Girly Vibes does not send signup-verification or password-reset emails.",
+                "Google لتسجيل الدخول واستعادة الوصول إلى الحساب، مع Supabase Auth لجلسات التطبيق. لا ترسل Girly Vibes رسائل تأكيد التسجيل أو إعادة تعيين كلمة المرور.",
               ),
               l(
                 "Hosting providers, Google Play, and Android operating-system services.",
@@ -246,8 +246,8 @@ function PrivacyPolicy() {
         <>
           <p>
             {l(
-              "We retain account and synced app data while your account is active or as needed to provide the service. You can request permanent account erasure in Settings → Account → Delete account and data, using your account password and an explicit DELETE confirmation.",
-              "نحتفظ ببيانات الحساب والتطبيق المتزامنة طالما حسابك نشط أو حسب الحاجة لتقديم الخدمة. يمكنك طلب محو الحساب نهائيًا عبر الإعدادات ← الحساب ← حذف الحساب والبيانات، باستخدام كلمة مرور الحساب وتأكيد DELETE صريحًا.",
+              "We retain account and synced app data while your account is active or as needed to provide the service. You can request permanent account erasure in Settings → Account → Delete account and data, using a fresh sign-in with the same Google account and an explicit DELETE confirmation.",
+              "نحتفظ ببيانات الحساب والتطبيق المتزامنة طالما حسابك نشط أو حسب الحاجة لتقديم الخدمة. يمكنك طلب محو الحساب نهائيًا عبر الإعدادات ← الحساب ← حذف الحساب والبيانات، بتسجيل دخول جديد باستخدام حساب Google نفسه وتأكيد DELETE صريحًا.",
             )}
           </p>
           <p>
