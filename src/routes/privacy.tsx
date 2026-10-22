@@ -109,6 +109,12 @@ function PrivacyPolicy() {
           </p>
           <p>
             {l(
+              "Messages with potential suicide, self-harm, abuse or danger phrases may create an automated warning for authorized human review. We retain the flagged text, account and conversation reference, detection time and review notes. Detection can be wrong or miss concerns; review is not continuous and help is not guaranteed, so do not wait for an administrator in an emergency. Warnings remain after ordinary chat deletion and are removed with full account erasure.",
+              "قد تُنشئ الرسائل التي تتضمن عبارات عن الانتحار أو إيذاء النفس أو الإساءة أو الخطر تنبيهًا آليًا للمراجعة البشرية المخوّلة. نحفظ النص المحدد ومرجع الحساب والمحادثة ووقت الكشف وملاحظات المراجعة. قد يخطئ الكشف أو يفوّت حالات؛ المراجعة ليست مستمرة ولا نضمن تقديم المساعدة، فلا تنتظري المشرف في حالة طارئة. تبقى التنبيهات بعد حذف الدردشة العادي وتُحذف عند محو الحساب بالكامل.",
+            )}
+          </p>
+          <p>
+            {l(
               "The private-diary PIN is a device-local screen lock and is not synced. Synced diary content is not end-to-end encrypted; authorized operators and service providers may process it to operate and support the service.",
               "رمز اليوميات الخاصة هو قفل شاشة محلي على الجهاز ولا تتم مزامنته. محتوى اليوميات المتزامن ليس مشفّرًا من طرف إلى طرف، وقد يعالجه المشغّلون المخوّلون ومقدّمو الخدمات لتشغيل الخدمة ودعمها.",
             )}
