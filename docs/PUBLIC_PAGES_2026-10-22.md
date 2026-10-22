@@ -43,15 +43,22 @@ to make the existing deletion instructions discoverable.
 
 ## Deployment and email follow-up
 
-At this checkpoint, the refreshed pages have been built and checked locally.
-**Production deployment and live checks are pending at this source checkpoint.**
-The owner renewed the Vercel CLI login through Firefox. Deployment uses the
-existing project and its saved environment, from this verified source.
+**Deployed and verified live.** Production source commit
+`5714e1b5f83cef5b865dc116b92dd08b218f9222` is READY in deployment
+`dpl_Et62x3R66ZPVuNkb1TxLGWLn8Nye`, aliased to `https://girly-vibes.com`.
+The owner renewed the existing Vercel CLI login through Firefox. Existing project
+environment configuration was preserved.
 
-After the Git push, deploy from this verified checkout linked to the existing
-Vercel project, then verify `/`, `/privacy`, `/delete-account` and `/terms`.
-The app repository's read-only `scripts/verify-public-release-pages.py` can check
-the fixed public routes and require the updated policy markers.
+Unauthenticated `/`, `/privacy`, `/delete-account` and `/terms` requests return
+HTTP 200 with their expected titles. The two legal pages pass all current-policy,
+retention, erasure, canonical/contact and same-Google-account checks. Production
+browser checks pass in English/Arabic with correct LTR/RTL, working navigation
+and no horizontal overflow. The router error prop was adapted to `unknown` for
+the patched dependency; final global types retain only the original games errors.
+
+The app repository's read-only `scripts/verify-public-release-pages.py` repeats
+the public checks with `--require-current-policy`. Deployment and browser proof
+are saved under its `docs/audit-evidence/2026-10-22-public` directory.
 
 Email remains a separate open part of release item 4:
 
