@@ -32,6 +32,13 @@ function PrivacyPolicy() {
 
   const sections = [
     {
+      title: l("Public leaderboard and moderation", "لوحة الجلو العامة والمراجعة"),
+      content: <p>{l(
+        "Leaderboard participation is optional. Accept the community rules before submitting a public nickname and note for admin approval. Scores use a generic name during review; only approved names and top-three notes are published. Edits need fresh approval. You can withdraw, report a name or note, and block users from your leaderboard. We store submissions, review decisions and feedback, reports and blocks for moderation. Records remain after withdrawal and are removed with full account erasure. Blocking does not remove content from other users’ leaderboards.",
+        "المشاركة في لوحة الجلو اختيارية. اقبلي قواعد المجتمع قبل إرسال اسم عام ورسالة لموافقة المشرف. تظهر النقاط باسم عام أثناء المراجعة؛ لا ننشر الاسم والرسالة إلا بعد الموافقة، وتظهر الرسائل للمراكز الثلاثة الأولى. أي تعديل يحتاج موافقة جديدة. يمكنك الانسحاب والإبلاغ عن اسم أو رسالة وحظر مستخدم من لوحتك. نحفظ الطلبات وقرارات المراجعة والملاحظات والبلاغات والحظر للإشراف. تبقى السجلات بعد الانسحاب وتُمحى عند محو الحساب بالكامل. لا يزيل الحظر المحتوى من لوحات الآخرين."
+      )}</p>,
+    },
+    {
       title: l("1. Who we are", "1. من نحن"),
       content: (
         <>

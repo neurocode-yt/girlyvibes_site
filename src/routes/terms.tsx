@@ -14,13 +14,20 @@ export const Route = createFileRoute("/terms")({
 function TermsPage() {
   return (
     <LegalPage
-      updated="2026-07-27"
+      updated="2026-10-24"
       title={{ ar: "شروط الاستخدام", en: "Terms of Use" }}
       intro={{
         ar: "شروط بسيطة ولطيفة زي التطبيق نفسه 🌸 باستخدامك لموقع أو تطبيق Girly Vibes بتوافقي عليها.",
         en: "Simple, friendly terms — just like the app itself 🌸 By using the Girly Vibes website or app, you agree to them.",
       }}
       sections={[
+        {
+          title: { ar: "قواعد لوحة الجلو", en: "Leaderboard community rules" },
+          body: {
+            ar: "المشاركة اختيارية. لا تنشري تنمراً أو تهديداً أو كراهية أو محتوى جنسياً أو تشجيعاً لإيذاء النفس أو معلومات شخصية عنك أو عن الآخرين. يراجع المشرف الاسم العام والرسالة قبل نشرهما، وكل تعديل يحتاج موافقة جديدة. يمكننا رفض المخالفات أو إزالة محتوى سبق اعتماده. يمكنك الإبلاغ والحظر والانسحاب من صفحة نقاط الجلو. لا تضمن الموافقة ترتيباً أو مكافأة.",
+            en: "Participation is optional. Do not post bullying, threats, hate, sexual content, encouragement of self-harm, or personal information about yourself or others. Admins approve the public name and note before publication; every edit requires fresh approval. We may reject violations or remove previously approved content. Report, block or withdraw from Glow Points. Approval does not guarantee a ranking or reward.",
+          },
+        },
         {
           title: { ar: "استخدام شخصي ولطيف", en: "Personal, kind use" },
           body: {
