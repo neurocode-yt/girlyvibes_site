@@ -213,8 +213,8 @@ function DeleteAccountPage() {
               </h2>
               <p className="mt-4 leading-7 text-[color:var(--mauve)]/75">
                 {l(
-                  "Deleting a chat removes it from your app and device cache after server confirmation; its transcript is retained in Supabase for authorized security review with no automatic expiry. Full-account erasure also removes those retained deleted transcripts. Uninstalling the app alone does not delete your synced account data.",
-                  "حذف محادثة يزيلها من التطبيق وذاكرة الجهاز بعد تأكيد الخادم؛ ويُحتفَظ بنصّها في Supabase للمراجعة الأمنية المخوّلة دون انتهاء تلقائي. محو الحساب بالكامل يزيل أيضًا نصوص المحادثات المحذوفة المحتفظ بها. إلغاء تثبيت التطبيق وحده لا يحذف بيانات حسابك المتزامنة.",
+                  "Deleting a chat removes it from your app and device cache after server confirmation. A server copy remains for authorized safety and security review, with manual cleanup after review determines it is no longer needed; there is no automatic expiry or guaranteed review deadline. Full-account erasure is separate and also removes retained chat records. Uninstalling alone does not delete synced account data.",
+                  "حذف محادثة يزيلها من التطبيق وذاكرة الجهاز بعد تأكيد الخادم. تبقى نسخة على الخادم لمراجعة السلامة والأمن من المشرفين المخوّلين، وتُنظف يدوياً بعد أن تحدد المراجعة انتهاء الحاجة إليها؛ ولا توجد مدة انتهاء تلقائية أو مهلة مراجعة مضمونة. محو الحساب بالكامل إجراء منفصل يزيل أيضاً سجلات المحادثات المحتفظ بها. إلغاء التثبيت وحده لا يحذف بيانات الحساب المتزامنة.",
                 )}
               </p>
               <p className="mt-4 leading-7 text-[color:var(--mauve)]/75">

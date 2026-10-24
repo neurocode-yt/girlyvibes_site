@@ -32,31 +32,20 @@ function PrivacyPolicy() {
 
   const sections = [
     {
-      title: l("Public leaderboard and moderation", "لوحة الجلو العامة والمراجعة"),
-      content: <p>{l(
-        "Leaderboard participation is optional. Accept the community rules before submitting a public nickname and note for admin approval. Scores use a generic name during review; only approved names and top-three notes are published. Edits need fresh approval. You can withdraw, report a name or note, and block users from your leaderboard. We store submissions, review decisions and feedback, reports and blocks for moderation. Records remain after withdrawal and are removed with full account erasure. Blocking does not remove content from other users’ leaderboards.",
-        "المشاركة في لوحة الجلو اختيارية. اقبلي قواعد المجتمع قبل إرسال اسم عام ورسالة لموافقة المشرف. تظهر النقاط باسم عام أثناء المراجعة؛ لا ننشر الاسم والرسالة إلا بعد الموافقة، وتظهر الرسائل للمراكز الثلاثة الأولى. أي تعديل يحتاج موافقة جديدة. يمكنك الانسحاب والإبلاغ عن اسم أو رسالة وحظر مستخدم من لوحتك. نحفظ الطلبات وقرارات المراجعة والملاحظات والبلاغات والحظر للإشراف. تبقى السجلات بعد الانسحاب وتُمحى عند محو الحساب بالكامل. لا يزيل الحظر المحتوى من لوحات الآخرين."
-      )}</p>,
-    },
-    {
-      title: l("1. Who we are", "1. من نحن"),
+      title: l("1. About this policy", "1. حول هذه السياسة"),
       content: (
         <>
           <p>
             {l(
-              "Girly Vibes is a self-care and lifestyle app for routines, diary notes, calm breathing, glow points, reads, activities, reminders, vision boards, and Maryam, the in-app AI chat companion.",
-              "Girly Vibes تطبيق للعناية بالنفس وأسلوب الحياة، يوفّر الروتينات وملاحظات اليوميات وتمارين التنفس الهادئ ونقاط الجلو والقراءات والأنشطة والتذكيرات ولوحات الرؤية، بالإضافة إلى Maryam، مرافقة الدردشة بالذكاء الاصطناعي داخل التطبيق.",
+              "Girly Vibes provides self-care routines, diary and notes, reminders, calm activities, progress tracking and Maryam, an AI chat companion. This policy explains how the Girly Vibes app and related services collect, use, share and retain personal information.",
+              "يوفر Girly Vibes روتينات للعناية بالنفس ويوميات وملاحظات وتذكيرات وأنشطة هادئة وتتبعاً للتقدم ومريم، مرافقة دردشة بالذكاء الاصطناعي. تشرح هذه السياسة كيف يجمع التطبيق والخدمات المرتبطة به المعلومات الشخصية ويستخدمها ويشاركها ويحتفظ بها.",
             )}
           </p>
           <p>
             {l(
-              "For privacy questions or data requests, email ",
-              "للاستفسارات المتعلقة بالخصوصية أو طلبات البيانات، راسلنا على ",
+              "For privacy questions or requests about your information, contact privacy@girly-vibes.com. This policy covers account information, private content, AI conversations and optional public leaderboard participation.",
+              "لأسئلة الخصوصية أو الطلبات المتعلقة بمعلوماتك، تواصل معنا عبر privacy@girly-vibes.com. تشمل هذه السياسة معلومات الحساب والمحتوى الخاص ومحادثات الذكاء الاصطناعي والمشاركة الاختيارية في لوحة الجلو العامة.",
             )}
-            <a href={`mailto:${CONTACT_EMAIL}`}>
-              <bdi>{CONTACT_EMAIL}</bdi>
-            </a>
-            .
           </p>
         </>
       ),
@@ -67,69 +56,20 @@ function PrivacyPolicy() {
         <>
           <p>
             {l(
-              "Depending on the features you use, we may collect or process:",
-              "حسب الميزات التي تستخدمها، قد نجمع أو نعالج:",
-            )}
-          </p>
-          <ul>
-            <li>
-              <strong>{l("Account information:", "معلومات الحساب:")}</strong>{" "}
-              {l(
-                "Google account email, name/profile information you share, optional username, Supabase user ID, and authentication session information. Sign-in and account recovery use Google; Girly Vibes does not receive your Google password.",
-                "بريد حساب Google والاسم ومعلومات الملف التي تشاركها، واسم المستخدم الاختياري، ومعرّف مستخدم Supabase، ومعلومات جلسة المصادقة. يتم تسجيل الدخول واستعادة الوصول عبر Google؛ ولا تتلقى Girly Vibes كلمة مرور حساب Google.",
-              )}
-            </li>
-            <li>
-              <strong>{l("Profile and preferences:", "الملف الشخصي والتفضيلات:")}</strong>{" "}
-              {l(
-                "display name, profile photo or avatar, language, theme, and app settings.",
-                "الاسم المعروض، وصورة الملف الشخصي أو الصورة الرمزية، واللغة، والمظهر، وإعدادات التطبيق.",
-              )}
-            </li>
-            <li>
-              <strong>{l("Content you create:", "المحتوى الذي تنشئه:")}</strong>{" "}
-              {l(
-                "diary entries, notes, attachments, voice notes, routines, reminders, widget todo items, glow progress, saved reads, activity preferences, vision-board images, Who Am I answers, and support messages.",
-                "إدخالات اليوميات، والملاحظات، والمرفقات، والملاحظات الصوتية، والروتينات، والتذكيرات، ومهام الويدجت، وتقدّم نقاط الجلو، والقراءات المحفوظة، وتفضيلات الأنشطة، وصور لوحة الرؤية، وإجابات Who Am I، ورسائل الدعم.",
-              )}
-            </li>
-            <li>
-              <strong>{l("AI chat:", "دردشة الذكاء الاصطناعي:")}</strong>{" "}
-              {l(
-                "your messages, conversation transcripts and metadata synced to your account for recovery across devices and reinstalls, recent chat context, optional display name and calm check-in context, supported tool requests, optional personalization summaries, message-usage counters, and bounded information submitted when you report an AI response. Conversation history is available for signed-in accounts independently of plan and optional memory.",
-                "رسائلك ونصوص المحادثات وبياناتها الوصفية المتزامنة مع حسابك لاستعادتها عبر الأجهزة وبعد إعادة التثبيت، وسياق الدردشة الأخير، والاسم المعروض الاختياري وسياق تسجيل الهدوء، وطلبات الأدوات المدعومة، وملخّصات التخصيص الاختيارية، وعدّادات استخدام الرسائل، ومعلومات محدودة تُقدَّم عند الإبلاغ عن رد من الذكاء الاصطناعي. سجل المحادثات متاح للحسابات المسجّلة بصورة مستقلة عن الخطة والذاكرة الاختيارية.",
-              )}
-            </li>
-            <li>
-              <strong>{l("Device access:", "الوصول إلى الجهاز:")}</strong>{" "}
-              {l(
-                "notifications for reminders, microphone access for voice notes, user-selected photos or media, internet access, and local storage for offline data and encrypted sessions.",
-                "الإشعارات للتذكيرات، والوصول إلى الميكروفون للملاحظات الصوتية، والصور أو الوسائط التي تختارها، والوصول إلى الإنترنت، والتخزين المحلي للبيانات دون اتصال والجلسات المشفّرة.",
-              )}
-            </li>
-          </ul>
-          <p>
-            {l(
-              "Maryam is blocked from accessing private diary and note content. Durable AI personalization memory is disabled by default and saved only after you opt in. Turning memory off deletes its saved summaries and personalization paragraph; it does not delete separate conversation history or submitted AI reports.",
-              "تُمنع Maryam من الوصول إلى محتوى اليوميات والملاحظات الخاصة. ذاكرة التخصيص الدائمة للذكاء الاصطناعي معطّلة افتراضيًا ولا تُحفظ إلا بعد موافقتك. إيقاف الذاكرة يحذف ملخّصاتها وفقرة التخصيص المحفوظة، ولا يحذف سجل المحادثات المنفصل أو بلاغات الذكاء الاصطناعي المقدّمة.",
+              "Account and preferences: your Google email and shared profile information, account ID, optional username or nickname, profile photo, language, theme, settings and authentication session. Google manages sign-in and account recovery; we do not receive your Google password.",
+              "الحساب والتفضيلات: بريد Google ومعلومات الملف التي تشاركها ومعرّف الحساب واسم المستخدم أو الاسم المستعار الاختياري وصورة الملف واللغة والمظهر والإعدادات وجلسة المصادقة. تدير Google تسجيل الدخول واستعادة الوصول؛ ولا نتلقى كلمة مرور Google.",
             )}
           </p>
           <p>
             {l(
-              "Messages with potential suicide, self-harm, abuse or danger phrases may create an automated warning for authorized human review. We retain the flagged text, account and conversation reference, detection time and review notes. Detection can be wrong or miss concerns; review is not continuous and help is not guaranteed, so do not wait for an administrator in an emergency. Warnings remain after ordinary chat deletion and are removed with full account erasure.",
-              "قد تُنشئ الرسائل التي تتضمن عبارات عن الانتحار أو إيذاء النفس أو الإساءة أو الخطر تنبيهًا آليًا للمراجعة البشرية المخوّلة. نحفظ النص المحدد ومرجع الحساب والمحادثة ووقت الكشف وملاحظات المراجعة. قد يخطئ الكشف أو يفوّت حالات؛ المراجعة ليست مستمرة ولا نضمن تقديم المساعدة، فلا تنتظري المشرف في حالة طارئة. تبقى التنبيهات بعد حذف الدردشة العادي وتُحذف عند محو الحساب بالكامل.",
+              "Content and activity: diary entries, notes, notebook answers, selected photos or other attachments, voice notes, routines, reminders, plans, progress and glow points, saved reads, vision-board content and information you provide for support.",
+              "المحتوى والنشاط: اليوميات والملاحظات وإجابات الدفتر والصور أو المرفقات التي تختارها والملاحظات الصوتية والروتينات والتذكيرات والخطط والتقدم ونقاط الجلو والقراءات المحفوظة ولوحة الرؤية والمعلومات التي تقدمها للدعم.",
             )}
           </p>
           <p>
             {l(
-              "The private-diary PIN is a device-local screen lock and is not synced. Synced diary content is not end-to-end encrypted; authorized operators and service providers may process it to operate and support the service.",
-              "رمز اليوميات الخاصة هو قفل شاشة محلي على الجهاز ولا تتم مزامنته. محتوى اليوميات المتزامن ليس مشفّرًا من طرف إلى طرف، وقد يعالجه المشغّلون المخوّلون ومقدّمو الخدمات لتشغيل الخدمة ودعمها.",
-            )}
-          </p>
-          <p>
-            {l(
-              "The app does not currently include third-party advertising or analytics SDKs.",
-              "لا يتضمّن التطبيق حاليًا حزم SDK لإعلانات أو تحليلات من أطراف ثالثة.",
+              "Chat and moderation: messages, replies, conversation identifiers and timestamps, recent context, optional personalization summaries, usage counters, submitted reports, safety flags and review notes. Public leaderboard submissions, decisions and blocks are described below.",
+              "الدردشة والإشراف: الرسائل والردود ومعرّفات المحادثات وأوقاتها والسياق الحديث وملخصات التخصيص الاختيارية وعدادات الاستخدام والبلاغات وتنبيهات السلامة وملاحظات المراجعة. نوضح أدناه طلبات لوحة الجلو العامة وقرارات مراجعتها والحظر.",
             )}
           </p>
         </>
@@ -138,210 +78,221 @@ function PrivacyPolicy() {
     {
       title: l("3. How we use information", "3. كيف نستخدم المعلومات"),
       content: (
-        <ul>
-          {[
-            l(
-              "Create, secure, verify, and recover your account.",
-              "إنشاء حسابك وتأمينه والتحقق منه واستعادته.",
-            ),
-            l(
-              "Sync your data and provide the app features you choose to use.",
-              "مزامنة بياناتك وتوفير ميزات التطبيق التي تختار استخدامها.",
-            ),
-            l(
-              "Provide Maryam AI responses and supported in-app actions.",
-              "تقديم ردود Maryam بالذكاء الاصطناعي والإجراءات المدعومة داخل التطبيق.",
-            ),
-            l(
-              "Authenticate your Google account and maintain your app session.",
-              "مصادقة حساب Google والحفاظ على جلسة التطبيق.",
-            ),
-            l(
-              "Deliver local reminders and user-scoped Android widgets.",
-              "تقديم التذكيرات المحلية وويدجت Android المرتبطة بالمستخدم.",
-            ),
-            l(
-              "Improve safety, reliability, support, and prevent abuse.",
-              "تحسين السلامة والموثوقية والدعم ومنع إساءة الاستخدام.",
-            ),
-          ].map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      ),
-    },
-    {
-      title: l("4. Service providers and sharing", "4. مقدّمو الخدمات والمشاركة"),
-      content: (
         <>
           <p>
             {l(
-              "We do not sell personal information or share it for third-party advertising. We use service providers only to operate Girly Vibes:",
-              "لا نبيع المعلومات الشخصية ولا نشاركها لأغراض إعلانات أطراف ثالثة. نستخدم مقدّمي خدمات فقط لتشغيل Girly Vibes:",
+              "We use this information to operate and secure accounts, save and synchronize content, restore synced data on another device, provide requested app features and AI responses, deliver local reminders, respond to support requests, investigate abuse and protect users and the service.",
+              "نستخدم هذه المعلومات لتشغيل الحسابات وحمايتها وحفظ المحتوى ومزامنته واستعادة البيانات المتزامنة على جهاز آخر وتوفير ميزات التطبيق وردود الذكاء الاصطناعي والتذكيرات المحلية والرد على طلبات الدعم والتحقيق في إساءة الاستخدام وحماية المستخدمين والخدمة.",
             )}
           </p>
-          <ul>
-            {[
-              l(
-                "Supabase for authentication, database, storage, and sessions.",
-                "Supabase للمصادقة وقاعدة البيانات والتخزين والجلسات.",
-              ),
-              l(
-                "Hugging Face Spaces for hosting the Maryam AI/RAG backend.",
-                "Hugging Face Spaces لاستضافة الواجهة الخلفية لـ Maryam (الذكاء الاصطناعي / RAG).",
-              ),
-              l(
-                "OpenAI or an OpenAI-compatible provider for AI responses.",
-                "OpenAI أو مزوّد متوافق مع OpenAI لردود الذكاء الاصطناعي.",
-              ),
-              l(
-                "Google for sign-in and account recovery, together with Supabase Auth for app sessions. Girly Vibes does not send signup-verification or password-reset emails.",
-                "Google لتسجيل الدخول واستعادة الوصول إلى الحساب، مع Supabase Auth لجلسات التطبيق. لا ترسل Girly Vibes رسائل تأكيد التسجيل أو إعادة تعيين كلمة المرور.",
-              ),
-              l(
-                "Hosting providers, Google Play, and Android operating-system services.",
-                "مقدّمو الاستضافة وGoogle Play وخدمات نظام Android.",
-              ),
-            ].map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
           <p>
             {l(
-              "We may disclose information when required by law, to investigate abuse, protect users, or protect the security and integrity of Girly Vibes.",
-              "قد نفصح عن المعلومات عندما يقتضي القانون ذلك، أو للتحقيق في إساءة الاستخدام، أو لحماية المستخدمين، أو لحماية أمن وسلامة Girly Vibes.",
+              "We do not sell your personal information or use your private content for third-party advertising. Girly Vibes uses Google sign-in rather than sending signup-verification or password-reset emails.",
+              "لا نبيع معلوماتك الشخصية ولا نستخدم محتواك الخاص لإعلانات الجهات الخارجية. يستخدم Girly Vibes تسجيل الدخول عبر Google بدلاً من إرسال رسائل تأكيد التسجيل أو إعادة تعيين كلمة المرور.",
             )}
           </p>
         </>
       ),
     },
     {
-      title: l("5. AI and wellness disclosures", "5. إفصاحات الذكاء الاصطناعي والعافية"),
+      title: l(
+        "4. Maryam, AI processing and cloud history",
+        "4. مريم ومعالجة الذكاء الاصطناعي والسجل السحابي",
+      ),
       content: (
         <>
           <p>
             {l(
-              "Maryam is an AI-assisted companion for self-care, routines, reminders, confidence, beauty, studying, and everyday support. AI can make mistakes.",
-              "Maryam مرافقة بمساعدة الذكاء الاصطناعي للعناية بالنفس والروتينات والتذكيرات والثقة والجمال والدراسة والدعم اليومي. وقد يخطئ الذكاء الاصطناعي.",
+              "When you send a message to Maryam, your message and relevant recent context are sent to our backend and the configured AI provider to generate a response. Depending on the feature, this can include your display name, selected help mode or calm check-in context. Maryam does not receive access to your private diary or notes through chat.",
+              "عند إرسال رسالة إلى مريم، تُرسل الرسالة والسياق الحديث ذو الصلة إلى خادمنا ومزوّد الذكاء الاصطناعي المستخدم لتوليد الرد. قد يتضمن ذلك، حسب الميزة، اسمك المعروض أو نمط المساعدة أو سياق تسجيل حالتك. لا تحصل مريم على وصول إلى يومياتك أو ملاحظاتك الخاصة عبر الدردشة.",
             )}
           </p>
           <p>
             {l(
-              "Girly Vibes is not a medical device, therapist, doctor, emergency service, or crisis service and does not diagnose, treat, cure, or prevent medical or mental-health conditions. In immediate danger, contact local emergency services or a trusted person.",
-              "Girly Vibes ليس جهازًا طبيًا ولا معالجًا نفسيًا ولا طبيبًا ولا خدمة طوارئ أو أزمة، ولا يشخّص الحالات الطبية أو النفسية ولا يعالجها ولا يشفيها ولا يمنعها. في حال الخطر الفوري، اتصل بخدمات الطوارئ المحلية أو بشخص موثوق.",
+              "For signed-in accounts, conversation transcripts and metadata are stored in Supabase for history, synchronization and recovery across devices or reinstalls, independently of plan. Personalization memory is a separate optional feature: disabling or clearing it does not erase conversation history.",
+              "للحسابات المسجّلة، تُحفظ نصوص المحادثات وبياناتها في Supabase للسجل والمزامنة والاستعادة عبر الأجهزة أو بعد إعادة التثبيت، بصرف النظر عن الخطة. ذاكرة التخصيص ميزة اختيارية منفصلة؛ تعطيلها أو مسحها لا يمحو سجل المحادثات.",
+            )}
+          </p>
+          <p>
+            {l(
+              "Maryam can make mistakes. Girly Vibes provides general self-care support, not medical advice, diagnosis, treatment, therapy or emergency assistance.",
+              "قد تخطئ مريم. يقدم Girly Vibes دعماً عاماً للعناية بالنفس، وليس نصيحة طبية أو تشخيصاً أو علاجاً أو علاجاً نفسياً أو مساعدة طارئة.",
             )}
           </p>
         </>
       ),
     },
     {
-      title: l("6. How we protect information", "6. كيف نحمي المعلومات"),
+      title: l(
+        "5. Authorized chat review for safety and security",
+        "5. مراجعة المحادثات المخوّلة لأغراض السلامة والأمن",
+      ),
       content: (
         <>
           <p>
             {l(
-              "We use HTTPS, Supabase row-level security, server-only admin credentials, encrypted local session storage where available, user-scoped reminder and widget data, token verification, request limits, rate limits, and access controls.",
-              "نستخدم HTTPS، وأمان مستوى الصف في Supabase، وبيانات اعتماد إدارية على الخادم فقط، وتخزين جلسات محليًا مشفّرًا حيث يتوفر، وبيانات تذكيرات وويدجت مرتبطة بالمستخدم، والتحقق من الرموز، وحدود الطلبات، وحدود المعدّل، وضوابط الوصول.",
+              "Authorized Girly Vibes administrators can access and review stored Maryam conversations, including messages and replies, together with associated account details such as email, account ID and conversation timestamps. Access is not limited to messages that a user reports or that an automated system flags. We use this access for safety and security review, investigating suspected abuse or threats, assessing reports and addressing support concerns.",
+              "يمكن لمشرفي Girly Vibes المخوّلين الوصول إلى محادثات مريم المحفوظة ومراجعتها، بما يشمل الرسائل والردود وبيانات الحساب المرتبطة مثل البريد الإلكتروني ومعرّف الحساب وأوقات المحادثة. لا يقتصر الوصول على الرسائل التي يبلّغ عنها المستخدم أو يرصدها النظام آلياً. نستخدم هذا الوصول لمراجعة السلامة والأمن والتحقيق في الاشتباه بإساءة الاستخدام أو التهديدات وتقييم البلاغات ومعالجة مسائل الدعم.",
             )}
           </p>
           <p>
             {l(
-              "No system is perfectly secure. Avoid storing emergency, legally privileged, or highly sensitive information unless you understand the risks.",
-              "لا يوجد نظام آمن بالكامل. تجنّب تخزين معلومات طارئة أو محمية قانونيًا أو شديدة الحساسية ما لم تفهم المخاطر.",
+              "Messages containing possible suicide, self-harm, abuse or danger signals may produce automated safety warnings for human review. Warning records can include the flagged text, linked account and conversation, detection time, review status and internal notes. A report of an AI reply can also include the reply, preceding message, sources and report reason.",
+              "قد تُنشئ الرسائل التي تحمل إشارات محتملة للانتحار أو إيذاء النفس أو الإساءة أو الخطر تنبيهات آلية للمراجعة البشرية. قد تتضمن سجلات التنبيه النص المحدد والحساب والمحادثة المرتبطين ووقت الكشف وحالة المراجعة والملاحظات الداخلية. وقد يشمل بلاغ رد الذكاء الاصطناعي الرد والرسالة السابقة والمصادر وسبب البلاغ.",
+            )}
+          </p>
+          <p>
+            {l(
+              "Chats are not public to other users, but they are not end-to-end encrypted or confidential from authorized operators and service providers. Admin access is intended for the purposes described here, not public disclosure. Automated detection can miss concerns or flag harmless messages. Review is not continuous, and we cannot guarantee detection, a response or assistance. In immediate danger, contact local emergency services or a trusted person rather than waiting for an administrator.",
+              "المحادثات ليست عامة للمستخدمين الآخرين، لكنها ليست مشفّرة من طرف إلى طرف ولا محجوبة عن المشغلين المخوّلين ومقدمي الخدمات. يهدف وصول المشرفين إلى الأغراض الموضحة هنا، وليس إلى النشر العام. قد يفوّت الكشف الآلي حالات خطرة أو يرصد رسائل غير ضارة. المراجعة ليست مستمرة ولا نضمن اكتشاف الخطر أو الرد أو المساعدة. في حال الخطر الفوري، تواصل مع خدمات الطوارئ المحلية أو شخص موثوق بدلاً من انتظار المشرف.",
             )}
           </p>
         </>
       ),
     },
     {
-      title: l("7. Retention and deletion", "7. الاحتفاظ والحذف"),
+      title: l("6. Optional public leaderboard", "6. لوحة الجلو العامة الاختيارية"),
       content: (
         <>
           <p>
             {l(
-              "We retain account and synced app data while your account is active or as needed to provide the service. You can request permanent account erasure in Settings → Account → Delete account and data, using a fresh sign-in with the same Google account and an explicit DELETE confirmation.",
-              "نحتفظ ببيانات الحساب والتطبيق المتزامنة طالما حسابك نشط أو حسب الحاجة لتقديم الخدمة. يمكنك طلب محو الحساب نهائيًا عبر الإعدادات ← الحساب ← حذف الحساب والبيانات، بتسجيل دخول جديد باستخدام حساب Google نفسه وتأكيد DELETE صريحًا.",
+              "Leaderboard participation is optional. After accepting the community rules, you may submit a public nickname and note for admin approval. Participating scores use a generic name during review. Only approved names and top-three notes appear publicly to other users; every edit requires fresh approval.",
+              "المشاركة في لوحة الجلو اختيارية. بعد قبول قواعد المجتمع يمكنك إرسال اسم عام ورسالة لموافقة المشرف. تظهر نقاط المشاركين باسم عام أثناء المراجعة. لا تظهر الأسماء والرسائل للمستخدمين الآخرين إلا بعد الموافقة، وتُعرض الرسائل للمراكز الثلاثة الأولى؛ وكل تعديل يحتاج موافقة جديدة.",
             )}
           </p>
           <p>
             {l(
-              "Deleting a chat or clearing chat history removes the affected conversations from the app and this device's cache after server confirmation. Other devices clear their cached copies when they reconnect and synchronize. The full transcripts remain in a separate deleted-chat category for that user in Supabase, accessible to authorized administrators for security review, with no automatic expiry. These retained transcripts are not downloadable through the mobile app.",
-              "حذف محادثة أو مسح سجل الدردشة يزيل المحادثات المعنية من التطبيق وذاكرة هذا الجهاز بعد تأكيد الخادم. تزيل الأجهزة الأخرى نسخها المحلية عند إعادة الاتصال والمزامنة. تبقى النصوص الكاملة في فئة منفصلة للمحادثات المحذوفة لذلك المستخدم في Supabase، ويمكن للمشرفين المخوّلين مراجعتها لأغراض الأمن، دون انتهاء تلقائي للاحتفاظ بها. ولا يمكن تنزيل هذه النصوص المحتفظ بها عبر تطبيق الجوال.",
+              "You can withdraw, report a public name or note, and block or unblock users from your leaderboard. Blocking affects your view, not other users’ views. We store submissions, the latest review decision and feedback, report snapshots and blocks to operate moderation. Withdrawal does not erase these moderation records; full account erasure removes account-linked records.",
+              "يمكنك الانسحاب والإبلاغ عن اسم أو رسالة وحظر المستخدمين أو إلغاء حظرهم من لوحتك. يؤثر الحظر على عرضك أنت وليس على عرض الآخرين. نحفظ الطلبات وآخر قرار مراجعة وملاحظاته ونسخ البلاغات والحظر لتشغيل الإشراف. لا يمحو الانسحاب سجلات الإشراف هذه؛ ويزيل محو الحساب بالكامل السجلات المرتبطة به.",
+            )}
+          </p>
+        </>
+      ),
+    },
+    {
+      title: l("7. Service providers and disclosures", "7. مقدمو الخدمات والإفصاح"),
+      content: (
+        <>
+          <p>
+            {l(
+              "We use Google for sign-in and account recovery; Supabase for authentication, database and media storage; Hugging Face Spaces to host the Maryam backend; and OpenAI or an OpenAI-compatible provider to generate AI responses. Hosting providers and Android/Google Play services support website delivery, distribution and operating-system features. Providers process relevant information when delivering these services.",
+              "نستخدم Google لتسجيل الدخول واستعادة الوصول، وSupabase للمصادقة وقاعدة البيانات وتخزين الوسائط، وHugging Face Spaces لاستضافة خادم مريم، وOpenAI أو مزوداً متوافقاً معه لتوليد ردود الذكاء الاصطناعي. يدعم مقدمو الاستضافة وخدمات Android وGoogle Play تقديم الموقع وتوزيع التطبيق وميزات نظام التشغيل. يعالج المزودون المعلومات ذات الصلة عند تقديم هذه الخدمات.",
             )}
           </p>
           <p>
             {l(
-              "Clearing chat history does not also erase separate optional memory summaries, submitted AI reports, or provider backups. Full-account erasure removes the account's chat-history rows, including retained deleted transcripts, and its private uploaded media. If media cleanup is queued, it continues in the background; a pending result is not confirmation that erasure has finished.",
-              "مسح سجل الدردشة لا يمحو أيضًا ملخّصات الذاكرة الاختيارية المنفصلة أو بلاغات الذكاء الاصطناعي المقدّمة أو النسخ الاحتياطية لدى مقدّمي الخدمات. محو الحساب بالكامل يزيل صفوف سجل محادثاته، بما فيها النصوص المحذوفة المحتفظ بها، ووسائطه الخاصة المرفوعة. إذا وُضع تنظيف الوسائط في قائمة الانتظار، يستمر في الخلفية؛ والنتيجة المعلّقة ليست تأكيدًا على اكتمال المحو.",
+              "Information may be processed outside your country, where our providers operate. We may disclose relevant information when required by applicable law or a valid legal request, or when reasonably necessary and legally permitted to investigate abuse or protect a person or the service. Safety review does not mean that every flagged conversation is shared externally.",
+              "قد تُعالج المعلومات خارج بلدك حيث يعمل مقدمو خدماتنا. قد نفصح عن المعلومات ذات الصلة عندما يتطلب القانون المعمول به أو طلب قانوني صالح ذلك، أو عندما يكون الإفصاح ضرورياً بصورة معقولة ومسموحاً به قانوناً للتحقيق في إساءة الاستخدام أو حماية شخص أو الخدمة. لا تعني مراجعة السلامة مشاركة كل محادثة مرصودة مع جهة خارجية.",
+            )}
+          </p>
+        </>
+      ),
+    },
+    {
+      title: l("8. Permissions and local storage", "8. الأذونات والتخزين المحلي"),
+      content: (
+        <>
+          <p>
+            {l(
+              "Features may request notifications for reminders, microphone access for voice notes, and access to photos or media you select. You can manage permissions in your device settings. Refusing a permission may prevent the related feature from working.",
+              "قد تطلب الميزات الإشعارات للتذكيرات والميكروفون للملاحظات الصوتية والوصول إلى الصور أو الوسائط التي تختارها. يمكنك إدارة الأذونات من إعدادات الجهاز. قد يؤدي رفض إذن إلى منع عمل الميزة المرتبطة به.",
+            )}
+          </p>
+          <p>
+            {l(
+              "Some content, preferences and encrypted conversation caches are stored on your device for offline use. Offline changes require reconnection to synchronize. Uninstalling can remove unsynced device-only content; it does not erase data already stored on our servers. Other devices and widgets may keep cached information until they reconnect and refresh.",
+              "يُحفظ بعض المحتوى والتفضيلات وذاكرة المحادثات المشفّرة على جهازك للاستخدام دون اتصال. تحتاج التغييرات دون اتصال إلى إعادة الاتصال للمزامنة. قد يزيل إلغاء التثبيت المحتوى غير المتزامن الموجود على الجهاز فقط؛ ولا يمحو البيانات المحفوظة على خوادمنا. قد تحتفظ الأجهزة الأخرى والويدجت بنسخ مؤقتة حتى إعادة الاتصال والتحديث.",
+            )}
+          </p>
+        </>
+      ),
+    },
+    {
+      title: l("9. Security and private content", "9. الأمن والمحتوى الخاص"),
+      content: (
+        <>
+          <p>
+            {l(
+              "We use safeguards such as HTTPS in transit, database access controls, authenticated sessions, server-only admin credentials and encrypted local session storage where available. No system is perfectly secure. Private diary PINs protect the local screen; they are not end-to-end encryption of cloud copies. Authorized operators and providers can process stored private content to operate and support the service.",
+              "نستخدم وسائل حماية مثل HTTPS أثناء النقل وضوابط الوصول إلى قاعدة البيانات وجلسات المصادقة وبيانات اعتماد المشرفين على الخادم فقط وتخزين الجلسات المحلي المشفّر حيث يتوفر. لا يوجد نظام آمن تماماً. تحمي رموز اليوميات الخاصة الشاشة المحلية؛ ولا تعني تشفير النسخ السحابية من طرف إلى طرف. يمكن للمشغلين المخوّلين والمزودين معالجة المحتوى الخاص المحفوظ لتشغيل الخدمة ودعمها.",
+            )}
+          </p>
+        </>
+      ),
+    },
+    {
+      title: l("10. Retention and manual safety review", "10. الاحتفاظ والمراجعة اليدوية للسلامة"),
+      content: (
+        <>
+          <p>
+            {l(
+              "We retain account and synced content while needed to provide the service. Removing a chat from the app does not immediately erase its server copy. Retained transcripts remain available to authorized administrators for safety and security review. Server cleanup of these copies is manual after review determines that there is no continuing safety or security need to retain them; there is no automatic expiry or guaranteed review deadline.",
+              "نحتفظ بالحساب والمحتوى المتزامن حسب الحاجة لتقديم الخدمة. إزالة محادثة من التطبيق لا تمحو نسختها على الخادم فوراً. تبقى النصوص المحتفظ بها متاحة للمشرفين المخوّلين لمراجعة السلامة والأمن. يتم تنظيف هذه النسخ من الخادم يدوياً بعد أن تحدد المراجعة عدم وجود حاجة مستمرة للاحتفاظ بها لأغراض السلامة أو الأمن؛ ولا توجد مدة انتهاء تلقائية أو مهلة مراجعة مضمونة.",
+            )}
+          </p>
+          <p>
+            {l(
+              "Separate personalization summaries, reports, safety-review records and provider backups are not erased merely by clearing the chat list. Full account erasure is a separate process and removes account-linked conversation history, including retained chats, memory and moderation records from our active app database. Provider backup copies follow the relevant provider’s retention and deletion processes.",
+              "لا يؤدي مسح قائمة المحادثات وحده إلى محو ملخصات التخصيص أو البلاغات أو سجلات مراجعة السلامة أو النسخ الاحتياطية لدى المزودين. محو الحساب بالكامل إجراء منفصل يزيل سجل المحادثات المرتبط بالحساب، بما فيه المحادثات المحتفظ بها والذاكرة وسجلات الإشراف، من قاعدة بيانات التطبيق النشطة. تتبع نسخ المزودين الاحتياطية إجراءات الاحتفاظ والحذف لدى المزود المعني.",
+            )}
+          </p>
+        </>
+      ),
+    },
+    {
+      title: l("11. Your choices and account deletion", "11. خياراتك وحذف الحساب"),
+      content: (
+        <>
+          <p>
+            {l(
+              "You can edit supported profile information, manage device permissions, turn off optional AI memory, withdraw from the leaderboard and request access, correction or deletion of your information at privacy@girly-vibes.com. Depending on applicable law, you may have additional rights to obtain a copy, object to or restrict processing, or complain to a data-protection authority.",
+              "يمكنك تعديل معلومات الملف المدعومة وإدارة أذونات الجهاز وإيقاف ذاكرة الذكاء الاصطناعي الاختيارية والانسحاب من لوحة الجلو وطلب الوصول إلى معلوماتك أو تصحيحها أو حذفها عبر privacy@girly-vibes.com. حسب القانون المعمول به، قد تكون لك حقوق إضافية للحصول على نسخة أو الاعتراض على المعالجة أو تقييدها أو تقديم شكوى إلى جهة حماية البيانات.",
+            )}
+          </p>
+          <p>
+            {l(
+              "To erase your account, use Settings → Account → Delete account and data, confirm DELETE and sign in again with the same Google account. You can also request deletion without reinstalling the app at https://girly-vibes.com/delete-account or through our privacy email. We verify account ownership before acting; simply supplying someone else’s email does not authorize deletion. Never send your password.",
+              "لمحو حسابك، استخدم الإعدادات ← الحساب ← حذف الحساب والبيانات، وأكّد DELETE ثم سجّل الدخول مجدداً بحساب Google نفسه. يمكنك أيضاً طلب الحذف دون إعادة تثبيت التطبيق عبر https://girly-vibes.com/delete-account أو بريد الخصوصية. نتحقق من ملكية الحساب قبل التنفيذ؛ ومجرد تقديم بريد شخص آخر لا يجيز حذف حسابه. لا ترسل كلمة مرورك مطلقاً.",
+            )}
+          </p>
+          <p>
+            {l(
+              "Private media cleanup can continue in the background after an erasure request. A pending status does not mean cleanup is complete. Contact our privacy email if you need help or your request remains pending.",
+              "قد يستمر تنظيف الوسائط الخاصة في الخلفية بعد طلب المحو. لا تعني الحالة المعلّقة اكتمال التنظيف. تواصل مع بريد الخصوصية إذا احتجت إلى المساعدة أو بقي طلبك معلّقاً.",
             )}
           </p>
           <p>
             <Link to="/delete-account" className="font-semibold underline underline-offset-4">
-              {l(
-                "Account-deletion instructions and email request",
-                "تعليمات حذف الحساب وطلب الحذف بالبريد الإلكتروني",
-              )}
+              {l("Account-deletion instructions and request", "تعليمات حذف الحساب وتقديم الطلب")}
             </Link>
           </p>
+        </>
+      ),
+    },
+    {
+      title: l("12. Children’s privacy", "12. خصوصية الأطفال"),
+      content: (
+        <>
           <p>
             {l(
-              "You may also request deletion or make a data request at ",
-              "يمكنك أيضًا طلب الحذف أو تقديم طلب بيانات عبر ",
-            )}
-            <a href={`mailto:${CONTACT_EMAIL}`}>
-              <bdi>{CONTACT_EMAIL}</bdi>
-            </a>
-            .{" "}
-            {l(
-              "Limited information may be retained where required for security, abuse prevention, legal compliance, or backups.",
-              "وقد نحتفظ بمعلومات محدودة عند الحاجة لأغراض الأمن أو منع إساءة الاستخدام أو الامتثال القانوني أو النسخ الاحتياطية.",
+              "Girly Vibes is not intended for children under 13. If you believe a child under 13 has provided personal information without appropriate consent, contact us so we can investigate and take steps to remove it.",
+              "Girly Vibes غير موجّه للأطفال دون سن 13. إذا اعتقدت أن طفلاً دون 13 قد قدم معلومات شخصية دون موافقة مناسبة، فتواصل معنا للتحقيق واتخاذ خطوات لإزالتها.",
             )}
           </p>
         </>
       ),
     },
     {
-      title: l("8. Local and offline data", "8. البيانات المحلية ودون اتصال"),
+      title: l("13. Changes and contact", "13. التغييرات والتواصل"),
       content: (
-        <p>
-          {l(
-            "Girly Vibes is offline-first. Some data is stored locally for speed and offline use. Local reminders, widget mutations, and encrypted conversation caches are scoped to the signed-in user. Conversation history also syncs to your account separately from optional AI memory. Offline changes need a connection to finish syncing; uninstalling before a successful sync can lose device-only content. Synced data follows the retention and deletion rules above.",
-            "Girly Vibes مصمَّم للعمل أولًا دون اتصال. تُخزَّن بعض البيانات محليًا للسرعة والاستخدام دون إنترنت. ترتبط التذكيرات المحلية وتغييرات الويدجت وذاكرة المحادثات المشفّرة بالمستخدم المسجّل الدخول. كما تتم مزامنة سجل المحادثات مع حسابك بصورة منفصلة عن ذاكرة الذكاء الاصطناعي الاختيارية. تحتاج التغييرات دون اتصال إلى اتصال لإكمال المزامنة؛ وقد يؤدي إلغاء التثبيت قبل نجاح المزامنة إلى فقدان المحتوى الموجود على الجهاز فقط. تتبع البيانات المتزامنة قواعد الاحتفاظ والحذف المذكورة أعلاه.",
-          )}
-        </p>
-      ),
-    },
-    {
-      title: l("9. Children’s privacy", "9. خصوصية الأطفال"),
-      content: (
-        <p>
-          {l(
-            "Girly Vibes is not intended for children under 13. If we learn that we collected personal information from a child under 13 without appropriate consent, we will take steps to delete it.",
-            "Girly Vibes غير موجّه للأطفال دون سن 13. إذا علمنا أننا جمعنا معلومات شخصية من طفل دون 13 دون موافقة مناسبة، فسنتخذ خطوات لحذفها.",
-          )}
-        </p>
-      ),
-    },
-    {
-      title: l("10. International processing", "10. المعالجة الدولية"),
-      content: (
-        <p>
-          {l(
-            "Information may be processed in countries other than where you live. Our service providers may store or process data where they operate and support secure transmission and access controls.",
-            "قد تُعالَج المعلومات في بلدان غير بلد إقامتك. وقد يخزّن مقدّمو خدماتنا البيانات أو يعالجونها حيث يعملون، مع دعم النقل الآمن وضوابط الوصول.",
-          )}
-        </p>
-      ),
-    },
-    {
-      title: l("11. Changes to this policy", "11. التغييرات على هذه السياسة"),
-      content: (
-        <p>
-          {l(
-            "We may update this policy when features, providers, data practices, or legal requirements change. The latest version and effective date will always appear on this page.",
-            "قد نحدّث هذه السياسة عند تغيّر الميزات أو مقدّمي الخدمات أو ممارسات البيانات أو المتطلبات القانونية. وستظهر أحدث نسخة وتاريخ السريان دائمًا على هذه الصفحة.",
-          )}
-        </p>
+        <>
+          <p>
+            {l(
+              "We update this policy when features, providers or data practices change. The date on this page identifies the latest policy. Where required, we provide additional notice and request consent for material changes. Questions and privacy requests can be sent to privacy@girly-vibes.com.",
+              "نحدّث هذه السياسة عندما تتغير الميزات أو المزودون أو ممارسات البيانات. يحدد التاريخ في هذه الصفحة أحدث سياسة. نقدم إشعاراً إضافياً ونطلب الموافقة على التغييرات الجوهرية عندما يكون ذلك مطلوباً. يمكنك إرسال أسئلة الخصوصية وطلباتها إلى privacy@girly-vibes.com.",
+            )}
+          </p>
+        </>
       ),
     },
   ];
