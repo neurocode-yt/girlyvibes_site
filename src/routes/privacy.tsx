@@ -131,8 +131,8 @@ function PrivacyPolicy() {
         <>
           <p>
             {l(
-              "Authorized Girly Vibes administrators can access and review stored Maryam conversations, including messages and replies, together with associated account details such as email, account ID and conversation timestamps. Access is not limited to messages that a user reports or that an automated system flags. We use this access for safety and security review, investigating suspected abuse or threats, assessing reports and addressing support concerns.",
-              "يمكن لمشرفي Girly Vibes المخوّلين الوصول إلى محادثات مريم المحفوظة ومراجعتها، بما يشمل الرسائل والردود وبيانات الحساب المرتبطة مثل البريد الإلكتروني ومعرّف الحساب وأوقات المحادثة. لا يقتصر الوصول على الرسائل التي يبلّغ عنها المستخدم أو يرصدها النظام آلياً. نستخدم هذا الوصول لمراجعة السلامة والأمن والتحقيق في الاشتباه بإساءة الاستخدام أو التهديدات وتقييم البلاغات ومعالجة مسائل الدعم.",
+              "Access to stored Maryam conversations is restricted to authorized Girly Vibes administrators and relevant service providers as needed to operate the service, provide support, investigate abuse or review safety and security concerns. Review may include messages, replies and linked account details such as email and conversation timestamps, including conversations that have not been reported or automatically flagged.",
+              "يقتصر الوصول إلى محادثات مريم المحفوظة على مشرفي Girly Vibes المخوّلين ومقدمي الخدمات المعنيين عند الحاجة لتشغيل الخدمة أو تقديم الدعم أو التحقيق في إساءة الاستخدام أو مراجعة مسائل السلامة والأمن. قد تشمل المراجعة الرسائل والردود وبيانات الحساب المرتبطة مثل البريد الإلكتروني وأوقات المحادثة، بما فيها محادثات لم يُبلّغ عنها ولم تُرصد آلياً.",
             )}
           </p>
           <p>
