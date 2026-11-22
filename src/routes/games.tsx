@@ -18,11 +18,6 @@ export const Route = createFileRoute("/games")({
       { property: "og:title", content: "Girly Games 🎮 — Your Aesthetic 3D Playroom" },
       { property: "og:description", content: "Dress up a custom 3D paper-doll with 360-degree rotation controls, or play with standard fluffy bunny pet!" }
     ],
-    links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" },
-    ],
   }),
 });
 
