@@ -156,8 +156,8 @@ function ThemeMock({ isAr }: { isAr: boolean }) {
   const themes = [
     { n: isAr?"كلاسيك":"Classic", c: ["#FBE4EC","#F7C9D9"] },
     { n: isAr?"بريميوم":"Premium", c: ["#FBEFE0","#E4C28E"] },
-    { n: isAr?"أكوا":"Aqua", c: ["#E0F5F2","#A8D8D6"] },
-    { n: isAr?"حديقة":"Garden", c: ["#E8F3DA","#B8D898"] },
+    { n: isAr?"حكاية وردية":"Pink Storybook", c: ["#FFF9FB","#FFD9E7"] },
+    { n: isAr?"فانيلا وليلك":"Vanilla Lilac", c: ["#F8F3FF","#D9C8F0"] },
     { n: isAr?"وردي ناعم":"Soft Rose", c: ["#FDE8EE","#F5BCCD"] },
     { n: isAr?"بيرل":"Pearl", c: ["#FBF0EC","#E8C8C2"] },
   ];

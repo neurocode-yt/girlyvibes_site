@@ -23,8 +23,7 @@ const updates = [
 ];
 
 export function Themes() {
-  const { t, lang } = useI18n();
-  const isAr = lang === "ar";
+  const { t } = useI18n();
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,57 +47,58 @@ export function Themes() {
   return (
     <Section id="themes">
       <div className="text-center mb-12">
-        <p className="text-xs font-medium tracking-widest uppercase text-[color:var(--rose-deep)]">✿ Themes</p>
-        <h2 className="mt-3 text-3xl md:text-5xl font-semibold text-[color:var(--mauve)]">{t("themes.title")}</h2>
+        <h2 className="text-3xl md:text-5xl font-semibold text-[color:var(--mauve)]">{t("themes.title")}</h2>
         <p className="mt-3 text-[color:var(--mauve)]/70">{t("themes.lead")}</p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {themes.map((th, i) => {
           const isActive = selectedTheme === th.n;
           return (
-            <motion.div
+            <motion.button
               key={th.n}
+              type="button"
+              aria-pressed={isActive}
               onClick={() => handleThemeClick(th.n)}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.04 }}
-              whileHover={{ y: -4 }}
-              className={`group relative p-5 rounded-3xl bg-white shadow-card border cursor-pointer overflow-hidden transition-all duration-300 ${
-                isActive ? "border-[color:var(--rose-deep)] scale-[1.03] ring-2 ring-[color:var(--rose-deep)]/20" : "border-[color:var(--border)]"
+              className={`group relative p-3 sm:p-5 rounded-3xl bg-[color:var(--card)] shadow-card border cursor-pointer text-start transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--rose-deep)] hover:border-[color:var(--rose-deep)] ${
+                isActive ? "border-[color:var(--rose-deep)] ring-2 ring-[color:var(--rose-deep)]/30" : "border-[color:var(--border)]"
               }`}
             >
-              <div className="flex gap-1.5">
+              <div aria-hidden="true" className="flex gap-1.5">
                 {th.c.map((color) => (
-                  <div key={color} className="flex-1 h-20 rounded-2xl relative overflow-hidden" style={{ background: color }}>
+                  <div key={color} className="flex-1 h-12 sm:h-16 rounded-xl relative overflow-hidden" style={{ background: color }}>
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity shimmer" />
                   </div>
                 ))}
               </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="font-display text-[color:var(--mauve)] font-semibold text-sm sm:text-base">{th.n}</p>
-                {isActive && <span className="text-xs font-bold text-[color:var(--rose-deep)] bg-[color:var(--rose-soft)] px-2.5 py-0.5 rounded-full">✓</span>}
-              </div>
-            </motion.div>
+              <span className="mt-3 flex items-center justify-between gap-1">
+                <span className="text-[color:var(--mauve)] font-semibold text-sm sm:text-base">
+                  {th.n === "Pink Storybook" ? t("themes.storybook") : <bdi>{th.n}</bdi>}
+                </span>
+                {isActive && <span aria-hidden="true" className="text-[color:var(--mauve)]">✓</span>}
+              </span>
+            </motion.button>
           );
         })}
       </div>
 
       <div className="flex flex-col items-center gap-3 mt-8">
         <button
+          type="button"
+          aria-pressed={selectedTheme === null}
           onClick={handleResetClick}
-          className={`px-6 py-3 rounded-full text-xs font-semibold shadow-soft border transition-all duration-300 active:scale-95 ${
+          className={`px-6 py-3 rounded-full text-sm font-semibold shadow-soft border transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--rose-deep)] ${
             selectedTheme === null
-              ? "bg-[color:var(--rose-soft)] border-[color:var(--rose-deep)]/40 text-[color:var(--rose-deep)] cursor-default opacity-85"
-              : "bg-white border-[color:var(--border)] hover:bg-[color:var(--rose-soft)] text-[color:var(--mauve)]"
+              ? "bg-[color:var(--rose-soft)] border-[color:var(--rose-deep)]/40 text-[color:var(--mauve)]"
+              : "bg-[color:var(--card)] border-[color:var(--border)] hover:bg-[color:var(--rose-soft)] text-[color:var(--mauve)] cursor-pointer"
           }`}
         >
-          🌈 {isAr ? "تفعيل تدفق الألوان التلقائي (قوس قزح)" : "Enable Dynamic Rainbow Hue-Morphing"}
+          {t("themes.reset")}
         </button>
-        <p className="text-center text-[10px] text-[color:var(--mauve)]/50">
-          {lang === "ar" ? "9 ثيمات داخل التطبيق" : "9 in-app themes"}
-        </p>
       </div>
     </Section>
   );

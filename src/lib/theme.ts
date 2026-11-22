@@ -4,6 +4,7 @@ export type ThemePalette = {
 };
 
 export const themes: ThemePalette[] = [
+  { n: "Pink Storybook", c: ["#FFF9FB", "#FFD9E7", "#A34365"] },
   { n: "Classic Pink", c: ["#FBE4EC", "#F7C9D9", "#B55B72"] },
   { n: "Premium Gold", c: ["#FBEFE0", "#E4C28E", "#9A6B2F"] },
   { n: "Aqua Orchid", c: ["#E0F5F2", "#A8D8D6", "#6B8AA8"] },

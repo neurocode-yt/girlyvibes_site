@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { type ReactNode } from "react";
 
 type Props = {
@@ -16,9 +16,11 @@ const notchClass: Record<NonNullable<Props["notch"]>, string> = {
 };
 
 export function PhoneFrame({ children, className = "", notch = "rose", glow = false }: Props) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <motion.div
-      initial={{ y: 20, opacity: 0 }}
+      initial={reduceMotion ? false : { y: 20, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
@@ -32,8 +34,8 @@ export function PhoneFrame({ children, className = "", notch = "rose", glow = fa
         />
       )}
       <motion.div
-        animate={{ y: [-6, 6, -6] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        animate={reduceMotion ? { y: 0 } : { y: [-6, 6, -6] }}
+        transition={reduceMotion ? { duration: 0 } : { duration: 6, repeat: Infinity, ease: "easeInOut" }}
         className="relative"
       >
         <div className="relative mx-auto w-[280px] md:w-[320px] aspect-[9/19] rounded-[44px] bg-[#1a1014] p-2.5 shadow-2xl">
