@@ -8,7 +8,6 @@ import { renderGreetingCard } from "@/lib/greetingCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Zap, Sparkles, Smile, RefreshCw, Star, Camera, BookOpen, Box, Award, Coins } from "lucide-react";
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export const Route = createFileRoute("/games")({
   component: GamesPage,
@@ -281,10 +280,10 @@ const HALLMARK_TEMPLATES = [
   }
 ];
 
-const PRESET_3D_MODELS = [
-  { id: "hijab", nameEn: "Soft Hijabi Chic 🌸", nameAr: "لفة شيفون أنيقة 🌸", url: "https://models.readyplayer.me/64e8cd8317e07661b17b6ec7.glb" },
-  { id: "streetwear", nameEn: "Glow Streetwear 💅", nameAr: "ستايل كاجوال دافئ 💅", url: "https://models.readyplayer.me/64b77f9859f518e00d720c74.glb" },
-  { id: "glam", nameEn: "Royal Soiree 🕌", nameAr: "سهرة ملكية فاخرة 🕌", url: "https://models.readyplayer.me/6461247063467612f0e08f5d.glb" },
+const OUTFIT_PRESETS = [
+  { id: "chiffon", nameEn: "Chiffon & embroidery", nameAr: "شيفون وتطريز", hair: "waves", top: "cardigan", bottom: "skirt", acc: "clips", bg: "pink-room" },
+  { id: "streetwear", nameEn: "Cozy streetwear", nameAr: "كاجوال مريح", hair: "crinkle", top: "hoodie", bottom: "jeans", acc: "headphones", bg: "teal-records" },
+  { id: "glam", nameEn: "Evening glow", nameAr: "إطلالة السهرة", hair: "bob", top: "shrug", bottom: "pleated", acc: "necklace", bg: "garden" },
 ];
 
 function GamesPage() {
@@ -292,10 +291,6 @@ function GamesPage() {
   const [activeTab, setActiveTab] = useState<"dressup" | "tamagotchi" | "hallmark">("dressup");
   const [isMounted, setIsMounted] = useState(false);
 
-  // 3D Avatar Model State
-  const [selected3dPreset, setSelected3dPreset] = useState<string>("hijab");
-  const [custom3dGlbUrl, setCustom3dGlbUrl] = useState<string | null>(null);
-  const [isRpmModalOpen, setIsRpmModalOpen] = useState<boolean>(false);
 
   // Greeting card customization
   const [hallmarkTemplate, setHallmarkTemplate] = useState("eid");
@@ -2444,29 +2439,27 @@ function GamesPage() {
                 >
                   {/* Doll Frame Canvas (Left Pane) */}
                   <div className="relative flex flex-col items-center">
-                    <button
-                      onClick={() => setIsRpmModalOpen(true)}
-                      className="w-full py-2.5 mb-3 px-4 rounded-2xl bg-rose-gradient text-white font-bold text-xs shadow-soft hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <Sparkles className="w-4 h-4 text-amber-300" />
-                      {lang === "ar" ? "✨ صممي شخصيتك الـ 3D الاحترافية (3D Studio)" : "✨ Build Your Custom 3D Girl Avatar"}
-                    </button>
-
-                    <div className="flex gap-2 mb-3 w-full">
-                      {PRESET_3D_MODELS.map((preset) => {
-                        const isSel = selected3dPreset === preset.id && !custom3dGlbUrl;
+                    <div role="group" aria-label={isArabic ? "إطلالات جاهزة" : "Outfit presets"} className="mb-4 grid w-full gap-2 sm:grid-cols-3">
+                      {OUTFIT_PRESETS.map((preset) => {
+                        const active = hair === preset.hair && top === preset.top &&
+                          bottom === preset.bottom && acc === preset.acc && bg === preset.bg;
                         return (
                           <button
                             key={preset.id}
+                            type="button"
+                            aria-pressed={active}
                             onClick={() => {
                               playSynthSound("click");
-                              setCustom3dGlbUrl(null);
-                              setSelected3dPreset(preset.id);
+                              setHair(preset.hair);
+                              setTop(preset.top);
+                              setBottom(preset.bottom);
+                              setAcc(preset.acc);
+                              setBg(preset.bg);
                             }}
-                            className={`flex-1 py-1.5 px-2 rounded-xl text-[11px] font-semibold border transition-all cursor-pointer ${
-                              isSel
-                                ? "bg-rose-500 text-white border-transparent shadow-xs"
-                                : "bg-white/60 dark:bg-zinc-900/60 border-[color:var(--border)] text-[color:var(--mauve)]"
+                            className={`min-h-11 cursor-pointer rounded-xl border px-2 py-2 text-sm font-semibold transition-colors ${
+                              active
+                                ? "bg-[color:var(--mauve)] text-[color:var(--background)] border-transparent"
+                                : "border-[color:var(--border)] bg-[color:var(--card)] text-[color:var(--mauve)] hover:bg-[color:var(--rose-soft)]"
                             }`}
                           >
                             {lang === "ar" ? preset.nameAr : preset.nameEn}
@@ -3239,39 +3232,6 @@ function GamesPage() {
           </div>
         </main>
       </div>
-
-      <AnimatePresence>
-        {isRpmModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
-          >
-            <div className="bg-white dark:bg-zinc-950 rounded-3xl w-full max-w-4xl h-[90vh] overflow-hidden flex flex-col border border-[color:var(--border)] shadow-2xl">
-              <div className="p-4 border-b border-[color:var(--border)] flex items-center justify-between bg-[color:var(--rose-soft)]/30">
-                <div className="flex items-center gap-2 font-bold text-sm text-[color:var(--rose-deep)]">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  <span>{lang === "ar" ? "مصمم الشخصيات الـ 3D الاحترافي ✨" : "Official ReadyPlayerMe 3D Avatar Creator ✨"}</span>
-                </div>
-                <button
-                  onClick={() => setIsRpmModalOpen(false)}
-                  className="w-8 h-8 rounded-full bg-white dark:bg-zinc-900 border font-bold text-xs flex items-center justify-center text-[color:var(--mauve)] cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="flex-1 w-full relative bg-slate-900">
-                <iframe
-                  src="https://readyplayer.me/avatar?frameApi"
-                  allow="camera *; microphone *"
-                  className="w-full h-full border-0"
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <Footer />
     </div>
