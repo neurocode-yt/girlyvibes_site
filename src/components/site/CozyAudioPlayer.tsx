@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Volume2, VolumeX, Music, Sparkles } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 // Beautiful MIDI frequency helper
@@ -18,19 +18,23 @@ export function CozyAudioPlayer() {
   const isAr = lang === "ar";
   const [isPlaying, setIsPlaying] = useState(false);
   const [enableSFX, setEnableSFX] = useState(true);
-  const [rainVolume, setRainVolume] = useState(0.2); // Cozy rain background volume
+  const [rainVolume, setRainVolume] = useState(0.2);
+  const [audioFailed, setAudioFailed] = useState(false);
+  const switchingAudio = useRef(false);
 
   const audioCtxRef = useRef<AudioContext | null>(null);
   const mainGainRef = useRef<GainNode | null>(null);
   const rainGainRef = useRef<GainNode | null>(null);
-  const musicIntervalRef = useRef<number | null>(null);
   const currentChordIdx = useRef(0);
 
   // Initialize Audio Context on click to satisfy browser policies
   const initAudio = () => {
     if (audioCtxRef.current) return;
 
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const AudioContextClass =
+      window.AudioContext ??
+      (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextClass) throw new Error("Audio playback is unavailable");
     const ctx = new AudioContextClass();
     audioCtxRef.current = ctx;
 
@@ -83,9 +87,10 @@ export function CozyAudioPlayer() {
   };
 
   // Sound Effect 1: Synthesize Bubble Pop
-  const playBubbleSFX = () => {
+  const playBubbleSFX = useCallback(() => {
     const ctx = audioCtxRef.current;
-    if (!ctx || !enableSFX || ctx.state === "suspended") return;
+    const masterGain = mainGainRef.current;
+    if (!ctx || ctx.state !== "running" || !masterGain) return;
 
     try {
       const osc = ctx.createOscillator();
@@ -101,19 +106,20 @@ export function CozyAudioPlayer() {
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
 
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(masterGain);
 
       osc.start();
       osc.stop(ctx.currentTime + 0.09);
     } catch (e) {
       console.warn("Audio pop failure", e);
     }
-  };
+  }, []);
 
   // Sound Effect 2: Synthesize Sparkle Chime (Twinkle)
-  const playSparkleSFX = () => {
+  const playSparkleSFX = useCallback(() => {
     const ctx = audioCtxRef.current;
-    if (!ctx || !enableSFX || ctx.state === "suspended") return;
+    const masterGain = mainGainRef.current;
+    if (!ctx || ctx.state !== "running" || !masterGain) return;
 
     try {
       const playSingleChime = (delay: number, pitch: number) => {
@@ -128,7 +134,7 @@ export function CozyAudioPlayer() {
         gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 0.3);
 
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(masterGain);
 
         osc.start(ctx.currentTime + delay);
         osc.stop(ctx.currentTime + delay + 0.35);
@@ -142,12 +148,13 @@ export function CozyAudioPlayer() {
     } catch (e) {
       console.warn("Audio chime failure", e);
     }
-  };
+  }, []);
 
   // Generative Lofi chords playing loop
-  const triggerNextLofiChord = () => {
+  const triggerNextLofiChord = useCallback(() => {
     const ctx = audioCtxRef.current;
-    if (!ctx || ctx.state === "suspended") return;
+    const masterGain = mainGainRef.current;
+    if (!ctx || ctx.state !== "running" || !masterGain) return;
 
     try {
       const chord = CHORDS[currentChordIdx.current];
@@ -168,7 +175,7 @@ export function CozyAudioPlayer() {
         filter.frequency.setValueAtTime(600, ctx.currentTime);
 
         // Stagger/arpeggiate the keys slightly for human strumming feeling
-        const strumDelay = index * 0.05 + (Math.random() - 0.5) * 0.02;
+        const strumDelay = Math.max(0, index * 0.05 + (Math.random() - 0.5) * 0.02);
 
         // Long soft envelope
         gain.gain.setValueAtTime(0, ctx.currentTime);
@@ -177,7 +184,7 @@ export function CozyAudioPlayer() {
 
         osc.connect(filter);
         filter.connect(gain);
-        gain.connect(mainGainRef.current!);
+        gain.connect(masterGain);
 
         osc.start(ctx.currentTime + strumDelay);
         osc.stop(ctx.currentTime + 4.2);
@@ -185,164 +192,162 @@ export function CozyAudioPlayer() {
     } catch (e) {
       console.warn("Generative chord failure", e);
     }
-  };
+  }, []);
 
   // Handle Play/Mute state
   const handlePlayToggle = async () => {
-    if (!audioCtxRef.current) {
+    if (switchingAudio.current) return;
+    switchingAudio.current = true;
+    setAudioFailed(false);
+    try {
       initAudio();
-    }
+      const ctx = audioCtxRef.current;
+      const gain = mainGainRef.current?.gain;
+      if (!ctx || !gain) throw new Error("Audio is unavailable");
 
-    const ctx = audioCtxRef.current;
-    if (!ctx) return;
-
-    if (isPlaying) {
-      // Mute the master volume smoothly
-      mainGainRef.current?.gain.setValueAtTime(mainGainRef.current.gain.value, ctx.currentTime);
-      mainGainRef.current?.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.2);
-      setTimeout(() => {
-        ctx.suspend();
+      gain.cancelScheduledValues(ctx.currentTime);
+      if (isPlaying) {
         setIsPlaying(false);
-      }, 220);
-    } else {
-      await ctx.resume();
-      mainGainRef.current?.gain.setValueAtTime(mainGainRef.current.gain.value, ctx.currentTime);
-      mainGainRef.current?.gain.exponentialRampToValueAtTime(0.5, ctx.currentTime + 0.3);
-      setIsPlaying(true);
-
-      // Instantly play first chord
-      triggerNextLofiChord();
-
-      // Clear any previous interval and start scheduling chords every 4.2s
-      if (musicIntervalRef.current) window.clearInterval(musicIntervalRef.current);
-      musicIntervalRef.current = window.setInterval(triggerNextLofiChord, 4200);
-
-      // Play click chime sound
-      playSparkleSFX();
+        gain.setTargetAtTime(0, ctx.currentTime, 0.045);
+        await new Promise((resolve) => window.setTimeout(resolve, 200));
+        await ctx.suspend();
+      } else {
+        await ctx.resume();
+        gain.setTargetAtTime(0.5, ctx.currentTime, 0.06);
+        setIsPlaying(true);
+      }
+    } catch {
+      setAudioFailed(true);
+    } finally {
+      switchingAudio.current = false;
     }
   };
 
-  // Sync SFX elements (Attach bubble sound on hovers and sparkles on clicks globally)
   useEffect(() => {
-    const handleElementHover = () => playBubbleSFX();
-    const handleElementClick = () => playSparkleSFX();
+    if (!isPlaying) return;
+    triggerNextLofiChord();
+    const interval = window.setInterval(triggerNextLofiChord, 4200);
+    return () => window.clearInterval(interval);
+  }, [isPlaying, triggerNextLofiChord]);
 
-    let cleanups: (() => void)[] = [];
-
-    const attachSoundHandlers = () => {
-      // Find all buttons, links, clickable items
-      const elements = document.querySelectorAll("button, a, input, select, [role='button']");
-      elements.forEach((el) => {
-        // Avoid adding multiple listeners if re-attached
-        el.addEventListener("mouseenter", handleElementHover, { passive: true });
-        el.addEventListener("mousedown", handleElementClick, { passive: true });
-
-        cleanups.push(() => {
-          el.removeEventListener("mouseenter", handleElementHover);
-          el.removeEventListener("mousedown", handleElementClick);
-        });
-      });
+  useEffect(() => {
+    if (!isPlaying || !enableSFX) return;
+    const controlAt = (target: EventTarget | null) => {
+      if (!(target instanceof Element)) return null;
+      const control = target.closest("button, a[href], input, select, [role='button']");
+      return control?.matches(":disabled, [aria-disabled='true']") ? null : control;
     };
-
-    // Attach initially and periodically to catch newly rendered components
-    attachSoundHandlers();
-    const interval = setInterval(attachSoundHandlers, 2500);
-
+    const hover = (event: PointerEvent) => {
+      const control = controlAt(event.target);
+      if (event.pointerType !== "mouse" || !control) return;
+      if (!(event.relatedTarget instanceof Node) || !control.contains(event.relatedTarget)) {
+        playBubbleSFX();
+      }
+    };
+    const click = (event: MouseEvent) => {
+      if (controlAt(event.target)) playSparkleSFX();
+    };
+    document.addEventListener("pointerover", hover, { passive: true });
+    document.addEventListener("click", click, { passive: true });
     return () => {
-      clearInterval(interval);
-      cleanups.forEach((cleanup) => cleanup());
-      if (musicIntervalRef.current) window.clearInterval(musicIntervalRef.current);
+      document.removeEventListener("pointerover", hover);
+      document.removeEventListener("click", click);
     };
-  }, [enableSFX, isPlaying]);
+  }, [enableSFX, isPlaying, playBubbleSFX, playSparkleSFX]);
+
+  useEffect(
+    () => () => {
+      const ctx = audioCtxRef.current;
+      if (ctx && ctx.state !== "closed") void ctx.close().catch(() => {});
+    },
+    [],
+  );
 
   // Adjust rain gain on volume state change
   useEffect(() => {
     if (rainGainRef.current && audioCtxRef.current) {
-      rainGainRef.current.gain.setValueAtTime(rainGainRef.current.gain.value, audioCtxRef.current.currentTime);
-      rainGainRef.current.gain.exponentialRampToValueAtTime(Math.max(0.0001, rainVolume), audioCtxRef.current.currentTime + 0.2);
+      const gain = rainGainRef.current.gain;
+      const now = audioCtxRef.current.currentTime;
+      gain.cancelScheduledValues(now);
+      gain.setTargetAtTime(rainVolume, now, 0.05);
     }
   }, [rainVolume]);
 
-  return (
-    <div className="fixed bottom-6 right-6 z-[999] flex flex-col items-end gap-3 select-none pointer-events-auto">
-      {/* Expanded Dashboard Panel (Only visible when playing) */}
-      {isPlaying && (
-        <div className="p-4 rounded-3xl glass border border-white/40 shadow-soft w-64 text-[color:var(--mauve)] flex flex-col gap-3 animate-fade-in animate-duration-300">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold flex items-center gap-1.5 text-[color:var(--rose-deep)]">
-              <Music className="w-3.5 h-3.5 animate-pulse" />
-              {isAr ? "نغمات هادئة 📻" : "Generative Cozy Lofi"}
-            </span>
-            <span className="text-[10px] bg-white/70 px-2 py-0.5 rounded-full border border-[color:var(--border)] uppercase tracking-wider font-bold">
-              {isAr ? "نشط" : "Synth Live"}
-            </span>
-          </div>
+  const soundLabel = isAr ? "صوت هادئ" : "Ambient sound";
+  const rainLabel = isAr ? "مستوى صوت المطر" : "Rain volume";
+  const effectsLabel = isAr ? "أصوات التفاعل" : "Interaction sounds";
+  const volumePercent = new Intl.NumberFormat(isAr ? "ar-EG" : "en", { style: "percent" }).format(
+    rainVolume / 0.4,
+  );
 
-          {/* Soundscapes Control */}
-          <div className="flex flex-col gap-1.5 mt-1">
-            <label className="text-[10px] opacity-75 flex justify-between">
-              <span>🌧️ {isAr ? "صوت المطر" : "Gentle Rain"}</span>
-              <span>{Math.round(rainVolume * 100)}%</span>
+  return (
+    <div className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] end-4 z-40 flex max-w-[calc(100vw-2rem)] flex-col items-end gap-2">
+      {audioFailed && (
+        <p
+          role="status"
+          className="rounded-xl border border-[color:var(--border)] bg-[color:var(--card)] p-3 text-sm"
+        >
+          {isAr ? "تعذّر تشغيل الصوت في المتصفح ده." : "Sound couldn’t play in this browser."}
+        </p>
+      )}
+      {isPlaying && (
+        <div
+          id="cozy-audio-controls"
+          role="region"
+          aria-label={soundLabel}
+          className="grid w-64 max-w-full gap-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] p-4 text-[color:var(--mauve)] shadow-card"
+        >
+          <div className="grid gap-1">
+            <label
+              htmlFor="cozy-rain-volume"
+              className="flex justify-between gap-3 text-sm font-semibold"
+            >
+              {rainLabel}
+              <span aria-hidden="true">{volumePercent}</span>
             </label>
             <input
+              id="cozy-rain-volume"
               type="range"
               min="0"
               max="0.4"
               step="0.05"
               value={rainVolume}
-              onChange={(e) => setRainVolume(parseFloat(e.target.value))}
-              className="w-full h-1 bg-[color:var(--border)] rounded-lg appearance-none cursor-pointer accent-[color:var(--rose-deep)]"
+              aria-valuetext={volumePercent}
+              onChange={(event) => setRainVolume(Number(event.target.value))}
+              className="h-8 w-full cursor-pointer accent-[color:var(--rose-deep)]"
             />
           </div>
-
-          {/* Effects Toggle */}
           <button
-            onClick={() => setEnableSFX(!enableSFX)}
-            className={`flex items-center justify-between p-2 rounded-2xl border text-xs transition duration-200 ${
-              enableSFX
-                ? "bg-[color:var(--rose-soft)]/50 border-[color:var(--rose-deep)]/40 text-[color:var(--rose-deep)]"
-                : "bg-white/40 border-[color:var(--border)] opacity-60"
-            }`}
+            type="button"
+            aria-pressed={enableSFX}
+            onClick={() => setEnableSFX((enabled) => !enabled)}
+            className="flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--rose-soft)]/40 px-3 text-start text-sm font-semibold hover:bg-[color:var(--rose-soft)]"
           >
-            <span className="flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" />
-              {isAr ? "مؤثرات بابل وبريق" : "Interactive SFX Sounds"}
+            {effectsLabel}
+            <span aria-hidden="true" className="shrink-0 text-sm">
+              {enableSFX ? (isAr ? "مفعّلة" : "On") : isAr ? "متوقفة" : "Off"}
             </span>
-            <span className="font-bold">{enableSFX ? "ON" : "OFF"}</span>
           </button>
         </div>
       )}
-
-      {/* Retro Cassette Graphic Button */}
       <button
+        type="button"
         onClick={handlePlayToggle}
-        className={`group relative flex items-center justify-center p-3 rounded-full border shadow-soft transition-all duration-300 pointer-events-auto active:scale-95 ${
+        aria-label={soundLabel}
+        aria-pressed={isPlaying}
+        aria-controls={isPlaying ? "cozy-audio-controls" : undefined}
+        title={soundLabel}
+        className={`inline-flex size-12 cursor-pointer items-center justify-center rounded-full border border-[color:var(--border)] shadow-soft transition-colors ${
           isPlaying
-            ? "bg-rose-gradient text-white border-transparent scale-105 float-slow"
-            : "bg-white text-[color:var(--rose-deep)] border-[color:var(--border)] hover:bg-[color:var(--rose-soft)]"
+            ? "bg-[color:var(--mauve)] text-[color:var(--background)] hover:opacity-90"
+            : "bg-[color:var(--card)] text-[color:var(--mauve)] hover:bg-[color:var(--rose-soft)]"
         }`}
-        title={isAr ? "شغلي النغمات الهادئة" : "Play cozy lofi soundscape"}
       >
-        {/* Glowing aura when playing */}
-        {isPlaying && (
-          <div className="absolute inset-0 rounded-full bg-[color:var(--rose-deep)] opacity-30 blur-md scale-110 animate-pulse pointer-events-none" />
+        {isPlaying ? (
+          <Volume2 aria-hidden="true" className="size-5" />
+        ) : (
+          <VolumeX aria-hidden="true" className="size-5" />
         )}
-
-        <div className="relative flex items-center gap-2">
-          {isPlaying ? <Volume2 className="w-5 h-5 animate-pulse" /> : <VolumeX className="w-5 h-5" />}
-
-          {/* Cassette cassette body */}
-          <div className={`flex items-center gap-1 overflow-hidden transition-all duration-300 ${isPlaying ? "w-28 opacity-100" : "w-0 opacity-0"}`}>
-            <span className="text-[10px] font-display font-medium tracking-wide">
-              {isAr ? "موسيقى وراقة 🌸" : "COZY VIBES"}
-            </span>
-            {/* Spinning hubs */}
-            <div className="flex gap-1 items-center">
-              <div className="w-2.5 h-2.5 rounded-full border border-dashed border-white animate-spin animate-duration-3000" />
-              <div className="w-2.5 h-2.5 rounded-full border border-dashed border-white animate-spin animate-duration-3000" />
-            </div>
-          </div>
-        </div>
       </button>
     </div>
   );

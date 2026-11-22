@@ -1,243 +1,181 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Heart, Pause, Play, RotateCcw } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { Section, Blob } from "./Decor";
-import { PhoneFrame } from "./PhoneFrame";
-import { Wind, Play, Pause, RefreshCw } from "lucide-react";
+import { Blob, Section } from "./Decor";
 
 const cardKeys = ["calm.c1", "calm.c2", "calm.c3", "calm.c4"];
+const stepSeconds = 4;
+const steps = [
+  { label: "calm.inhale", scale: 1.12, color: "bg-[#F7D4E4]" },
+  { label: "calm.hold", scale: 1.12, color: "bg-[#FFE3EE]" },
+  { label: "calm.exhale", scale: 0.92, color: "bg-[#D2EEE8]" },
+  { label: "calm.rest", scale: 0.92, color: "bg-[#E8DDF7]" },
+];
 
-type BreathStep = "inhale" | "holdIn" | "exhale" | "holdOut";
+type BreathingClock = {
+  started: boolean;
+  runningSince: number | null;
+  savedMilliseconds: number;
+  seconds: number;
+};
+
+const initialClock: BreathingClock = {
+  started: false,
+  runningSince: null,
+  savedMilliseconds: 0,
+  seconds: 0,
+};
+
+function pauseClock(clock: BreathingClock, now: number): BreathingClock {
+  if (clock.runningSince === null) return clock;
+  const savedMilliseconds = clock.savedMilliseconds + now - clock.runningSince;
+  return {
+    ...clock,
+    runningSince: null,
+    savedMilliseconds,
+    seconds: Math.floor(savedMilliseconds / 1000),
+  };
+}
 
 export function CalmRoom() {
   const { t, lang } = useI18n();
-  const isAr = lang === "ar";
+  const [clock, setClock] = useState(initialClock);
+  const playing = clock.runningSince !== null;
+  const phase = steps[Math.floor(clock.seconds / stepSeconds) % steps.length];
+  const secondsLeft = stepSeconds - (clock.seconds % stepSeconds);
 
-  // Guided breathing states
-  const [isActive, setIsActive] = useState(false);
-  const [breathStep, setBreathStep] = useState<BreathStep>("inhale");
-  const [timeLeft, setTimeLeft] = useState(4);
-
-  // Box breathing timing cycle (4 seconds for each step)
   useEffect(() => {
-    if (!isActive) return;
+    if (!playing) return;
 
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          // Move to next step
-          setBreathStep((current) => {
-            switch (current) {
-              case "inhale":
-                return "holdIn";
-              case "holdIn":
-                return "exhale";
-              case "exhale":
-                return "holdOut";
-              case "holdOut":
-                return "inhale";
-              default:
-                return "inhale";
-            }
-          });
-          return 4; // Reset timer to 4 seconds
-        }
-        return prev - 1;
+    const timer = window.setInterval(() => {
+      const now = performance.now();
+      setClock((current) => {
+        if (current.runningSince === null) return current;
+        const seconds = Math.floor((current.savedMilliseconds + now - current.runningSince) / 1000);
+        return seconds === current.seconds ? current : { ...current, seconds };
       });
-    }, 1000);
+    }, 100);
 
-    return () => clearInterval(timer);
-  }, [isActive]);
-
-  const handleToggleActive = () => {
-    setIsActive(!isActive);
-    if (!isActive) {
-      setBreathStep("inhale");
-      setTimeLeft(4);
-    }
-  };
-
-  const getStepText = (step: BreathStep) => {
-    if (isAr) {
-      switch (step) {
-        case "inhale":
-          return "شهيق... خذي نفسًا عميقًا 🌸";
-        case "holdIn":
-          return "ثبات... استرخي بسلام 🧘";
-        case "exhale":
-          return "زفير... أخرجي الهواء ببطء 🫧";
-        case "holdOut":
-          return "استراحة... لحظة سكون 🌙";
+    const pauseInBackground = () => {
+      if (document.hidden) {
+        const now = performance.now();
+        setClock((current) => pauseClock(current, now));
       }
-    } else {
-      switch (step) {
-        case "inhale":
-          return "Inhale... breathe in deep 🌸";
-        case "holdIn":
-          return "Hold... just relax in peace 🧘";
-        case "exhale":
-          return "Exhale... let it out slowly 🫧";
-        case "holdOut":
-          return "Rest... embrace stillness 🌙";
-      }
-    }
+    };
+    document.addEventListener("visibilitychange", pauseInBackground);
+
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", pauseInBackground);
+    };
+  }, [playing]);
+
+  const toggleClock = () => {
+    const now = performance.now();
+    setClock((current) =>
+      current.runningSince === null
+        ? { ...current, started: true, runningSince: now }
+        : pauseClock(current, now),
+    );
   };
 
-  const getCircleScale = (step: BreathStep, active: boolean) => {
-    if (!active) return 1.0;
-    switch (step) {
-      case "inhale":
-        return 1.35; // Expand
-      case "holdIn":
-        return 1.35; // Stay expanded
-      case "exhale":
-        return 0.9;  // Shrink
-      case "holdOut":
-        return 0.9;  // Stay shrunk
-    }
+  const restart = () => {
+    const now = performance.now();
+    setClock((current) =>
+      current.runningSince === null
+        ? initialClock
+        : { ...initialClock, started: true, runningSince: now },
+    );
   };
 
-  const getCircleColor = (step: BreathStep) => {
-    switch (step) {
-      case "inhale":
-        return "from-[#F7C9D9] to-[#C88AA0] shadow-[0_0_50px_oklch(0.86_0.07_5_/_0.5)]";
-      case "holdIn":
-        return "from-[#FFE0E9] to-[#FFC2D6] shadow-[0_0_60px_oklch(0.78_0.12_0_/_0.6)] border border-white/40";
-      case "exhale":
-        return "from-[#E0F5F2] to-[#A8D8D6] shadow-[0_0_40px_oklch(0.8_0.08_180_/_0.4)]";
-      case "holdOut":
-        return "from-[#F0EAF8] to-[#C9B3E0] shadow-[0_0_30px_oklch(0.75_0.1_300_/_0.3)]";
-    }
-  };
+  const buttonLabel = playing ? "calm.pause" : clock.started ? "calm.resume" : "calm.start";
 
   return (
-    <Section id="calm" className="overflow-hidden">
-      <div className="relative rounded-[40px] p-8 md:p-14 overflow-hidden bg-gradient-to-br from-[#3a2230] via-[#52304a] to-[#7a3f5e]">
-        <Blob className="w-[400px] h-[400px] -top-20 -right-20" color="oklch(0.78 0.12 0 / 0.4)" />
-        <Blob className="w-[400px] h-[400px] -bottom-20 -left-20" color="oklch(0.65 0.1 320 / 0.3)" />
-
-        <div className="relative grid lg:grid-cols-[1fr_1.1fr] gap-12 items-center">
-          <div className="text-white">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-[#F7C9D9] backdrop-blur-sm">
-              ✿ {t("calm.title")}
-            </span>
-            <h2 className="mt-3 text-3xl md:text-5xl font-semibold text-balance leading-tight">{t("calm.lead")}</h2>
-
-            <div className="mt-8 grid sm:grid-cols-2 gap-3">
-              {cardKeys.map((k, i) => (
-                <motion.div
-                  key={k}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/20 transition text-sm flex items-start gap-2.5"
+    <Section id="calm">
+      <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#3a2230] via-[#52304a] to-[#7a3f5e] p-5 text-white sm:p-8 lg:p-14">
+        <Blob className="-end-20 -top-20 size-[400px]" color="oklch(0.78 0.12 0 / 0.35)" />
+        <div className="relative grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+          <div>
+            <h2 className="text-balance text-3xl font-semibold md:text-5xl">{t("calm.title")}</h2>
+            <p className="mt-3 text-pretty text-lg leading-relaxed text-white/90">
+              {t("calm.lead")}
+            </p>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+              {cardKeys.map((key) => (
+                <li
+                  key={key}
+                  className="flex items-start gap-2 rounded-2xl border border-white/20 bg-white/10 p-3"
                 >
-                  <span className="text-base select-none">🩷</span>
-                  <span className="text-white/90 font-medium">{t(k)}</span>
-                </motion.div>
+                  <Heart aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[#FFD9E7]" />
+                  {t(key)}
+                </li>
               ))}
-            </div>
-
-            <p className="mt-8 text-xs text-white/50 max-w-md leading-relaxed">
-              ⓘ {t("calm.disclaimer")}
+            </ul>
+            <p className="mt-6 max-w-lg text-sm leading-relaxed text-white/85">
+              {t("calm.disclaimer")}
             </p>
           </div>
 
-          <div className="relative flex justify-center">
-            <PhoneFrame notch="dark" glow>
-              <div className="absolute inset-0 flex flex-col justify-between pt-10 pb-8 px-4 text-white" dir={isAr ? "rtl" : "ltr"}>
-                {/* Header info */}
-                <div className="text-center">
-                  <p className="text-[10px] uppercase font-bold tracking-widest text-[#F7C9D9] bg-white/10 px-3 py-0.5 rounded-full inline-block">
-                    {isAr ? "تمرين التنفس المربع" : "Box Breathing Guide"}
-                  </p>
-                  <p className="text-[9px] text-white/60 mt-1">{isAr ? "4 ثوانٍ لكل خطوة" : "4s Cycle • Simple & Calming"}</p>
-                </div>
+          <div className="rounded-[28px] border border-[#FFE3EE]/25 bg-[#311D2B] p-4 text-center sm:p-6">
+            <h3 className="text-xl font-semibold text-white">{t("calm.guide")}</h3>
+            <p className="mt-1 text-sm text-[#EEDCE7]">{t("calm.timing")}</p>
 
-                {/* Animated Breathing Circle */}
-                <div className="relative flex-1 flex flex-col items-center justify-center">
-                  <div className="relative w-44 h-44 flex items-center justify-center">
-                    {/* Background breathing ripple */}
-                    <AnimatePresence>
-                      {isActive && (
-                        <motion.div
-                          key={breathStep}
-                          initial={{ scale: 0.9, opacity: 0.2 }}
-                          animate={{ scale: getCircleScale(breathStep, true) * 1.25, opacity: 0 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 4, ease: "linear", repeat: Infinity }}
-                          className="absolute w-36 h-36 rounded-full bg-white/20 pointer-events-none"
-                        />
-                      )}
-                    </AnimatePresence>
+            <div className="my-4 grid min-h-40 place-items-center overflow-hidden py-2">
+              <motion.div
+                initial={false}
+                animate={{ scale: playing ? phase.scale : 1 }}
+                transition={{ duration: playing ? stepSeconds : 0.25, ease: "easeInOut" }}
+                className={`grid size-32 max-w-full place-content-center rounded-full text-[#321D2B] sm:size-36 ${phase.color}`}
+              >
+                <span role="timer" className="text-3xl font-semibold tabular-nums">
+                  {new Intl.NumberFormat(lang === "ar" ? "ar-EG" : "en", {
+                    style: "unit",
+                    unit: "second",
+                    unitDisplay: "short",
+                  }).format(secondsLeft)}
+                </span>
+              </motion.div>
+            </div>
 
-                    {/* Main pulsing circle */}
-                    <motion.div
-                      animate={{ scale: getCircleScale(breathStep, isActive) }}
-                      transition={{ duration: isActive ? 4 : 1, ease: "easeInOut" }}
-                      className={`w-36 h-36 rounded-full bg-gradient-to-br ${
-                        isActive ? getCircleColor(breathStep) : "from-white/20 to-white/10 border border-white/20"
-                      } flex flex-col items-center justify-center transition-all duration-700`}
-                    >
-                      {isActive ? (
-                        <div className="text-center">
-                          <span className="text-2xl font-bold font-display">{timeLeft}s</span>
-                          <p className="text-[8px] tracking-wider uppercase font-semibold text-white/80 mt-0.5">
-                            {isAr ? "متبقي" : "Left"}
-                          </p>
-                        </div>
-                      ) : (
-                        <Wind className="w-8 h-8 text-[#F7C9D9] animate-pulse" />
-                      )}
-                    </motion.div>
-                  </div>
+            <p
+              role="status"
+              aria-atomic="true"
+              className="mx-auto grid min-h-12 max-w-xs place-content-center text-pretty leading-snug"
+            >
+              {clock.started ? (
+                <>
+                  {!playing && <span className="text-sm text-[#EEDCE7]">{t("calm.paused")}</span>}
+                  <span>{t(phase.label)}</span>
+                </>
+              ) : (
+                t("calm.ready")
+              )}
+            </p>
 
-                  {/* Step instructions */}
-                  <div className="mt-8 text-center px-4 min-h-[48px] flex items-center justify-center">
-                    <AnimatePresence mode="wait">
-                      <motion.p
-                        key={isActive ? breathStep : "idle"}
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -5 }}
-                        className="text-xs sm:text-sm font-display font-medium text-[#FBE4EC]"
-                      >
-                        {isActive ? getStepText(breathStep) : (isAr ? "جاهزة للبدء؟ خذي دقيقة هدوء 🧘" : "Ready? Take a quiet minute for yourself 🧘")}
-                      </motion.p>
-                    </AnimatePresence>
-                  </div>
-                </div>
-
-                {/* Control Actions */}
-                <div className="flex gap-2 justify-center px-4">
-                  <button
-                    onClick={handleToggleActive}
-                    className={`flex-1 py-3 px-4 rounded-2xl flex items-center justify-center gap-2 text-xs font-semibold shadow-soft active:scale-95 transition-all duration-300 ${
-                      isActive
-                        ? "bg-red-500/20 border border-red-500/30 text-red-200 hover:bg-red-500/30"
-                        : "bg-white text-[color:var(--rose-deep)] border border-transparent hover:bg-[#FBE4EC]"
-                    }`}
-                  >
-                    {isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
-                    {isActive ? (isAr ? "إيقاف مؤقت" : "Pause") : (isAr ? "ابدئي التمرين" : "Start Exercise")}
-                  </button>
-
-                  {isActive && (
-                    <button
-                      onClick={() => {
-                        setBreathStep("inhale");
-                        setTimeLeft(4);
-                      }}
-                      className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 active:scale-95 transition-all"
-                      title={isAr ? "إعادة تعيين" : "Restart cycle"}
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            </PhoneFrame>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <button
+                type="button"
+                onClick={toggleClock}
+                className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-[#FFE3EE] px-5 py-2.5 font-semibold text-[#321D2B] transition-colors hover:bg-white focus-visible:outline-white"
+              >
+                {playing ? (
+                  <Pause aria-hidden="true" className="size-4" />
+                ) : (
+                  <Play aria-hidden="true" className="size-4" />
+                )}
+                {t(buttonLabel)}
+              </button>
+              <button
+                type="button"
+                onClick={restart}
+                disabled={!clock.started}
+                className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-white/35 px-4 py-2.5 font-semibold text-white transition-colors hover:bg-white/15 focus-visible:outline-white disabled:cursor-default disabled:opacity-50"
+              >
+                <RotateCcw aria-hidden="true" className="size-4" />
+                {t("calm.restart")}
+              </button>
+            </div>
           </div>
         </div>
       </div>
