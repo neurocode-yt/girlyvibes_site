@@ -95,29 +95,15 @@ export function CalmRoom() {
     <Section id="calm">
       <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#3a2230] via-[#52304a] to-[#7a3f5e] p-5 text-white sm:p-8 lg:p-14">
         <Blob className="-end-20 -top-20 size-[400px]" color="oklch(0.78 0.12 0 / 0.35)" />
-        <div className="relative grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-          <div>
+        <div className="relative grid gap-6 lg:grid-cols-2 lg:gap-x-12">
+          <div className="lg:col-start-1 lg:row-start-1 lg:self-end">
             <h2 className="text-balance text-3xl font-semibold md:text-5xl">{t("calm.title")}</h2>
             <p className="mt-3 text-pretty text-lg leading-relaxed text-white/90">
               {t("calm.lead")}
             </p>
-            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {cardKeys.map((key) => (
-                <li
-                  key={key}
-                  className="flex items-start gap-2 rounded-2xl border border-white/20 bg-white/10 p-3"
-                >
-                  <Heart aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[#FFD9E7]" />
-                  {t(key)}
-                </li>
-              ))}
-            </ul>
-            <p className="mt-6 max-w-lg text-sm leading-relaxed text-white/85">
-              {t("calm.disclaimer")}
-            </p>
           </div>
 
-          <div className="rounded-[28px] border border-[#FFE3EE]/25 bg-[#311D2B] p-4 text-center sm:p-6">
+          <div className="rounded-[28px] border border-[#FFE3EE]/25 bg-[#311D2B] p-4 text-center sm:p-6 lg:col-start-2 lg:row-span-2 lg:row-start-1">
             <h3 className="text-xl font-semibold text-white">{t("calm.guide")}</h3>
             <p className="mt-1 text-sm text-[#EEDCE7]">{t("calm.timing")}</p>
 
@@ -176,6 +162,22 @@ export function CalmRoom() {
                 {t("calm.restart")}
               </button>
             </div>
+          </div>
+          <div className="lg:col-start-1 lg:row-start-2">
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {cardKeys.map((key) => (
+                <li
+                  key={key}
+                  className="flex items-start gap-2 rounded-2xl border border-white/20 bg-white/10 p-3"
+                >
+                  <Heart aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[#FFD9E7]" />
+                  {t(key)}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 max-w-lg text-sm leading-relaxed text-white/85">
+              {t("calm.disclaimer")}
+            </p>
           </div>
         </div>
       </div>
