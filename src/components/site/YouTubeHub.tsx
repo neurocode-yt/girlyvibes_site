@@ -1,18 +1,18 @@
-import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { useMemo, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { useI18n } from "@/lib/i18n";
 import { Section } from "./Decor";
-import { Play, Youtube as YT, Eye, Clock, Users, Loader2 } from "lucide-react";
+import { Play, Youtube as YT, Eye, Clock, Users } from "lucide-react";
 import {
-  getChannelData,
   FALLBACK_YOUTUBE_DATA,
+  HANDLE,
+  type YTPayload,
   type YTVideo,
   type YTPlaylist,
-} from "@/lib/youtube.functions";
+} from "@/lib/youtubeData";
 
-const CHANNEL_URL = "https://www.youtube.com/@girlyvibes0";
+const CHANNEL_URL = `https://www.youtube.com/@${HANDLE}`;
 
 type FilterKey = "latest" | "popular" | "skincare" | "advice" | "glow" | "calm";
 
@@ -66,60 +66,62 @@ function formatDuration(iso: string) {
   return `${hh}${mm}:${ss}`;
 }
 
-function formatViews(n: number) {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
+function formatViews(n: number, isAr: boolean) {
+  return new Intl.NumberFormat(isAr ? "ar-EG" : "en", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(n);
 }
 
-function timeAgo(iso: string, isAr: boolean) {
-  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-  const u = (n: number, en: string, ar: string) =>
-    isAr ? `قبل ${Math.floor(n)} ${ar}` : `${Math.floor(n)} ${en} ago`;
-  if (diff < 3600) return u(diff / 60, "min", "د");
-  if (diff < 86400) return u(diff / 3600, "h", "س");
-  if (diff < 604800) return u(diff / 86400, "d", "ي");
-  if (diff < 2592000) return u(diff / 604800, "w", "أسبوع");
-  if (diff < 31536000) return u(diff / 2592000, "mo", "شهر");
-  return u(diff / 31536000, "y", "سنة");
+function VideoDate({ value, isAr }: { value: string; isAr: boolean }) {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return null;
+  return (
+    <time dateTime={value}>
+      {new Intl.DateTimeFormat(isAr ? "ar-EG" : "en-GB", {
+        dateStyle: "medium",
+        timeZone: "UTC",
+      }).format(date)}
+    </time>
+  );
+}
+
+async function loadChannel(signal: AbortSignal): Promise<YTPayload> {
+  try {
+    if (import.meta.env.DEV) {
+      const { getChannelData } = await import("@/lib/youtube.functions");
+      return await getChannelData();
+    }
+
+    const response = await fetch("/api/youtube", { signal });
+    if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
+      const data = (await response.json()) as YTPayload;
+      if (Array.isArray(data?.videos) && data.videos.length && Array.isArray(data.playlists)) {
+        return data;
+      }
+    }
+  } catch (error) {
+    if (signal.aborted) throw error;
+  }
+  return FALLBACK_YOUTUBE_DATA;
 }
 
 export function YouTubeHub() {
   const { t, lang } = useI18n();
   const isAr = lang === "ar";
-  const fetchFn = useServerFn(getChannelData);
-  const { data, isLoading } = useQuery({
+  const sectionRef = useRef<HTMLElement>(null);
+  const nearYouTube = useInView(sectionRef, { once: true, margin: "400px 0px" });
+  const { data } = useQuery({
     queryKey: ["yt-channel"],
-    queryFn: async () => {
-      try {
-        const res = await fetchFn();
-        if (res && !res.isFallback && res.videos && res.videos.length > 0) return res;
-      } catch (e) {
-        // Static hosts do not expose the TanStack server function.
-      }
-
-      try {
-        const response = await fetch("/api/youtube");
-        if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
-          const res = (await response.json()) as typeof FALLBACK_YOUTUBE_DATA;
-          if (res && !res.isFallback && res.videos && res.videos.length > 0) return res;
-        }
-      } catch (e) {
-        // The verified channel snapshot below keeps every link on the real channel.
-      }
-
-      return FALLBACK_YOUTUBE_DATA;
-    },
+    queryFn: ({ signal }) => loadChannel(signal),
+    enabled: nearYouTube,
     initialData: FALLBACK_YOUTUBE_DATA,
     initialDataUpdatedAt: 0,
-    staleTime: 1000 * 60 * 30,
-    refetchOnMount: "always",
+    staleTime: (query) => (query.state.data?.isFallback ? 60_000 : 30 * 60_000),
   });
   const [filter, setFilter] = useState<FilterKey>("latest");
 
-  const videos = data?.videos ?? [];
-  const playlists = data?.playlists ?? [];
-  const channel = data?.channel;
+  const { videos, playlists, channel, isFallback } = data;
 
   const filtered = useMemo(() => {
     if (filter === "latest") {
@@ -141,31 +143,31 @@ export function YouTubeHub() {
   }, [videos]);
 
   return (
-    <Section id="youtube">
-      <div className="text-center mb-10">
-        <p className="text-xs font-medium tracking-widest uppercase text-[color:var(--rose-deep)]">
-          ✿ YouTube
-        </p>
-        <h2 className="mt-3 text-3xl md:text-5xl font-semibold text-[color:var(--mauve)]">
+    <Section id="youtube" ref={sectionRef}>
+      <div className="mb-10 text-center">
+        <h2 className="text-3xl md:text-5xl font-semibold text-[color:var(--mauve)]">
           {t("youtube.title")}
         </h2>
         <p className="mt-3 text-[color:var(--mauve)]/70">{t("youtube.lead")}</p>
 
         {channel && (
-          <div className="mt-6 inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/80 border border-[color:var(--border)] shadow-sm">
+          <div className="mt-6 inline-flex max-w-full flex-wrap items-center justify-center gap-3 rounded-3xl border border-[color:var(--border)] bg-[color:var(--card)] p-3 shadow-sm sm:rounded-full sm:px-5">
             {channel.thumbnail && (
               <img
                 src={channel.thumbnail}
-                alt={channel.title}
+                alt=""
                 className="w-9 h-9 rounded-full"
                 loading="lazy"
+                decoding="async"
+                width={36}
+                height={36}
               />
             )}
             <div className="text-start">
               <p className="text-sm font-semibold text-[color:var(--mauve)]">{channel.title}</p>
-              <p className="text-[11px] text-[color:var(--mauve)]/60 flex items-center gap-2">
-                <Users className="w-3 h-3" /> {formatViews(channel.subscribers)}{" "}
-                {isAr ? "مشترك" : "subscribers"}
+              <p className="flex flex-wrap items-center gap-1.5 text-sm text-[color:var(--mauve)]">
+                <Users aria-hidden="true" className="size-3.5" />{" "}
+                {formatViews(channel.subscribers, isAr)} {isAr ? "مشترك" : "subscribers"}
                 <span>·</span>
                 <span>
                   {channel.videoCount} {isAr ? "فيديو" : "videos"}
@@ -176,104 +178,93 @@ export function YouTubeHub() {
               href={CHANNEL_URL}
               target="_blank"
               rel="noreferrer"
-              className="ms-2 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-rose-gradient text-white text-xs font-medium hover:scale-105 transition"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-[color:var(--mauve)] px-4 text-sm font-medium text-[color:var(--background)] hover:opacity-90"
             >
-              <YT className="w-3.5 h-3.5" /> {t("youtube.subscribe")}
+              <YT aria-hidden="true" className="size-4" /> {t("youtube.subscribe")}
             </a>
           </div>
+        )}
+        {isFallback && (
+          <p className="mt-3 text-sm text-[color:var(--mauve)]">{t("youtube.saved")}</p>
         )}
       </div>
 
       {/* Featured */}
       {featured && (
-        <div className="relative p-3 rounded-[32px] bg-gradient-to-tr from-[#FFB2CB] via-[#FFF9F7] to-[#FCE5EE] border border-[#FFD6E3] shadow-soft mb-10 hover:shadow-glow hover:scale-[1.01] transition duration-300">
-          {/* Large Floating Ribbon */}
-          <div
-            className="absolute -top-3 -left-3.5 text-3xl z-20 select-none drop-shadow-md animate-bounce"
-            style={{ animationDuration: "3s" }}
-          >
-            💝
-          </div>
-          {/* Sparkles on opposite side */}
-          <div className="absolute -bottom-3 -right-3 text-2xl z-20 select-none drop-shadow-md">
-            ✨
-          </div>
-
-          <motion.a
-            href={featured.url}
-            target="_blank"
-            rel="noreferrer"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="group relative block aspect-video rounded-[22px] overflow-hidden shadow-card"
-          >
+        <a
+          href={featured.url}
+          target="_blank"
+          rel="noreferrer"
+          className="group mb-10 grid overflow-hidden rounded-3xl border border-[color:var(--border)] bg-[color:var(--card)] shadow-card transition-colors hover:bg-[color:var(--rose-soft)]/40 md:grid-cols-[1.15fr_1fr]"
+        >
+          <div className="relative aspect-video bg-[color:var(--rose-soft)]">
             <img
               src={featured.thumbnail}
-              alt={featured.title}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700"
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 size-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-            <div className="absolute inset-0 grid place-items-center">
-              <div className="w-20 h-20 rounded-full bg-white/95 grid place-items-center group-hover:scale-110 transition shadow-glow">
-                <Play className="w-8 h-8 text-[color:var(--rose-deep)] fill-current ms-1" />
-              </div>
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 grid place-items-center bg-black/20"
+            >
+              <span className="grid size-14 place-items-center rounded-full bg-white text-[#7B3D54] shadow-card">
+                <Play className="size-6 fill-current" />
+              </span>
             </div>
-            <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-              <p className="text-xs uppercase tracking-widest opacity-80">
-                ⭐ {isAr ? "الأكثر مشاهدة" : "Most Watched"}
-              </p>
-              <p className="mt-1 text-xl md:text-2xl font-display font-semibold line-clamp-2">
-                {featured.title}
-              </p>
-              <p className="mt-2 text-xs opacity-80 flex items-center gap-3">
-                <span className="inline-flex items-center gap-1">
-                  <Eye className="w-3.5 h-3.5" /> {formatViews(featured.views)}
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" /> {formatDuration(featured.duration)}
-                </span>
-                <span>{timeAgo(featured.publishedAt, isAr)}</span>
-              </p>
-            </div>
-          </motion.a>
-        </div>
+          </div>
+          <div className="self-center p-4 sm:p-6">
+            <p className="text-sm text-[color:var(--mauve)]">
+              {isAr ? "الأكثر مشاهدة" : "Most watched"}
+            </p>
+            <h3 className="mt-1 font-semibold text-[color:var(--mauve)] sm:text-xl" dir="auto">
+              {featured.title}
+            </h3>
+            <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[color:var(--mauve)]">
+              <span className="inline-flex items-center gap-1">
+                <Eye aria-hidden="true" className="size-4" /> {formatViews(featured.views, isAr)}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Clock aria-hidden="true" className="size-4" />{" "}
+                <bdi>{formatDuration(featured.duration)}</bdi>
+              </span>
+              <VideoDate value={featured.publishedAt} isAr={isAr} />
+            </p>
+          </div>
+        </a>
       )}
 
       {/* Filter tabs */}
-      <div className="flex flex-wrap justify-center gap-2 mb-8">
+      <div
+        role="group"
+        aria-label={t("youtube.filters")}
+        className="flex flex-wrap justify-center gap-2 mb-8"
+      >
         {FILTERS.map((f) => {
           const active = filter === f.key;
           return (
             <button
               key={f.key}
+              type="button"
+              aria-pressed={active}
               onClick={() => setFilter(f.key)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition border ${
+              className={`min-h-11 cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-rose-gradient text-white border-transparent shadow-glow"
-                  : "bg-white text-[color:var(--mauve)] border-[color:var(--border)] hover:bg-[color:var(--blush)]"
+                  ? "bg-[color:var(--mauve)] text-[color:var(--background)] border-transparent"
+                  : "bg-[color:var(--card)] text-[color:var(--mauve)] border-[color:var(--border)] hover:bg-[color:var(--rose-soft)]"
               }`}
             >
-              {isAr ? f.ar : f.en}
+              {isFallback && f.key === "latest" ? t("youtube.savedFilter") : isAr ? f.ar : f.en}
             </button>
           );
         })}
       </div>
 
       {/* Video grid */}
-      {isLoading ? (
-        <div className="grid place-items-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin text-[color:var(--rose-deep)]" />
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="text-center py-12 text-[color:var(--mauve)]/60">
-          {data?.error
-            ? isAr
-              ? "تعذّر تحميل الفيديوهات."
-              : "Couldn't load videos right now."
-            : isAr
-              ? "لا توجد فيديوهات في هذا القسم بعد."
-              : "No videos in this section yet."}
+      {filtered.length === 0 ? (
+        <div role="status" className="text-center py-12 text-[color:var(--mauve)]">
+          {isAr ? "لا توجد فيديوهات في هذا القسم بعد." : "No videos in this section yet."}
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -327,8 +318,9 @@ function VideoCard({ v, i, isAr }: { v: YTVideo; i: number; isAr: boolean }) {
         <div className="relative aspect-video overflow-hidden bg-[color:var(--blush)]">
           <img
             src={v.thumbnail}
-            alt={v.title}
+            alt=""
             loading="lazy"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500"
           />
           <div className="absolute bottom-2 end-2 px-1.5 py-0.5 rounded bg-black/80 text-white text-[10px] font-medium">
@@ -346,10 +338,10 @@ function VideoCard({ v, i, isAr }: { v: YTVideo; i: number; isAr: boolean }) {
           </p>
           <div className="mt-2.5 flex items-center gap-3 text-[11px] text-[color:var(--mauve)]/60">
             <span className="inline-flex items-center gap-1">
-              <Eye className="w-3 h-3" /> {formatViews(v.views)}
+              <Eye aria-hidden="true" className="w-3 h-3" /> {formatViews(v.views, isAr)}
             </span>
             <span>·</span>
-            <span>{timeAgo(v.publishedAt, isAr)}</span>
+            <VideoDate value={v.publishedAt} isAr={isAr} />
           </div>
         </div>
       </div>
@@ -376,8 +368,9 @@ function PlaylistCard({ p, i, isAr }: { p: YTPlaylist; i: number; isAr: boolean 
           {p.thumbnail ? (
             <img
               src={p.thumbnail}
-              alt={p.title}
+              alt=""
               loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (

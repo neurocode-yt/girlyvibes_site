@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import type { ReactNode } from "react";
+import type { ReactNode, Ref } from "react";
 
 export function FloatingDecor() {
   const items = [
@@ -39,9 +39,9 @@ export function Blob({ className = "", color = "var(--blush)" }: { className?: s
   );
 }
 
-export function Section({ id, children, className = "" }: { id?: string; children: ReactNode; className?: string }) {
+export function Section({ id, children, className = "", ref }: { id?: string; children: ReactNode; className?: string; ref?: Ref<HTMLElement> }) {
   return (
-    <section id={id} className={`relative py-20 md:py-28 px-5 md:px-8 ${className}`}>
+    <section ref={ref} id={id} className={`relative py-20 md:py-28 px-5 md:px-8 ${className}`}>
       <div className="max-w-7xl mx-auto relative">{children}</div>
     </section>
   );

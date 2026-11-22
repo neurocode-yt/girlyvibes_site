@@ -102,7 +102,10 @@ const ar: Dict = {
   "glow.you": "مثال لنقاطك",
 
   "youtube.title": "قناة اليوتيوب",
-  "youtube.lead": "شوفي فيديو اليوم، وكملي التحدي معانا.",
+  "youtube.lead": "اختاري فيديو من قناة Girly Vibes أو تصفّحي قوائم التشغيل.",
+  "youtube.saved": "دي مختارات محفوظة من القناة.",
+  "youtube.savedFilter": "مختارات محفوظة",
+  "youtube.filters": "تصفية الفيديوهات",
   "youtube.subscribe": "اشتركي في القناة",
   "youtube.watch": "تشغيل",
   "youtube.featured": "فيديو الأسبوع",
@@ -280,7 +283,10 @@ const en: Dict = {
   "glow.you": "Example score",
 
   "youtube.title": "YouTube Hub",
-  "youtube.lead": "Watch today's video, then continue the challenge with us.",
+  "youtube.lead": "Pick a video from the Girly Vibes channel or browse the playlists.",
+  "youtube.saved": "Showing saved channel picks.",
+  "youtube.savedFilter": "Saved picks",
+  "youtube.filters": "Filter videos",
   "youtube.subscribe": "Subscribe on YouTube",
   "youtube.watch": "Watch on YouTube",
   "youtube.featured": "This week's featured",
