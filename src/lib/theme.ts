@@ -22,6 +22,7 @@ export const clearInlineThemeStyles = (root: HTMLElement) => {
   root.style.removeProperty("--secondary");
   root.style.removeProperty("--accent");
   root.style.removeProperty("--blush");
+  root.style.removeProperty("--glow");
   root.style.removeProperty("--rose-soft");
   root.style.removeProperty("--rose-deep");
   root.style.removeProperty("--primary");
@@ -53,6 +54,7 @@ export const applyTheme = (themeName: string | null, isDark?: boolean) => {
 
   root.setAttribute("data-selected-theme", themeName);
   localStorage.setItem("gv-selected-theme", themeName);
+  root.style.setProperty("--glow", th.c[1]);
 
   if (dark) {
     root.style.setProperty("--background", "#1e141a");

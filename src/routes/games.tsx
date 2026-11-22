@@ -2152,7 +2152,7 @@ function GamesPage() {
       <div className="relative z-10 flex-grow flex flex-col justify-start">
         <Header />
 
-        <div className="w-full pt-28 pb-12 px-4 flex-grow flex flex-col items-center">
+        <main id="main-content" tabIndex={-1} className="w-full pt-28 pb-12 px-4 flex-grow flex flex-col items-center">
           
           <div className="text-center max-w-2xl mb-8">
             <motion.h1 
@@ -3237,7 +3237,7 @@ function GamesPage() {
               )}
             </AnimatePresence>
           </div>
-        </div>
+        </main>
       </div>
 
       <AnimatePresence>

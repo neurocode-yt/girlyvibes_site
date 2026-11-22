@@ -1,13 +1,12 @@
 import { useEffect } from "react";
+import { clearInlineThemeStyles } from "@/lib/theme";
 
 const supportsOklch = () => {
   if (typeof window === "undefined" || typeof CSS === "undefined" || !CSS.supports) return false;
   return CSS.supports("color", "oklch(0.9 0.1 20)");
 };
 
-const applyColors = (root: HTMLElement, h: number, isDark: boolean) => {
-  const oklch = supportsOklch();
-
+const applyColors = (root: HTMLElement, h: number, isDark: boolean, oklch: boolean) => {
   if (isDark) {
     if (oklch) {
       root.style.setProperty("--background", `oklch(0.2 0.03 ${h})`);
@@ -69,16 +68,19 @@ const applyColors = (root: HTMLElement, h: number, isDark: boolean) => {
 
 export function ColorScroll() {
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    const root = document.documentElement;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const oklch = supportsOklch();
+    let frame: number | undefined;
 
-    const handleScroll = () => {
-      if (document.documentElement.getAttribute("data-selected-theme")) return;
+    const updateColors = () => {
+      frame = undefined;
+      if (reducedMotion.matches || root.dataset.selectedTheme) return;
 
       const scrollY = window.scrollY;
-      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const maxScroll = Math.max(1, root.scrollHeight - window.innerHeight);
       const progress = Math.min(1, Math.max(0, scrollY / maxScroll));
 
-      // Breathtaking scroll-linked oklch/hsl hue morphing
       let hue = 25;
       if (progress < 0.25) {
         const p = progress / 0.25;
@@ -95,30 +97,30 @@ export function ColorScroll() {
       }
 
       const h = (hue + 360) % 360;
-      const root = document.documentElement;
-      const mode = root.getAttribute("data-theme-mode") || "light";
-
-      applyColors(root, h, mode === "dark");
+      applyColors(root, h, root.dataset.themeMode === "dark", oklch);
+    };
+    const handleScroll = () => {
+      if (frame === undefined && !reducedMotion.matches && !root.dataset.selectedTheme) {
+        frame = requestAnimationFrame(updateColors);
+      }
+    };
+    const syncMotionPreference = () => {
+      if (reducedMotion.matches) {
+        if (!root.dataset.selectedTheme) clearInlineThemeStyles(root);
+      } else {
+        handleScroll();
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    reducedMotion.addEventListener("change", syncMotionPreference);
+    syncMotionPreference();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      const root = document.documentElement;
-      root.style.removeProperty("--background");
-      root.style.removeProperty("--blush");
-      root.style.removeProperty("--rose-soft");
-      root.style.removeProperty("--rose-deep");
-      root.style.removeProperty("--mauve");
-      root.style.removeProperty("--foreground");
-      root.style.removeProperty("--glow");
-      root.style.removeProperty("--primary");
-      root.style.removeProperty("--secondary");
-      root.style.removeProperty("--accent");
-      root.style.removeProperty("--border");
-      root.style.removeProperty("--card");
+      reducedMotion.removeEventListener("change", syncMotionPreference);
+      if (frame !== undefined) cancelAnimationFrame(frame);
+      if (!root.dataset.selectedTheme) clearInlineThemeStyles(root);
     };
   }, []);
 

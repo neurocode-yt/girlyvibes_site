@@ -133,6 +133,10 @@
 
 @layer base {
   * { border-color: var(--color-border); }
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--rose-deep);
+    outline-offset: 3px;
+  }
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5.5rem;
@@ -211,11 +215,9 @@
     100% { opacity: 0; transform: translate(-50%, -120%) rotate(calc(var(--r, 0deg) + 40deg)) scale(0.6); }
   }
 
-  /* 3D scroll reveal is driven by JS (Scroll3D component) for cross-browser support. */
-
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .heartbeat, .float-slow, .float-slower, .sparkle-spin, .breathe, .shimmer {
+    .heartbeat, .float-slow, .float-slower, .sparkle-spin, .breathe, .shimmer, .animate-pulse, .cursor-sparkle {
       animation: none !important;
     }
   }

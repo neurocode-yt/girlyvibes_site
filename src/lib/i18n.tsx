@@ -5,7 +5,13 @@ export type Lang = "ar" | "en";
 type Dict = Record<string, string>;
 
 const ar: Dict = {
-  "nav.home": "الرئيسية",
+  "nav.label": "تنقّل الموقع",
+  "nav.menu": "قائمة الموقع",
+  "nav.openMenu": "افتحي القائمة",
+  "nav.closeMenu": "اقفلي القائمة",
+  "nav.skip": "انتقلي للمحتوى الرئيسي",
+  "nav.darkMode": "الوضع الداكن",
+  "nav.switchLanguage": "بدّلي للإنجليزية",
   "nav.features": "المزايا",
   "nav.calm": "غرفة الهدوء",
   "nav.glow": "نقاط الجلو",
@@ -166,7 +172,13 @@ const ar: Dict = {
 };
 
 const en: Dict = {
-  "nav.home": "Home",
+  "nav.label": "Site navigation",
+  "nav.menu": "Site menu",
+  "nav.openMenu": "Open menu",
+  "nav.closeMenu": "Close menu",
+  "nav.skip": "Skip to main content",
+  "nav.darkMode": "Dark mode",
+  "nav.switchLanguage": "Switch to Arabic",
   "nav.features": "Features",
   "nav.calm": "Calm Room",
   "nav.glow": "Glow Points",

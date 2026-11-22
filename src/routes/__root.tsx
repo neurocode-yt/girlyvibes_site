@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MotionConfig } from "framer-motion";
 import {
   Outlet,
   Link,
@@ -10,7 +11,6 @@ import {
 
 import appCss from "../styles.css?url";
 import { CursorTrail } from "@/components/site/CursorTrail";
-import { Scroll3D } from "@/components/site/Scroll3D";
 import { ColorScroll } from "@/components/site/ColorScroll";
 import { CozyAudioPlayer } from "@/components/site/CozyAudioPlayer";
 import { I18nProvider } from "@/lib/i18n";
@@ -154,11 +154,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-        <Outlet />
-        <CursorTrail />
-        <Scroll3D />
-        <ColorScroll />
-        <CozyAudioPlayer />
+        <MotionConfig reducedMotion="user">
+          <Outlet />
+          <CursorTrail />
+          <ColorScroll />
+          <CozyAudioPlayer />
+        </MotionConfig>
       </I18nProvider>
     </QueryClientProvider>
   );

@@ -17,9 +17,13 @@ export function CursorTrail() {
   const lastRef = useRef({ x: -999, y: -999, t: 0 });
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    const pointerEffects = window.matchMedia(
+      "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
+    );
 
-    const spawn = (cx: number, cy: number) => {
+    const spawn = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
+      const { clientX: cx, clientY: cy } = event;
       const now = performance.now();
       const dx = cx - lastRef.current.x;
       const dy = cy - lastRef.current.y;
@@ -37,25 +41,23 @@ export function CursorTrail() {
         rotate: (Math.random() - 0.5) * 60,
       };
       setParticles((prev) => [...prev.slice(-28), p]);
-      window.setTimeout(() => {
-        setParticles((prev) => prev.filter((x) => x.id !== id));
-      }, 1300);
     };
 
-    const onMouseMove = (e: MouseEvent) => spawn(e.clientX, e.clientY);
-    const onTouchMove = (e: TouchEvent) => {
-      const touch = e.touches[0];
-      if (touch) {
-        spawn(touch.clientX, touch.clientY);
+    const syncPointerEffects = () => {
+      if (pointerEffects.matches) {
+        document.addEventListener("pointermove", spawn, { passive: true });
+      } else {
+        document.removeEventListener("pointermove", spawn);
+        setParticles([]);
       }
     };
 
-    document.addEventListener("mousemove", onMouseMove, { passive: true });
-    document.addEventListener("touchmove", onTouchMove, { passive: true });
+    pointerEffects.addEventListener("change", syncPointerEffects);
+    syncPointerEffects();
 
     return () => {
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("touchmove", onTouchMove);
+      pointerEffects.removeEventListener("change", syncPointerEffects);
+      document.removeEventListener("pointermove", spawn);
     };
   }, []);
 
@@ -68,6 +70,7 @@ export function CursorTrail() {
         <span
           key={p.id}
           className="cursor-sparkle"
+          onAnimationEnd={() => setParticles((current) => current.filter(({ id }) => id !== p.id))}
           style={{
             position: "absolute",
             left: p.x,

@@ -40,7 +40,7 @@ function Index() {
     <div className="min-h-screen bg-[color:var(--background)] text-[color:var(--mauve)] overflow-x-hidden relative">
       <div className="relative z-10">
         <Header />
-        <main>
+        <main id="main-content" tabIndex={-1}>
           <Hero />
           <About />
           <Features />

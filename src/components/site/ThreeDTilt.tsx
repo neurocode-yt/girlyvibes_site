@@ -1,20 +1,20 @@
-import React, { useRef, useState } from "react";
+import { useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
+import { useReducedMotion } from "framer-motion";
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   maxRotation?: number; // Maximum rotation in degrees (default: 10)
   scale?: number; // Scale on hover (default: 1.02)
 };
 
 export function ThreeDTilt({ children, className = "", maxRotation = 10, scale = 1.02 }: Props) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [tiltStyle, setTiltStyle] = useState<React.CSSProperties>({});
+  const [tiltStyle, setTiltStyle] = useState<CSSProperties>({});
+  const reduceMotion = useReducedMotion();
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const card = cardRef.current;
-    const rect = card.getBoundingClientRect();
+  const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    if (reduceMotion || e.pointerType !== "mouse") return;
+    const rect = e.currentTarget.getBoundingClientRect();
     
     // Mouse coordinates relative to the card
     const x = e.clientX - rect.left;
@@ -43,14 +43,13 @@ export function ThreeDTilt({ children, className = "", maxRotation = 10, scale =
 
   return (
     <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handleMouseLeave}
       style={{
         transformStyle: "preserve-3d",
-        ...tiltStyle,
+        ...(reduceMotion ? {} : tiltStyle),
       }}
-      className={`transform-gpu ${className}`}
+      className={`transform-gpu motion-reduce:transform-none! motion-reduce:transition-none! ${className}`}
     >
       {children}
     </div>
