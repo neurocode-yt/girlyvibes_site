@@ -2,7 +2,7 @@ import { useI18n } from "@/lib/i18n";
 import { PhoneFrame } from "./PhoneFrame";
 import { FloatingDecor, Blob, HeartIcon } from "./Decor";
 import { motion } from "framer-motion";
-import { Heart, Sparkles, Play, Download, Wand2 } from "lucide-react";
+import { Heart, Sparkles, Play, Smartphone, Wand2 } from "lucide-react";
 import { ThreeDTilt } from "./ThreeDTilt";
 
 const chipKeys = [
@@ -59,25 +59,25 @@ export function Hero() {
             className="mt-8 flex flex-wrap gap-3 justify-center lg:justify-start"
           >
             <a
-              href="#download"
-              className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-white bg-rose-gradient font-medium shadow-soft hover:scale-[1.04] active:scale-[0.98] transition heartbeat"
+              href="#features"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[color:var(--mauve)] text-[color:var(--background)] font-medium shadow-soft hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--rose-deep)] transition-opacity"
             >
-              <Download className="w-4 h-4" />
-              {t("hero.cta.download")}
+              <Wand2 aria-hidden="true" className="w-4 h-4" />
+              {t("hero.cta.features")}
+            </a>
+            <a
+              href="#download"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[color:var(--card)] text-[color:var(--mauve)] font-medium border border-[color:var(--border)] hover:bg-[color:var(--rose-soft)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--rose-deep)] transition-colors"
+            >
+              <Smartphone aria-hidden="true" className="w-4 h-4" />
+              {t("nav.download")}
             </a>
             <a
               href="#youtube"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white text-[color:var(--rose-deep)] font-medium border border-[color:var(--border)] hover:bg-[color:var(--rose-soft)] transition"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[color:var(--card)] text-[color:var(--mauve)] font-medium border border-[color:var(--border)] hover:bg-[color:var(--rose-soft)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--rose-deep)] transition-colors"
             >
-              <Play className="w-4 h-4 fill-current" />
+              <Play aria-hidden="true" className="w-4 h-4" />
               {t("hero.cta.youtube")}
-            </a>
-            <a
-              href="#features"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/60 text-[color:var(--mauve)] font-medium border border-[color:var(--border)]/60 hover:bg-white transition"
-            >
-              <Wand2 className="w-4 h-4" />
-              {t("hero.cta.features")}
             </a>
           </motion.div>
 

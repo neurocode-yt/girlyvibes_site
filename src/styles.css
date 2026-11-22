@@ -133,7 +133,10 @@
 
 @layer base {
   * { border-color: var(--color-border); }
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+  }
   body {
     background: var(--color-background);
     color: var(--color-foreground);
@@ -211,6 +214,7 @@
   /* 3D scroll reveal is driven by JS (Scroll3D component) for cross-browser support. */
 
   @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
     .heartbeat, .float-slow, .float-slower, .sparkle-spin, .breathe, .shimmer {
       animation: none !important;
     }

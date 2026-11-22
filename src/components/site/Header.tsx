@@ -84,7 +84,7 @@ export function Header() {
             Girly Vibes
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden xl:flex items-center gap-1">
             {navKeys.map((n) => {
               if (n.isHash) {
                 return (
@@ -127,15 +127,15 @@ export function Header() {
               {lang === "ar" ? "EN" : "ع"}
             </button>
             <a
-              href="#download"
-              className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-white bg-rose-gradient shadow-soft hover:scale-[1.03] transition heartbeat"
+              href="/#download"
+              className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-[color:var(--mauve)] text-[color:var(--background)] shadow-soft hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--rose-deep)] transition-opacity"
             >
               <HeartIcon className="w-3.5 h-3.5" />
               {t("nav.download")}
             </a>
             <button
               onClick={() => setOpen(true)}
-              className="lg:hidden inline-flex w-9 h-9 items-center justify-center rounded-full bg-white/70 border border-[color:var(--border)]"
+              className="xl:hidden inline-flex w-9 h-9 items-center justify-center rounded-full bg-white/70 border border-[color:var(--border)]"
               aria-label="Open menu"
             >
               <Menu className="w-4 h-4" />
@@ -150,7 +150,7 @@ export function Header() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-[color:var(--background)]/95 backdrop-blur-xl lg:hidden"
+            className="fixed inset-0 z-50 overflow-y-auto overscroll-contain pb-8 bg-[color:var(--background)]/95 backdrop-blur-xl xl:hidden"
           >
             <div className="flex items-center justify-between p-5">
               <Link to="/" onClick={() => setOpen(false)} className="flex items-center gap-2 font-display text-xl text-[color:var(--rose-deep)] font-semibold">
@@ -208,9 +208,9 @@ export function Header() {
                 {lang === "ar" ? "English" : "العربية"}
               </button>
               <a
-                href="#download"
+                href="/#download"
                 onClick={() => setOpen(false)}
-                className="mt-4 text-center py-3 rounded-full text-white bg-rose-gradient font-medium"
+                className="mt-4 text-center py-3 rounded-full bg-[color:var(--mauve)] text-[color:var(--background)] font-medium"
               >
                 {t("nav.download")}
               </a>

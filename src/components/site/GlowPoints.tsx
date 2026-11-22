@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { Section } from "./Decor";
 import { Crown, Sparkles } from "lucide-react";
@@ -14,33 +14,13 @@ const list = [
   { name: "Sara", pts: 690 },
 ];
 
-function useCountdown() {
-  const [t, setT] = useState({ d: 6, h: 3, m: 22 });
-  useEffect(() => {
-    const id = setInterval(() => {
-      setT((x) => {
-        let m = x.m - 1, h = x.h, d = x.d;
-        if (m < 0) { m = 59; h -= 1; }
-        if (h < 0) { h = 23; d -= 1; }
-        if (d < 0) { d = 6; h = 23; m = 59; }
-        return { d, h, m };
-      });
-    }, 60_000);
-    return () => clearInterval(id);
-  }, []);
-  return t;
-}
-
 export function GlowPoints() {
-  const { t, lang } = useI18n();
-  const c = useCountdown();
-  const isAr = lang === "ar";
+  const { t } = useI18n();
 
   return (
     <Section id="glow">
       <div className="text-center mb-12">
-        <p className="text-xs font-medium tracking-widest uppercase text-[color:var(--rose-deep)]">✿ Glow Points</p>
-        <h2 className="mt-3 text-3xl md:text-5xl font-semibold text-[color:var(--mauve)]">{t("glow.title")}</h2>
+        <h2 className="text-3xl md:text-5xl font-semibold text-[color:var(--mauve)]">{t("glow.title")}</h2>
         <p className="mt-3 text-[color:var(--mauve)]/70">{t("glow.lead")}</p>
       </div>
 
@@ -48,15 +28,7 @@ export function GlowPoints() {
         <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#FBE4EC] to-transparent" />
 
         <div className="relative">
-          {/* Countdown */}
-          <div className="flex items-center justify-between flex-wrap gap-3 mb-8">
-            <div className="text-sm text-[color:var(--mauve)]/70">⏳ {t("glow.reset")}</div>
-            <div className="flex gap-2 text-[color:var(--rose-deep)] font-display text-lg">
-              <Stat n={c.d} l={isAr ? "يوم" : "d"} />
-              <Stat n={c.h} l={isAr ? "س" : "h"} />
-              <Stat n={c.m} l={isAr ? "د" : "m"} />
-            </div>
-          </div>
+          <h3 className="mb-8 text-lg font-semibold">{t("glow.example")}</h3>
 
           {/* Podium */}
           <div className="grid grid-cols-3 gap-3 items-end">
@@ -71,7 +43,7 @@ export function GlowPoints() {
                   transition={{ delay: i * 0.15, type: "spring" }}
                   className="text-center"
                 >
-                  <div className="relative mx-auto w-16 h-16 rounded-full bg-rose-gradient grid place-items-center text-white font-display text-xl">
+                  <div className="relative mx-auto size-10 sm:size-16 rounded-full bg-rose-gradient grid place-items-center text-white font-display text-xl">
                     {u.name[0]}
                     {u.rank === 1 && <Crown className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 text-[color:var(--glow)]" fill="currentColor" />}
                   </div>
@@ -111,21 +83,19 @@ export function GlowPoints() {
               <p className="text-xs opacity-80">{t("glow.you")}</p>
               <p className="text-2xl font-display font-bold mt-0.5">340 ✨</p>
             </div>
-            <div className="text-right">
+            <div className="text-end">
               <Sparkles className="w-6 h-6 inline-block" />
               <p className="text-xs opacity-90 mt-1">{t("glow.motiv")}</p>
             </div>
           </motion.div>
         </div>
       </div>
+      <div className="mt-6 max-w-3xl mx-auto leading-relaxed">
+        <p>{t("glow.rules")}</p>
+        <Link to="/terms" className="mt-2 inline-block font-semibold underline underline-offset-4">
+          {t("footer.terms")}
+        </Link>
+      </div>
     </Section>
-  );
-}
-
-function Stat({ n, l }: { n: number; l: string }) {
-  return (
-    <span className="px-2.5 py-1 rounded-xl bg-[color:var(--rose-soft)]/70 text-sm">
-      {n}<span className="text-xs opacity-70 ms-1">{l}</span>
-    </span>
   );
 }
