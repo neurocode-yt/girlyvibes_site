@@ -4,6 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Download";
 import { Section, Blob, HeartIcon, SparkleMark } from "@/components/site/Decor";
+import { renderGreetingCard } from "@/lib/greetingCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Zap, Sparkles, Smile, RefreshCw, Star, Camera, BookOpen, Box, Award, Coins } from "lucide-react";
 import * as THREE from "three";
@@ -202,7 +203,17 @@ const FASHION_CHALLENGES = [
   }
 ];
 
-// Virtual Pet Boutique Items
+const BOUTIQUE_ITEMS = [
+  { id: "boba", nameEn: "Cozy Boba Tea 🧋", nameAr: "شاي بوبا دافئ 🧋", cost: 30, type: "food", value: 15 },
+  { id: "macaron", nameEn: "Strawberry Macaron 🍰", nameAr: "ماكارون فراولة 🍰", cost: 20, type: "food", value: 10 },
+  { id: "candycorn", nameEn: "Magic Star Candy 🍬", nameAr: "حلوى النجم السحرية 🍬", cost: 40, type: "food", value: 25 },
+  { id: "lights", nameEn: "Fairy Lights ✨", nameAr: "سلك أضواء براقة ✨", cost: 80, type: "decor", bgElement: "lights" },
+  { id: "rug", nameEn: "Vintage Persian Rug 🧶", nameAr: "سجادة فارسية عتيقة 🧶", cost: 100, type: "decor", bgElement: "rug" },
+  { id: "plushie", nameEn: "Plushie Collection 🧸", nameAr: "مجموعة دمى محشوة 🧸", cost: 130, type: "decor", bgElement: "plushie" },
+  { id: "wings", nameEn: "Angel Wings Skin 👼", nameAr: "أجنحة ملاك لطيفة 👼", cost: 150, type: "cosmetic", skin: "wings" },
+  { id: "detective", nameEn: "Detective Hat Skin 🕵️", nameAr: "قبعة محققة كلاسيكية 🕵️", cost: 120, type: "cosmetic", skin: "hat" },
+] as const;
+
 const HALLMARK_TEMPLATES = [
   {
     id: "eid",
@@ -210,6 +221,8 @@ const HALLMARK_TEMPLATES = [
     nameAr: "بطاقة العيد والمناسبات 🌸",
     bgGradient: "from-amber-100 via-rose-100 to-pink-200 dark:from-amber-950 dark:via-rose-950 dark:to-pink-900",
     borderColor: "border-amber-400",
+    exportBackground: "#ffedca",
+    exportAccent: "#ce922c",
     headerEn: "CELEBRATION GREETINGS",
     headerAr: "بطاقة تهنئة ومعايدة",
     defaultTitleEn: "Warm Eid Mubarak Wishes! 🌙",
@@ -224,6 +237,8 @@ const HALLMARK_TEMPLATES = [
     nameAr: "غلاف مجلة التألق ✨",
     bgGradient: "from-pink-100 via-purple-100 to-rose-200 dark:from-pink-950 dark:via-purple-950 dark:to-rose-900",
     borderColor: "border-pink-400",
+    exportBackground: "#fbe3f6",
+    exportAccent: "#c765a3",
     headerEn: "GIRLY VIBES MAGAZINE",
     headerAr: "مجلة جيرلي فايبس",
     defaultTitleEn: "The Ultimate Glow-Up Edition ✨",
@@ -238,6 +253,8 @@ const HALLMARK_TEMPLATES = [
     nameAr: "أصدقاء وعيد ميلاد 🎂",
     bgGradient: "from-rose-100 via-amber-50 to-pink-100 dark:from-rose-950 dark:via-zinc-900 dark:to-pink-950",
     borderColor: "border-rose-300",
+    exportBackground: "#ffe3eb",
+    exportAccent: "#d480a0",
     headerEn: "BESTIES FOREVER",
     headerAr: "صديقاتي للأبد",
     defaultTitleEn: "Happiest Birthday Sunshine! 🎂",
@@ -252,9 +269,13 @@ const HALLMARK_TEMPLATES = [
     nameAr: "حديقة الورد 🌺",
     bgGradient: "from-emerald-100 via-teal-50 to-rose-100 dark:from-emerald-950 dark:via-teal-950 dark:to-rose-950",
     borderColor: "border-emerald-300",
+    exportBackground: "#dff6ed",
+    exportAccent: "#598e79",
     headerEn: "FLOWERS & SUNSHINE",
     headerAr: "ورد وإشراق",
     defaultTitleEn: "Bloom With Grace & Love 🌸",
+    defaultTitleAr: "ازهري بحب وفرح 🌸",
+    defaultMsgEn: "Take a deep breath, smile softly, and bloom wherever you go.",
     defaultMsgAr: "خذي نفساً عميقاً، ابتسمي بصفاء، وأزهري في كل مكان.",
     seal: "🌸 BLOOM & GLOW"
   }
@@ -276,15 +297,23 @@ function GamesPage() {
   const [custom3dGlbUrl, setCustom3dGlbUrl] = useState<string | null>(null);
   const [isRpmModalOpen, setIsRpmModalOpen] = useState<boolean>(false);
 
-  // Hallmark State
+  // Greeting card customization
   const [hallmarkTemplate, setHallmarkTemplate] = useState("eid");
-  const [hallmarkTitle, setHallmarkTitle] = useState("Warm Eid Mubarak Wishes! 🌙");
-  const [hallmarkMessage, setHallmarkMessage] = useState("May your day be filled with happiness, sweet treats, and glowing moments!");
-  const [hallmarkRecipient, setHallmarkRecipient] = useState("To My Dearest Bestie 💖");
+  const [customTitle, setHallmarkTitle] = useState<string | null>(null);
+  const [customMessage, setHallmarkMessage] = useState<string | null>(null);
+  const [customRecipient, setHallmarkRecipient] = useState<string | null>(null);
   const [hallmarkStickers, setHallmarkStickers] = useState<string[]>(["🎀", "✨", "🌸", "📮"]);
+  const greetingTemplate = HALLMARK_TEMPLATES.find(({ id }) => id === hallmarkTemplate) ?? HALLMARK_TEMPLATES[0];
+  const isArabic = lang === "ar";
+  const greetingHeading = isArabic ? greetingTemplate.headerAr : greetingTemplate.headerEn;
+  const hallmarkTitle = customTitle ?? (isArabic ? greetingTemplate.defaultTitleAr : greetingTemplate.defaultTitleEn);
+  const hallmarkMessage = customMessage ?? (isArabic ? greetingTemplate.defaultMsgAr : greetingTemplate.defaultMsgEn);
+  const hallmarkRecipient = customRecipient ?? (isArabic ? "إلى صديقتي الغالية 💖" : "To my dearest bestie 💖");
 
   // --- THREE.JS REAL 3D RENDERING SYSTEM REFS ---
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [dollCanvas, setDollCanvas] = useState<HTMLCanvasElement | null>(null);
+  const [dollUnavailable, setDollUnavailable] = useState(false);
+  const rebuildDollRef = useRef<(() => void) | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const dollGroupRef = useRef<THREE.Group | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -451,10 +480,10 @@ function GamesPage() {
 
   // --- THREE.JS WEBGL REAL 3D CHIBI-DOLL SCENE INITIALIZER ---
   useEffect(() => {
-    if (!isMounted || (activeTab !== "dressup" && activeTab !== "hallmark") || !canvasRef.current) return;
+    if (!isMounted || !dollCanvas) return;
 
     // 1. Initialize Scene, Camera, WebGLRenderer with Dynamic Sizing
-    const parent = canvasRef.current.parentElement;
+    const parent = dollCanvas.parentElement;
     const width = parent ? parent.clientWidth : 320;
     const height = parent ? parent.clientHeight : 450;
     const scene = new THREE.Scene();
@@ -463,12 +492,19 @@ function GamesPage() {
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
     camera.position.set(0, 0.4, 9.5);
 
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvasRef.current,
-      antialias: true,
-      alpha: true,
-      preserveDrawingBuffer: true
-    });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas: dollCanvas,
+        antialias: true,
+        alpha: true,
+        preserveDrawingBuffer: true,
+      });
+    } catch {
+      setDollUnavailable(true);
+      return;
+    }
+    setDollUnavailable(false);
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -1745,15 +1781,11 @@ function GamesPage() {
     };
     animate();
 
-    // Bind rebuilder handle to standard canvas ref
-    (canvasRef as any).current.rebuildDoll = () => {
-      updateWardrobe();
-    };
+    rebuildDollRef.current = updateWardrobe;
 
     // Responsive window resize listener
     const handleResize = () => {
-      if (!canvasRef.current || !renderer || !camera) return;
-      const p = canvasRef.current.parentElement;
+      const p = dollCanvas.parentElement;
       if (!p) return;
       const w = p.clientWidth;
       const h = p.clientHeight;
@@ -1767,9 +1799,12 @@ function GamesPage() {
     return () => {
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animId);
+      rebuildDollRef.current = null;
+      rendererRef.current = null;
+      dollGroupRef.current = null;
       renderer.dispose();
     };
-  }, [isMounted, activeTab]);
+  }, [isMounted, dollCanvas]);
 
   // Sync drag rotation directly with standard Three.js group
   useEffect(() => {
@@ -1780,9 +1815,7 @@ function GamesPage() {
 
   // Rapid wardrobe mesh rebuilder hook (prevents screen flashes)
   useEffect(() => {
-    if (canvasRef.current && (canvasRef.current as any).rebuildDoll) {
-      (canvasRef.current as any).rebuildDoll();
-    }
+    rebuildDollRef.current?.();
   }, [hair, top, bottom, acc, equippedSkin, expression]);
 
   // --- TAMAGOTCHI INTERACTION HANDLERS ---
@@ -1800,7 +1833,7 @@ function GamesPage() {
 
   const handleFeedFromBackpack = (itemId: string) => {
     const item = BOUTIQUE_ITEMS.find((i) => i.id === itemId);
-    if (!item || bunnyState === "sleeping") return;
+    if (item?.type !== "food" || bunnyState === "sleeping") return;
     
     const idx = bunnyInventory.indexOf(itemId);
     if (idx === -1) return;
@@ -1810,7 +1843,7 @@ function GamesPage() {
 
     playSynthSound("feed");
     setBunnyState("eating");
-    setEnergy((prev) => Math.min(100, prev + (item.value || 15)));
+    setEnergy((prev) => Math.min(100, prev + item.value));
     setLove((prev) => Math.min(100, prev + 8));
     gainXp(20);
     triggerEmitter("🍰");
@@ -1931,11 +1964,11 @@ function GamesPage() {
     if (item.type === "food") {
       saveInventory([...bunnyInventory, itemId]);
     } else if (item.type === "decor") {
-      if (!activeBgDecor.includes(item.bgElement || "")) {
-        setActiveBgDecor([...activeBgDecor, item.bgElement || ""]);
+      if (!activeBgDecor.includes(item.bgElement)) {
+        setActiveBgDecor([...activeBgDecor, item.bgElement]);
       }
     } else if (item.type === "cosmetic") {
-      setEquippedSkin(item.skin || "none");
+      setEquippedSkin(item.skin);
     }
   };
 
@@ -1995,33 +2028,74 @@ function GamesPage() {
     }
 
     let capturedImage = "";
-    if (canvasRef.current) {
+    if (dollCanvas && !dollUnavailable) {
       try {
-        capturedImage = canvasRef.current.toDataURL("image/png");
+        capturedImage = dollCanvas.toDataURL("image/png");
       } catch (e) {
         console.warn("Failed to capture canvas image", e);
       }
     }
 
-    playSynthSound("win");
+    if (saveScrapbookImage(scrapbookCaption, capturedImage)) {
+      setScrapbookCaption("");
+    }
+  };
+
+  const saveScrapbookImage = (caption: string, image: string) => {
     const newItem = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       hair,
       top,
       bottom,
       acc,
       bg,
-      caption: scrapbookCaption,
-      image: capturedImage
+      caption,
+      image,
     };
     const updated = [newItem, ...scrapbook].slice(0, 12);
+    try {
+      localStorage.setItem("gv-doll-scrapbook", JSON.stringify(updated));
+    } catch {
+      triggerEmitter(isArabic ? "تعذّر الحفظ في هذا المتصفح" : "Couldn’t save in this browser");
+      return false;
+    }
     setScrapbook(updated);
-    localStorage.setItem("gv-doll-scrapbook", JSON.stringify(updated));
-    setScrapbookCaption("");
-    triggerEmitter("📸 Scrapbook Saved!");
+    playSynthSound("win");
+    triggerEmitter(isArabic ? "تم الحفظ في القصاصات" : "Saved to scrapbook");
+    return true;
   };
 
-  const handleDownloadPolaroid = (item: any) => {
+  const exportGreeting = (destination: "download" | "scrapbook") => {
+    let image: string;
+    try {
+      image = renderGreetingCard({
+        direction: isArabic ? "rtl" : "ltr",
+        background: greetingTemplate.exportBackground,
+        accent: greetingTemplate.exportAccent,
+        heading: greetingHeading,
+        title: hallmarkTitle,
+        portrait: dollUnavailable ? null : dollCanvas,
+        stickers: hallmarkStickers,
+        recipient: hallmarkRecipient,
+        message: hallmarkMessage,
+        seal: isArabic ? "جيرلي فايبس" : "Girly Vibes",
+      });
+    } catch {
+      triggerEmitter(isArabic ? "تعذّر إنشاء صورة البطاقة" : "Couldn’t create the card image");
+      return;
+    }
+
+    if (destination === "download") {
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = "girly-vibes-greeting-card.png";
+      link.click();
+    } else if (saveScrapbookImage(hallmarkTitle.trim() || greetingHeading, image)) {
+      saveCoins(carrotCoins + 50);
+    }
+  };
+
+  const handleDownloadPolaroid = (item: { id: string; image?: string }) => {
     if (!item.image) {
       triggerEmitter("❌ Polaroid image not found!");
       return;
@@ -2118,7 +2192,7 @@ function GamesPage() {
                     : "text-[color:var(--mauve)]/70 hover:text-[color:var(--rose-deep)]"
                 }`}
               >
-                💌 {lang === "ar" ? "بطاقات Hallmark" : "Hallmark Studio"}
+                💌 {lang === "ar" ? "بطاقات التهنئة" : "Greeting cards"}
               </button>
               <button
                 onClick={() => { playSynthSound("click"); setActiveTab("tamagotchi"); }}
@@ -2144,16 +2218,14 @@ function GamesPage() {
                   transition={{ type: "spring", stiffness: 100 }}
                   className="w-full grid lg:grid-cols-[1.1fr_1.3fr] gap-8 bg-white/70 dark:bg-zinc-950/70 p-6 md:p-8 rounded-[36px] border border-[color:var(--border)] backdrop-blur shadow-glow"
                 >
-                  {/* Left Column: Live Hallmark Greeting Card Preview Frame */}
+                  {/* Greeting card preview */}
                   <div className="relative flex flex-col items-center">
                     <div className="w-full justify-between flex items-center mb-3 text-xs text-[color:var(--mauve)]/70 font-semibold px-2">
-                      <span className="flex items-center gap-1">💌 HALLMARK PHOTO BOOTH CARD 💌</span>
-                      <span className="text-[10px] bg-rose-gradient px-2 py-0.5 rounded-full text-white font-bold">Official Hallmark Studio</span>
+                      <span>{isArabic ? "معاينة البطاقة" : "Card preview"}</span>
                     </div>
 
-                    {/* Ornate Hallmark Card Outer Container */}
                     {(() => {
-                      const selectedTmpl = HALLMARK_TEMPLATES.find((t) => t.id === hallmarkTemplate) || HALLMARK_TEMPLATES[0];
+                      const selectedTmpl = greetingTemplate;
                       return (
                         <div
                           className={`relative w-full max-w-[360px] aspect-[4/5] rounded-[32px] p-5 shadow-2xl border-4 ${selectedTmpl.borderColor} bg-gradient-to-b ${selectedTmpl.bgGradient} flex flex-col justify-between overflow-hidden select-none`}
@@ -2161,7 +2233,7 @@ function GamesPage() {
                           {/* Card Top Banner Header */}
                           <div className="text-center pt-1 pb-2 border-b border-black/10 dark:border-white/10">
                             <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-rose-600 dark:text-rose-400">
-                              {lang === "ar" ? selectedTmpl.headerAr : selectedTmpl.headerEn}
+                              {greetingHeading}
                             </p>
                             <h3 className="font-display font-bold text-lg text-slate-800 dark:text-slate-100 mt-0.5 leading-tight">
                               {hallmarkTitle}
@@ -2171,15 +2243,20 @@ function GamesPage() {
                           {/* Middle Frame: 3D Doll Canvas Viewport */}
                           <div className="relative my-2 w-full h-[210px] rounded-2xl overflow-hidden border-2 border-white/80 dark:border-white/20 shadow-inner bg-gradient-to-b from-white/40 to-white/10 flex items-center justify-center">
                             <canvas
-                              ref={canvasRef}
+                              ref={setDollCanvas}
                               onPointerDown={handlePointerDown}
                               onPointerMove={handlePointerMove}
                               onPointerUp={handlePointerUp}
                               onPointerLeave={handlePointerUp}
                               className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
                             />
+                            {dollUnavailable && (
+                              <p role="status" className="absolute inset-x-3 text-center text-sm">
+                                {isArabic ? "معاينة الدمية غير متاحة في هذا المتصفح." : "The doll preview is unavailable in this browser."}
+                              </p>
+                            )}
 
-                            {/* Floating Customizable Hallmark Stickers */}
+                            {/* Card stickers */}
                             <div className="absolute inset-0 pointer-events-none p-3 flex flex-wrap justify-between items-start">
                               {hallmarkStickers.map((st, i) => (
                                 <motion.span
@@ -2194,7 +2271,7 @@ function GamesPage() {
                             </div>
                           </div>
 
-                          {/* Bottom Section: Greeting Message & Hallmark Seal */}
+                          {/* Greeting message and studio mark */}
                           <div className="pt-2 border-t border-black/10 dark:border-white/10 flex flex-col justify-between gap-2">
                             <div className="bg-white/70 dark:bg-black/40 p-2.5 rounded-xl border border-white/60 dark:border-white/10">
                               <p className="text-xs font-bold text-rose-500 dark:text-rose-300">{hallmarkRecipient}</p>
@@ -2203,12 +2280,11 @@ function GamesPage() {
                               </p>
                             </div>
 
-                            {/* Official Hallmark Watermark & Barcode */}
                             <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 dark:text-slate-400">
                               <span className="font-bold bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-md">
                                 {selectedTmpl.seal}
                               </span>
-                              <span>GIRLY VIBES HALLMARK 2026</span>
+                              <bdi>Girly Vibes</bdi>
                             </div>
                           </div>
                         </div>
@@ -2216,24 +2292,24 @@ function GamesPage() {
                     })()}
                   </div>
 
-                  {/* Right Column: Hallmark Card Customizer Controls */}
+                  {/* Greeting card controls */}
                   <div className="flex flex-col gap-5 justify-between">
                     <div>
                       <h3 className="text-xl font-display font-bold text-[color:var(--rose-deep)] flex items-center gap-2">
                         <Sparkles className="w-5 h-5 text-amber-400" />
-                        {lang === "ar" ? "صانع بطاقات الهدايا والمعايدات (Hallmark Studio)" : "Hallmark Photo Booth Studio 💌"}
+                        {isArabic ? "استوديو بطاقات التهنئة" : "Greeting Card Studio"}
                       </h3>
                       <p className="text-xs text-[color:var(--mauve)]/75 mt-1">
                         {lang === "ar"
-                          ? "نسقي دميتك الـ 3D، واختاري قالب البطاقة، واكتبي إهداءك الخاص ثم احفظي بطاقة Hallmark عالية الجودة!"
-                          : "Customize your 3D doll, pick a Hallmark greeting template, add stickers, and create stunning personalized holiday cards!"}
+                          ? "نسّقي دميتك واختاري قالبًا، وبعدها اكتبي إهداءك وزيّني البطاقة بالملصقات."
+                          : "Style your doll, pick a template, then add a message and stickers to your card."}
                       </p>
                     </div>
 
                     {/* 1. Template Selector */}
                     <div>
                       <label className="text-xs font-bold text-[color:var(--rose-deep)] uppercase tracking-wider block mb-2">
-                        {lang === "ar" ? "1. اختر قالب البطاقة 🎨" : "1. Choose Hallmark Template 🎨"}
+                        {isArabic ? "اختاري قالب البطاقة" : "Choose a card template"}
                       </label>
                       <div className="grid grid-cols-2 gap-2">
                         {HALLMARK_TEMPLATES.map((tmpl) => {
@@ -2244,8 +2320,8 @@ function GamesPage() {
                               onClick={() => {
                                 playSynthSound("click");
                                 setHallmarkTemplate(tmpl.id);
-                                setHallmarkTitle(lang === "ar" ? tmpl.defaultTitleAr : tmpl.defaultTitleEn);
-                                setHallmarkMessage(lang === "ar" ? tmpl.defaultMsgAr : tmpl.defaultMsgEn);
+                                setHallmarkTitle(null);
+                                setHallmarkMessage(null);
                               }}
                               className={`p-3 rounded-2xl border text-xs font-semibold flex flex-col gap-1 text-start transition-all cursor-pointer ${
                                 isSel
@@ -2306,7 +2382,7 @@ function GamesPage() {
                     {/* 3. Sticker Toggles & Pose */}
                     <div>
                       <label className="text-xs font-bold text-[color:var(--rose-deep)] uppercase tracking-wider block mb-2">
-                        {lang === "ar" ? "3. ملصقات وإكسسوارات البطاقة 🎀" : "3. Hallmark Card Stickers 🎀"}
+                        {isArabic ? "ملصقات البطاقة" : "Card stickers"}
                       </label>
                       <div className="flex flex-wrap gap-2">
                         {["🎀", "✨", "🌸", "📮", "🎂", "👑", "🧋", "💗"].map((st) => {
@@ -2335,17 +2411,17 @@ function GamesPage() {
                       </div>
                     </div>
 
-                    {/* 4. Hallmark Card Actions */}
+                    {/* Card export actions */}
                     <div className="pt-3 border-t border-[color:var(--border)] flex flex-col sm:flex-row gap-3">
                       <button
-                        onClick={handleSaveToScrapbook}
+                        onClick={() => exportGreeting("download")}
                         className="flex-1 py-3 px-4 rounded-2xl bg-rose-gradient text-white font-bold text-xs shadow-soft hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <Camera className="w-4 h-4" />
-                        {lang === "ar" ? "تحميل بطاقة Hallmark 📸" : "Download Hallmark Card 📸"}
+                        {isArabic ? "حمّلي بطاقة التهنئة" : "Download card"}
                       </button>
                       <button
-                        onClick={handleSaveHallmarkToScrapbook}
+                        onClick={() => exportGreeting("scrapbook")}
                         className="py-3 px-4 rounded-2xl bg-amber-500 text-white font-bold text-xs shadow-soft hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <Coins className="w-4 h-4 fill-white" />
@@ -2464,10 +2540,15 @@ function GamesPage() {
 
                       {/* --- HIGH-QUALITY REAL-TIME 3D CHIBI-DOLL WEBGL CANVAS --- */}
                       {isMounted && (
-                        <canvas 
-                          ref={canvasRef} 
+                        <canvas
+                          ref={setDollCanvas}
                           className="absolute inset-0 z-10 w-full h-full pointer-events-none"
                         />
+                      )}
+                      {dollUnavailable && (
+                        <p role="status" className="absolute inset-x-3 z-20 text-center text-sm">
+                          {isArabic ? "معاينة الدمية غير متاحة في هذا المتصفح." : "The doll preview is unavailable in this browser."}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -2741,7 +2822,7 @@ function GamesPage() {
                     )}
                   </div>
                 </motion.div>
-              ) : (
+              ) : activeTab === "tamagotchi" && (
                 // --- DESIGN LAB 2: VIRTUAL COCO TAMAGOTCHI PET ---
                 <motion.div
                   key="tamagotchi"
