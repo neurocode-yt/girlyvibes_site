@@ -1,4 +1,4 @@
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Component,
   useCallback,
@@ -124,6 +124,59 @@ function releaseModel(group: THREE.Group) {
   for (const material of materials) material.dispose();
 }
 
+function useDollBlink(setEyeOpenness: (openness: number) => void) {
+  const invalidate = useThree((state) => state.invalidate);
+  const blinkStarted = useRef<number | null>(null);
+
+  useEffect(() => {
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let timer: number;
+    const schedule = () => {
+      window.clearTimeout(timer);
+      if (motionPreference.matches || document.hidden) return;
+      timer = window.setTimeout(
+        () => {
+          blinkStarted.current = performance.now();
+          invalidate();
+          schedule();
+        },
+        3800 + Math.random() * 2400,
+      );
+    };
+
+    const syncPreference = () => {
+      blinkStarted.current = null;
+      setEyeOpenness(1);
+      invalidate();
+      schedule();
+    };
+
+    schedule();
+    motionPreference.addEventListener("change", syncPreference);
+    document.addEventListener("visibilitychange", syncPreference);
+    return () => {
+      window.clearTimeout(timer);
+      blinkStarted.current = null;
+      motionPreference.removeEventListener("change", syncPreference);
+      document.removeEventListener("visibilitychange", syncPreference);
+    };
+  }, [invalidate, setEyeOpenness]);
+
+  useFrame(() => {
+    if (blinkStarted.current === null) return;
+    const progress = (performance.now() - blinkStarted.current) / 230;
+    if (progress >= 1) {
+      setEyeOpenness(1);
+      blinkStarted.current = null;
+      return;
+    }
+
+    const amount = progress < 0.36 ? progress / 0.36 : (1 - progress) / 0.64;
+    setEyeOpenness(1 - 0.98 * THREE.MathUtils.smoothstep(amount, 0, 1));
+    invalidate();
+  });
+}
+
 function Doll({
   look: { skin, hairStyle, hairColor, outfit, palette, accessory, costume },
   rotation,
@@ -140,12 +193,13 @@ function Doll({
     [outfit, palette, accessory, costume],
   );
 
-  useEffect(() => () => releaseModel(character), [character]);
+  useDollBlink(character.setEyeOpenness);
+  useEffect(() => () => releaseModel(character.group), [character]);
   useEffect(() => () => releaseModel(wardrobe), [wardrobe]);
 
   return (
     <group rotation={[0, rotation, 0]}>
-      <primitive object={character} />
+      <primitive object={character.group} />
       <primitive object={wardrobe} />
     </group>
   );
