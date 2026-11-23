@@ -90,7 +90,7 @@
 
 .products-hero h1 {
   margin-block: 0.65rem 1rem;
-  font-size: clamp(2.8rem, 6.3vw, 5.5rem);
+  font-size: clamp(2.8rem, 5.1vw, 4.15rem);
 }
 
 [dir="rtl"] .products-hero h1 {
@@ -162,8 +162,7 @@
   background: var(--edit-wash);
 }
 
-.products-collections,
-.products-catalog {
+.products-collections {
   margin-block-start: clamp(3rem, 7vw, 6rem);
 }
 
@@ -346,6 +345,6 @@
 
 @media (min-width: 50rem) {
   .products-hero {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
   }
 }

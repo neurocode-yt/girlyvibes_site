@@ -22,8 +22,13 @@ The page displays entries in the order you list them.
   The page skips entries with blank, malformed, or non-HTTPS URLs.
 - Optional product photos can go in `public/products/` if you have permission to publish them.
   Add `image` with a `src` such as `"/products/pink-journal.webp"` and English and Arabic
-  `alt` text describing the photo. Cards without a photo use the collection artwork.
+  `alt` text describing the photo. Cards without a photo use the collection icon.
 - Preview `/products` in English and Arabic. Check that the card appears under the right category
   and that its retailer link lands on the intended listing.
 
 Remove the entry from `catalog` when you want to take it off the page.
+
+The page discloses commissions above the catalog and labels each retailer link as paid.
+Retailer links use the sponsored link attribute.
+[FTC affiliate guidance](https://www.ftc.gov/business-guidance/resources/ftcs-endorsement-guides-what-people-are-asking)
+[Google Search Central link guidance](https://developers.google.com/search/docs/crawling-indexing/qualify-outbound-links#sponsored)
