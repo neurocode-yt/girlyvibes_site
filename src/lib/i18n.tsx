@@ -18,6 +18,7 @@ const ar: Dict = {
   "nav.youtube": "يوتيوب",
   "nav.updates": "التحديثات",
   "nav.faq": "أسئلة",
+  "nav.products": "المنتجات",
   "nav.download": "توفر التطبيق",
 
   "hero.eyebrow": "مساحتك الخاصة 🩷",
@@ -159,6 +160,8 @@ const ar: Dict = {
   "footer.privacy": "الخصوصية",
   "footer.terms": "الشروط",
   "footer.contact": "تواصلي",
+  "footer.links": "روابط",
+  "footer.connect": "تواصلي معنا",
 
   "nav.games": "ألعاب البنات 🎮",
   "games.title": "ركن ألعاب البنات 🌸",
@@ -199,6 +202,7 @@ const en: Dict = {
   "nav.youtube": "YouTube",
   "nav.updates": "Updates",
   "nav.faq": "FAQ",
+  "nav.products": "Products",
   "nav.download": "App availability",
 
   "hero.eyebrow": "Your soft little space 🩷",
@@ -340,6 +344,8 @@ const en: Dict = {
   "footer.privacy": "Privacy",
   "footer.terms": "Terms",
   "footer.contact": "Contact",
+  "footer.links": "Links",
+  "footer.connect": "Connect",
 
   "nav.games": "Girly Games 🎮",
   "games.title": "Girly Arcade Corner 🌸",

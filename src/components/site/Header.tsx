@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Link } from "@tanstack/react-router";
 import { Globe, Menu, Moon, Sun, X } from "lucide-react";
@@ -24,7 +24,7 @@ function NavigationLinks({
   onNavigate,
 }: {
   compact?: boolean;
-  onNavigate?: () => void;
+  onNavigate?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }) {
   const { t } = useI18n();
   const linkClass = compact
@@ -44,6 +44,14 @@ function NavigationLinks({
         className={`${linkClass} bg-[color:var(--rose-soft)]/60`}
       >
         {t("nav.games")}
+      </Link>
+      <Link
+        to="/products"
+        activeOptions={{ exact: true, includeSearch: false }}
+        onClick={onNavigate}
+        className={`${linkClass} bg-[color:var(--rose-soft)]/60 aria-[current=page]:font-bold`}
+      >
+        {t("nav.products")}
       </Link>
     </>
   );
@@ -88,8 +96,9 @@ export function Header() {
 
   const toggleLanguage = () => setLang(otherLanguage);
 
-  const closeForNavigation = () => {
-    navigatedFromMenu.current = true;
+  const closeForNavigation = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+    navigatedFromMenu.current = event.currentTarget.getAttribute("aria-current") !== "page";
     setOpen(false);
   };
 

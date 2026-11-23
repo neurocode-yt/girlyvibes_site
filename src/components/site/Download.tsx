@@ -94,16 +94,25 @@ export function Footer() {
             </button>
           </div>
           <div className="text-sm">
-            <p className="text-xs uppercase tracking-widest text-[color:var(--rose-deep)] mb-3">✿ Links</p>
+            <p className="text-xs font-semibold text-[color:var(--mauve)] mb-3">{t("footer.links")}</p>
             <ul className="space-y-2 text-[color:var(--mauve)]/80">
-              <li><a href="#features">{t("nav.features")}</a></li>
-              <li><a href="#calm">{t("nav.calm")}</a></li>
-              <li><a href="#glow">{t("nav.glow")}</a></li>
-              <li><a href="#faq">{t("nav.faq")}</a></li>
+              <li><a href="/#features">{t("nav.features")}</a></li>
+              <li><a href="/#calm">{t("nav.calm")}</a></li>
+              <li><a href="/#glow">{t("nav.glow")}</a></li>
+              <li><a href="/#faq">{t("nav.faq")}</a></li>
+              <li>
+                <Link
+                  to="/products"
+                  activeOptions={{ exact: true, includeSearch: false }}
+                  className="font-semibold underline-offset-4 hover:underline aria-[current=page]:underline"
+                >
+                  {t("nav.products")}
+                </Link>
+              </li>
             </ul>
           </div>
           <div className="text-sm">
-            <p className="text-xs uppercase tracking-widest text-[color:var(--rose-deep)] mb-3">✿ Connect</p>
+            <p className="text-xs font-semibold text-[color:var(--mauve)] mb-3">{t("footer.connect")}</p>
             <ul className="space-y-2 text-[color:var(--mauve)]/80">
               <li><a href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noreferrer" className="hover:text-[color:var(--rose-deep)] transition">YouTube</a></li>
               <li className="opacity-60 cursor-default">Instagram — {lang === "ar" ? "قريبًا" : "soon"} 🎀</li>
