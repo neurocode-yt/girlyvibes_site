@@ -1,0 +1,520 @@
+.games-masthead,
+.atelier {
+  --atelier-accent: #833953;
+  --atelier-ink: #412437;
+  --atelier-text: #67445a;
+  --atelier-paper: #fffafa;
+  --atelier-rose: #fae9ef;
+  --atelier-line: #ebd3df;
+}
+
+.dark :is(.games-masthead, .atelier) {
+  --atelier-accent: #f2b2cc;
+  --atelier-ink: #fbecf2;
+  --atelier-text: #e5c6d5;
+  --atelier-paper: #30212d;
+  --atelier-rose: #492d41;
+  --atelier-line: #654859;
+}
+
+.games-masthead {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  margin-block-end: 1.75rem;
+  text-align: center;
+}
+
+.games-masthead h1,
+.atelier-wardrobe h2 {
+  color: var(--atelier-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  letter-spacing: -0.053em;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
+[dir="rtl"] :is(.games-masthead h1, .atelier-wardrobe h2) {
+  font-family: var(--font-arabic);
+  font-weight: 700;
+  letter-spacing: normal;
+  line-height: 1.2;
+}
+
+.games-masthead h1 {
+  font-size: clamp(2.65rem, 5vw, 4.8rem);
+}
+
+.games-masthead p {
+  max-width: 40rem;
+  margin-block-start: 0.65rem;
+  color: var(--atelier-text);
+  text-wrap: pretty;
+}
+
+.games-masthead-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem 1rem;
+  margin-block-start: 1rem;
+}
+
+.games-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border: 1px solid var(--atelier-line);
+  border-radius: 1rem;
+  background: var(--atelier-paper);
+}
+
+.games-switcher button,
+.atelier button {
+  min-height: 2.75rem;
+  border: 1px solid var(--atelier-line);
+  border-radius: 0.75rem;
+  background: var(--atelier-paper);
+  color: var(--atelier-ink);
+  cursor: pointer;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.games-switcher button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-inline: 0.7rem;
+  border-color: transparent;
+  font-size: 0.93rem;
+}
+
+.games-switcher button[aria-pressed="true"],
+.atelier button[aria-pressed="true"] {
+  border-color: var(--atelier-accent);
+  background: var(--atelier-rose);
+  color: var(--atelier-accent);
+}
+
+.games-switcher button:hover,
+.atelier button:not(:disabled):hover {
+  background: var(--atelier-rose);
+}
+
+.atelier button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.games-coins {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--atelier-text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.games-coins svg {
+  color: var(--atelier-accent);
+}
+
+.atelier {
+  width: 100%;
+  color: var(--atelier-ink);
+  scroll-margin-block-start: 6rem;
+}
+
+.atelier :is(button, input, select, summary):focus-visible {
+  outline-color: var(--atelier-accent);
+}
+
+.atelier-layout {
+  display: grid;
+  gap: clamp(0.85rem, 2vw, 1.5rem);
+}
+
+.atelier-card {
+  min-width: 0;
+  border: 1px solid var(--atelier-line);
+  border-radius: clamp(1rem, 2.25vw, 1.8rem);
+  background: var(--atelier-paper);
+  box-shadow: 0 22px 45px -39px var(--atelier-accent);
+}
+
+.atelier-view-card {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(0.5rem, 1.4vw, 0.85rem);
+}
+
+.atelier-stage {
+  position: relative;
+  isolation: isolate;
+  min-height: 19rem;
+  height: clamp(21rem, 83vw, 35rem);
+  overflow: hidden;
+  border-radius: clamp(0.75rem, 1.6vw, 1.3rem);
+  background: radial-gradient(ellipse at 46% 10%, #fff0f3, #eac2d0 90%);
+  color: #693e56;
+}
+
+.atelier-stage[data-backdrop="lilac"] {
+  background: radial-gradient(ellipse at top, #f0e3ff, #c8b7df 90%);
+  color: #5f4675;
+}
+
+.atelier-stage[data-backdrop="mint"] {
+  background: radial-gradient(ellipse at top, #eaf8f3, #b6d3c6 90%);
+  color: #345a50;
+}
+
+.atelier-stage[data-backdrop="midnight"] {
+  background: radial-gradient(ellipse at top, #6b5475, #312438 95%);
+  color: #fff0f6;
+}
+
+.atelier-stage-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.7rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.atelier-view-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  padding-block-start: 0.7rem;
+}
+
+.atelier-view-actions button,
+.atelier-photo-actions button,
+.atelier-saved-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 2.75rem;
+  padding: 0.4rem 0.7rem;
+}
+
+.atelier button svg,
+.games-switcher button svg {
+  flex: none;
+}
+
+.atelier-wardrobe {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  padding: clamp(1rem, 2.3vw, 1.85rem);
+}
+
+.atelier-wardrobe-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.atelier-wardrobe h2 {
+  font-size: clamp(2rem, 3.6vw, 3rem);
+}
+
+.atelier-wardrobe-heading button {
+  padding-inline: 0.65rem;
+  border-color: transparent;
+  color: var(--atelier-accent);
+}
+
+.atelier-presets,
+.atelier-panels,
+.atelier-options,
+.atelier-photo-actions,
+.atelier-saved-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.atelier-presets button {
+  padding-inline: 0.7rem;
+  border-radius: 2rem;
+  font-size: 0.91rem;
+}
+
+.atelier-panels {
+  padding: 0.3rem;
+  border: 1px solid var(--atelier-line);
+  border-radius: 0.95rem;
+  background: var(--atelier-rose);
+}
+
+.atelier-panels button {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.5rem;
+  border-color: transparent;
+  background: transparent;
+}
+
+.atelier-panels button[aria-pressed="true"] {
+  border-color: var(--atelier-line);
+  background: var(--atelier-paper);
+  box-shadow: 0 4px 12px -10px var(--atelier-accent);
+}
+
+.atelier-fields {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.atelier-field {
+  min-width: 0;
+}
+
+.atelier-field legend {
+  margin-block-end: 0.45rem;
+  color: var(--atelier-text);
+  font-weight: 800;
+}
+
+.atelier-options button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.45rem 0.65rem;
+  text-align: start;
+}
+
+.atelier-field[data-field="outfit"] .atelier-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.atelier-outfit-thumb {
+  width: auto;
+  height: 3.75rem;
+  flex: none;
+  border-radius: 0.35rem;
+  object-fit: contain;
+}
+
+@media (max-width: 24rem) {
+  .atelier-field[data-field="outfit"] .atelier-options button {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+.atelier-swatch {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 1.15rem;
+  border: 1px solid #56324555;
+  border-radius: 50%;
+}
+
+.atelier-photo-actions {
+  margin-block-start: auto;
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--atelier-line);
+}
+
+.atelier button.atelier-primary {
+  padding-inline: 0.9rem;
+  border-color: var(--atelier-accent);
+  background: var(--atelier-accent);
+  color: var(--atelier-paper);
+}
+
+.atelier button.atelier-primary:not(:disabled):hover {
+  background: color-mix(in oklab, var(--atelier-accent), var(--atelier-ink) 14%);
+}
+
+.atelier-status {
+  color: var(--atelier-accent);
+  font-weight: 700;
+}
+
+.atelier-status:empty {
+  position: absolute;
+}
+
+.atelier-extras {
+  display: grid;
+  align-items: start;
+  gap: clamp(0.85rem, 2vw, 1.5rem);
+  margin-block-start: clamp(0.85rem, 2vw, 1.5rem);
+}
+
+.atelier-detail summary {
+  display: flex;
+  min-height: 3.65rem;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem clamp(0.8rem, 2vw, 1.3rem);
+  border-radius: inherit;
+  color: var(--atelier-ink);
+  cursor: pointer;
+  font-weight: 800;
+  list-style: none;
+}
+
+.atelier-detail summary::-webkit-details-marker {
+  display: none;
+}
+
+.atelier-detail summary svg {
+  flex: none;
+  color: var(--atelier-accent);
+}
+
+.atelier-chevron {
+  margin-inline-start: auto;
+}
+
+.atelier-detail[open] .atelier-chevron {
+  rotate: 180deg;
+}
+
+.atelier-detail-content {
+  display: grid;
+  gap: 0.85rem;
+  justify-items: start;
+  padding: 0 clamp(0.8rem, 2vw, 1.3rem) 1.15rem;
+}
+
+.atelier-share,
+.atelier-caption label {
+  display: grid;
+  gap: 0.4rem;
+  color: var(--atelier-text);
+  font-weight: 800;
+}
+
+.atelier :is(input, select) {
+  width: 100%;
+  min-height: 2.75rem;
+  min-width: 0;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--atelier-line);
+  border-radius: 0.65rem;
+  background: var(--atelier-paper);
+  color: var(--atelier-ink);
+}
+
+.atelier select {
+  appearance: none;
+  padding-inline-end: 2rem;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='none' stroke='%23935876' stroke-width='1.6' d='m3.5 6 4.5 4.5L12.5 6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  background-size: 1rem;
+}
+
+[dir="rtl"] .atelier select {
+  background-position: left 0.65rem center;
+}
+
+.atelier-challenge-clues {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--atelier-text);
+  list-style: none;
+}
+
+.atelier-challenge-clues li {
+  position: relative;
+  padding-inline-start: 1.4rem;
+}
+
+.atelier-challenge-clues svg {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0.25rem;
+  color: var(--atelier-accent);
+}
+
+.atelier-caption {
+  display: grid;
+  width: 100%;
+  gap: 0.55rem;
+  justify-items: start;
+}
+
+.atelier-caption label {
+  width: 100%;
+}
+
+.atelier-empty {
+  color: var(--atelier-text);
+}
+
+.atelier-scrapbook {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 0.65rem;
+  list-style: none;
+}
+
+.atelier-scrapbook li {
+  min-width: 0;
+  padding: 0.55rem;
+  border: 1px solid var(--atelier-line);
+  border-radius: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.atelier-scrapbook p {
+  margin: 0.5rem 0;
+}
+
+.atelier-saved-preview {
+  display: grid;
+  aspect-ratio: 6 / 5;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 0.55rem;
+  background: var(--atelier-rose);
+  color: var(--atelier-accent);
+}
+
+.atelier-saved-preview img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+
+@media (min-width: 49rem) {
+  .atelier-layout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+
+  .atelier-extras {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .atelier-stage {
+    height: clamp(28rem, 40vw, 35rem);
+  }
+}
