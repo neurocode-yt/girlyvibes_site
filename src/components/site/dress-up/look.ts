@@ -56,7 +56,7 @@ export const defaultLook: DressUpLook = {
   palette: "rose",
   hairStyle: "waves",
   hairColor: "espresso",
-  skin: "honey",
+  skin: "porcelain",
   accessory: "pearl-necklace",
   backdrop: "rose",
 };
@@ -164,7 +164,10 @@ function readLegacyLook(record: Record<string, unknown>) {
   });
 }
 
-export function initialDressUpLook(storage: Storage, params: URLSearchParams): DressUpLook {
+export function initialDressUpLook(
+  params: URLSearchParams,
+  getStorage: () => Storage,
+): DressUpLook {
   const sharedLook = params.get("look");
   if (sharedLook) {
     const optionIds = sharedLook.split("~");
@@ -174,7 +177,7 @@ export function initialDressUpLook(storage: Storage, params: URLSearchParams): D
   const legacy = readLegacyLook(Object.fromEntries(params.entries()));
   if (legacy) return legacy;
   try {
-    return readLook(JSON.parse(storage.getItem(draftStorageKey) ?? "null"));
+    return readLook(JSON.parse(getStorage().getItem(draftStorageKey) ?? "null"));
   } catch {
     return defaultLook;
   }
