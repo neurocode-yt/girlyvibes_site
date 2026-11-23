@@ -41,10 +41,119 @@ const crownRings: readonly Ring[] = [
   [crown, 0.002, 0.003, -0.02],
 ];
 
+const fallRings: readonly Ring[] = [
+  [1.63, 0.157, 0.117, -0.006],
+  [1.76, 0.201, 0.162, -0.012],
+  [1.91, 0.258, 0.174, -0.025],
+  [2.055, 0.246, 0.185, -0.039],
+  [2.15, 0.235, 0.182, -0.045],
+  [2.27, 0.259, 0.188, -0.046],
+  [2.392, 0.241, 0.201, -0.031],
+  [2.49, 0.221, 0.225, -0.014],
+  [2.58, 0.215, 0.225, -0.006],
+];
+
+const forehead = 2.682;
+const shellTop = 2.856;
+
+function curtainHair(profile: readonly Ring[], color: HairColor) {
+  const [base, sheen] = colors[color].map((value) => new THREE.Color(value));
+  const material = new THREE.MeshPhysicalMaterial({
+    vertexColors: true,
+    side: THREE.DoubleSide,
+    roughness: 0.61,
+    specularIntensity: 0.35,
+    sheen: 0.06,
+    sheenColor: sheen,
+    sheenRoughness: 0.75,
+  });
+
+  const rows = 169;
+  const sides = 176;
+  const geometry = surface(rows, sides, (row, turn) => {
+    const distanceFromPart = Math.min(turn, 1 - turn);
+    const separation = Math.sin(turn * Math.PI);
+    const frontLength = 1 - THREE.MathUtils.smoothstep(distanceFromPart, 0, 0.13);
+    const hem =
+      1.79 +
+      0.051 * separation ** 1.3 -
+      0.126 * frontLength +
+      0.027 * Math.sin(turn * tau * 2.8 - 0.34) * (1 - frontLength);
+    const y = THREE.MathUtils.lerp(hem, shellTop, row);
+    const [, fallWidth, fallDepth, fallCenter] = profileAt(fallRings, y);
+    const [, skullWidth, skullDepth, skullCenter] = profileAt(profile, y);
+    const crownHeight = THREE.MathUtils.clamp((y - 2.61) / (shellTop - 2.61), 0, 1);
+    const dome = Math.sqrt(Math.max(0, 1 - crownHeight ** 2));
+    const crownBlend = THREE.MathUtils.smoothstep(y, 2.52, 2.648);
+    const width = THREE.MathUtils.lerp(fallWidth, Math.max(0.001, 0.216 * dome), crownBlend);
+    const depth = THREE.MathUtils.lerp(fallDepth, Math.max(0.001, 0.203 * dome), crownBlend);
+    const center = THREE.MathUtils.lerp(fallCenter, -0.015 - 0.034 * crownHeight, crownBlend);
+
+    const gap = Math.max(0, forehead - y);
+    const opening =
+      0.815 * (1 - Math.exp(-gap / 0.038)) * THREE.MathUtils.smoothstep(gap, 0, 0.009);
+    const fall = 1 - THREE.MathUtils.smoothstep(y, 2.06, 2.36);
+    const shoulder = 0.22 * fall + 0.125 * fall * Math.sin((y - 1.69) * 13);
+    const temple = -0.149 * Math.exp(-(((y - 2.413) / 0.078) ** 2));
+    const start = Math.max(0, opening - shoulder + temple);
+    const sweep = 0.13 * Math.sin((y - 1.66) * 10.8) * (1 - crownBlend);
+    const curve = turn + Math.sin(turn * tau) * sweep * 0.19;
+    const angle = start + curve * (tau - 2 * start);
+    const sine = Math.sin(angle);
+    const cosine = Math.cos(angle);
+    const forward = Math.max(0, cosine);
+    const root = THREE.MathUtils.smoothstep(y, forehead - 0.01, 2.778);
+    const striation = curve * tau + 0.71 * root * sine + 0.14 * fall * Math.sin(14 * y) * sine;
+    const lock = 0.5 + 0.5 * Math.sin(striation * 11 + Math.sin(striation * 3) * 1.7);
+    const rib = 0.5 + 0.5 * Math.sin(striation * 49 + 1.2 * Math.sin(striation * 17));
+    const grain = 0.5 + 0.5 * Math.sin(striation * 76 + Math.sin(striation * 45) * 0.8);
+    const leftRight = Math.sin(turn * tau);
+    const asymmetricLength = (1 - THREE.MathUtils.smoothstep(y, 2.16, 2.38)) * leftRight;
+    const shape = 1 - THREE.MathUtils.smoothstep(y, 2.8, shellTop);
+    const relief = shape * (0.0036 * lock ** 2 + 0.00065 * rib + 0.00023 * grain);
+    const frontWave = forward * sine * (0.036 * fall * Math.sin((2.36 - y) * 15 - 0.5));
+    const x =
+      sine * (width + relief) + frontWave + 0.016 * asymmetricLength * Math.sin((y - 1.63) * 12);
+    const shoulderLine = Math.acos(THREE.MathUtils.clamp(cosine, -1, 1));
+    const sweepOverShoulder =
+      0.081 * Math.exp(-(((y - 2.064) / 0.11) ** 2 + ((shoulderLine - 1.12) / 0.488) ** 2));
+    const looseDepth =
+      center + cosine * (depth + relief) + 0.014 * forward * fall + sweepOverShoulder;
+    const skullX = x / skullWidth;
+    const scalpFront = skullCenter + Math.sqrt(Math.max(0, 1 - skullX ** 2)) * skullDepth;
+    const hairlineFit =
+      Math.exp(-(((y - forehead) / 0.067) ** 2)) *
+      THREE.MathUtils.smoothstep(forward, 0.4, 0.86) *
+      (1 - THREE.MathUtils.smoothstep(Math.abs(skullX), 0.51, 0.94));
+    const z = THREE.MathUtils.lerp(looseDepth, scalpFront + 0.0085 + relief * 0.24, hairlineFit);
+    const seam =
+      forward ** 14 *
+      Math.exp(-((x / 0.0095) ** 2)) *
+      THREE.MathUtils.smoothstep(y, forehead - 0.009, forehead + 0.016) *
+      (1 - THREE.MathUtils.smoothstep(y, 2.837, shellTop));
+    const dark = forward * (1 - THREE.MathUtils.smoothstep(y, 2.02, 2.24)) * (1 - lock) * 0.08;
+    const tinted = base
+      .clone()
+      .lerp(sheen, 0.19 + 0.1 * lock + 0.057 * rib + 0.025 * grain - dark)
+      .multiplyScalar(1 - 0.36 * seam);
+
+    return {
+      point: [x, y - 0.005 * seam, z - 0.004 * seam],
+      color: tinted,
+    };
+  });
+
+  const mesh = new THREE.Mesh(geometry, material);
+  const group = new THREE.Group();
+  group.add(mesh);
+  return group;
+}
+
 export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, color: HairColor) {
+  if (style === "waves") return curtainHair(profile, color);
+
   const group = new THREE.Group();
   const wrapped = style === "wrap";
-  const long = style === "waves";
   const [base, highlight] = (wrapped ? scarfColors : colors)[color];
   const tint: [THREE.Color, THREE.Color] = [new THREE.Color(base), new THREE.Color(highlight)];
   const hair = new THREE.MeshStandardMaterial({
@@ -54,8 +163,13 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
 
   const lock = (points: Point[], width: number, depth: number, falloff = 0.1, brightness = 0) => {
     const shades: [THREE.Color, THREE.Color] = [tint[0].clone().lerp(tint[1], brightness), tint[1]];
+    const fitted = points.map<Point>(([x, y, z]) => {
+      const headFit =
+        THREE.MathUtils.smoothstep(y, 2.25, 2.47) * (1 - THREE.MathUtils.smoothstep(y, 2.58, 2.82));
+      return [x * (1 - (wrapped ? 0.115 : 0.09) * headFit), y, z];
+    });
     group.add(
-      strand(points, (time) => [width * taper(time, falloff), depth * taper(time, falloff)], hair, {
+      strand(fitted, (time) => [width * taper(time, falloff), depth * taper(time, falloff)], hair, {
         steps: 28,
         sides: 18,
         grooves: wrapped ? 0.025 : 0.095,
@@ -72,7 +186,7 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
     const forward = Math.max(0, cosine);
     const hairline = wrapped
       ? 2.33 + 0.271 * forward ** 0.76
-      : 2.465 + 0.192 * forward ** 0.93 + (long ? 0.018 : 0.026) * Math.sin(angle * 2) * forward;
+      : 2.465 + 0.192 * forward ** 0.93 + 0.026 * Math.sin(angle * 2) * forward;
     const nape = style === "bun" ? Math.max(0, -cosine) * 0.105 : 0;
     const y = THREE.MathUtils.lerp(hairline - nape, crown, row);
     const [, headWidth, headDepth, headCenter] = profileAt(profile, y);
@@ -98,12 +212,14 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
       bodySurface(
         [
           [2.092, 0.081, 0.061, -0.007],
-          [2.169, 0.096, 0.075, -0.022],
-          [2.23, 0.125, 0.093, -0.025],
-          [2.281, 0.173, 0.11, -0.024],
+          [2.169, 0.096, 0.079, 0.009],
+          [2.23, 0.125, 0.093, 0.016],
+          [2.281, 0.173, 0.11, 0.004],
           [2.338, 0.198, 0.127, -0.027],
           [2.38, 0.212, 0.146, -0.029],
           [2.422, 0.22, 0.146, -0.027],
+          [2.468, 0.211, 0.148, -0.027],
+          [2.511, 0.187, 0.14, -0.032],
         ],
         porcelain(base, 0.85),
       ),
@@ -198,7 +314,7 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
   // Two overlapping groups follow the side part while keeping the eyes clear.
   lock(
     [
-      [long ? -0.015 : -0.035, 2.822, 0.032],
+      [-0.035, 2.822, 0.032],
       [-0.061, 2.802, 0.106],
       [-0.11, 2.744, 0.161],
       [-0.161, 2.679, 0.186],
@@ -225,12 +341,12 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
   );
   lock(
     [
-      [long ? 0.005 : -0.042, 2.825, 0.044],
+      [-0.042, 2.825, 0.044],
       [0.031, 2.795, 0.116],
       [0.121, 2.734, 0.184],
       [0.185, 2.642, 0.178],
       [0.211, 2.54, 0.154],
-      [0.226, 2.443, 0.109],
+      [0.226, 2.463, 0.079],
     ],
     0.056,
     0.026,
@@ -311,7 +427,6 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
     return group;
   }
 
-  const length = long ? 0.46 : 0.0;
   for (let column = 0; column < 11; column++) {
     const cross = (column - 5) / 5;
     const shell = Math.sqrt(Math.max(0, 1 - cross ** 2));
@@ -321,39 +436,26 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
       [
         [dx * 0.68, 2.716, -0.143 - 0.08 * shell],
         [dx, 2.544, -0.106 - 0.128 * shell],
-        [dx * 1.13 + 0.016 * sway, 2.412 - length * 0.12, -0.083 - 0.135 * shell],
-        [dx * (long ? 1.04 : 1.18) - 0.018 * sway, 2.305 - length * 0.47, -0.093 - 0.115 * shell],
-        [dx * (long ? 1.04 : 0.95) + 0.017 * sway, 2.274 - length * 0.77, -0.096 - 0.09 * shell],
-        [
-          dx * (long ? 0.9 : 0.72) + 0.024 * sway,
-          2.278 - length * (0.93 + 0.08 * sway),
-          -0.113 - 0.07 * shell,
-        ],
+        [dx * 1.13 + 0.016 * sway, 2.412, -0.083 - 0.135 * shell],
+        [dx * 1.18 - 0.018 * sway, 2.305, -0.093 - 0.115 * shell],
+        [dx * 0.95 + 0.017 * sway, 2.274, -0.096 - 0.09 * shell],
+        [dx * 0.72 + 0.024 * sway, 2.278, -0.113 - 0.07 * shell],
       ],
       0.057 + 0.009 * shell,
       0.037 + 0.013 * shell,
-      long ? 0.085 : 0.23,
+      0.23,
       0.04 + 0.09 * ((column + 1) % 3),
     );
   }
 
   for (const side of [-1, 1]) {
-    const shoulderWave: Point[] = long
-      ? [
-          [side * 0.257, 2.123, 0.068],
-          [side * 0.276, 2.014, 0.113],
-          [side * 0.25, 1.916, 0.143],
-          [side * 0.232, 1.864 + side * 0.019, 0.136],
-        ]
-      : [];
     lock(
       [
         [side * 0.198, 2.69, 0.126],
         [side * 0.248, 2.534, 0.064],
         [side * 0.242, 2.419, 0.061],
-        [side * 0.222, 2.33 - length * 0.13, 0.076],
-        [side * (long ? 0.228 : 0.199), 2.307 - length * 0.23, 0.046],
-        ...shoulderWave,
+        [side * 0.222, 2.33, 0.076],
+        [side * 0.199, 2.307, 0.046],
       ],
       0.048,
       0.026,
@@ -364,9 +466,9 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
       [
         [side * 0.228, 2.616, 0.004],
         [side * 0.248, 2.498, 0.024],
-        [side * 0.261, 2.4 - length * 0.11, -0.02],
-        [side * 0.215, 2.29 - length * 0.4, -0.053],
-        [side * 0.176, 2.275 - length * 0.57, -0.065],
+        [side * 0.261, 2.4, -0.02],
+        [side * 0.215, 2.29, -0.053],
+        [side * 0.176, 2.275, -0.065],
       ],
       0.048,
       0.032,
