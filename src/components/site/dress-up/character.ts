@@ -18,7 +18,7 @@ export type SkinTone = "porcelain" | "honey" | "umber";
 export type CharacterAppearance = { skin: SkinTone; hairStyle: HairStyle; hairColor: HairColor };
 
 const skinColors = {
-  porcelain: { base: "#f7ccb9", blush: "#ee9a96", shadow: "#dfa59c", lip: "#cf796d" },
+  porcelain: { base: "#f7cbb4", blush: "#ee9996", shadow: "#d49a90", lip: "#cf655f" },
   honey: { base: "#c78c63", blush: "#b95461", shadow: "#9e6659", lip: "#a74960" },
   umber: { base: "#895443", blush: "#b75b68", shadow: "#693e45", lip: "#a64d65" },
 } as const;
@@ -31,19 +31,22 @@ const browColors: Record<HairColor, string> = {
 };
 
 const headRings: readonly Ring[] = [
-  [2.247, 0.018, 0.031, 0.079],
-  [2.265, 0.077, 0.095, 0.075],
-  [2.293, 0.122, 0.137, 0.06],
-  [2.327, 0.153, 0.169, 0.041],
-  [2.368, 0.175, 0.192, 0.031],
-  [2.416, 0.196, 0.201, 0.018],
-  [2.465, 0.214, 0.205, 0.013],
-  [2.526, 0.226, 0.209, 0.01],
-  [2.585, 0.23, 0.207, 0.002],
-  [2.641, 0.217, 0.194, -0.007],
-  [2.69, 0.19, 0.173, -0.017],
-  [2.736, 0.151, 0.141, -0.025],
-  [2.774, 0.087, 0.089, -0.031],
+  [2.223, 0.002, 0.002, 0.078],
+  [2.225, 0.024, 0.03, 0.078],
+  [2.236, 0.052, 0.073, 0.068],
+  [2.256, 0.076, 0.111, 0.054],
+  [2.284, 0.099, 0.148, 0.036],
+  [2.322, 0.119, 0.169, 0.025],
+  [2.361, 0.135, 0.182, 0.016],
+  [2.406, 0.151, 0.192, 0.01],
+  [2.45, 0.163, 0.196, 0.008],
+  [2.493, 0.174, 0.202, 0.005],
+  [2.538, 0.18, 0.207, 0.002],
+  [2.585, 0.181, 0.207, 0],
+  [2.641, 0.174, 0.194, -0.007],
+  [2.69, 0.155, 0.173, -0.017],
+  [2.736, 0.121, 0.141, -0.025],
+  [2.774, 0.072, 0.089, -0.031],
   [2.8, 0.002, 0.003, -0.034],
 ];
 
@@ -68,13 +71,15 @@ const torsoRings: readonly Ring[] = [
 function faceRelief(x: number, y: number, frontness: number) {
   const frontal = THREE.MathUtils.smoothstep(frontness, 0, 0.7);
   const side = Math.abs(x);
-  const bridge = 0.014 * gaussian(x, y, 0, 2.472, 0.037, 0.062);
-  const nose = 0.022 * gaussian(x, y, 0, 2.423, 0.034, 0.036);
-  const nostril = 0.01 * gaussian(side, y, 0.029, 2.412, 0.022, 0.018);
-  const cheek = 0.016 * gaussian(side, y, 0.128, 2.41, 0.064, 0.049);
-  const socket = 0.012 * gaussian(side, y, 0.099, 2.505, 0.059, 0.04);
-  const lips = 0.007 * gaussian(x, y, 0, 2.352, 0.084, 0.031);
-  return frontal * (bridge + nose + nostril + cheek + lips - socket);
+  const crest = THREE.MathUtils.smoothstep(y, 2.365, 2.419);
+  const bridge = crest * 0.018 * gaussian(x, y, 0, 2.438, 0.017, 0.055);
+  const tip = 0.021 * gaussian(x, y, 0, 2.392, 0.017, 0.029);
+  const ala = 0.007 * gaussian(side, y, 0.016, 2.385, 0.0068, 0.011);
+  const nostril = 0.0025 * gaussian(side, y, 0.014, 2.381, 0.0048, 0.0039);
+  const cheekbone = 0.007 * gaussian(side, y, 0.116, 2.431, 0.044, 0.034);
+  const socket = 0.012 * gaussian(side, y, 0.083, 2.493, 0.053, 0.034);
+  const mouth = 0.0045 * gaussian(x, y, 0, 2.321, 0.051, 0.025);
+  return frontal * (bridge + tip + ala - nostril + cheekbone - socket + mouth);
 }
 
 function facePoint(x: number, y: number, offset: number): Point {
@@ -200,19 +205,46 @@ function addFace(
   const base = new THREE.Color(palette.base);
   const blush = new THREE.Color(palette.blush);
   const shadow = new THREE.Color(palette.shadow);
-  const headMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.68 });
-  const head = bodySurface(headRings, headMaterial, faceRelief, (x, y, frontness) => {
-    const width = Math.abs(x);
-    const cheek = 0.36 * gaussian(width, y, 0.128, 2.415, 0.052, 0.038);
-    const nose = 0.08 * gaussian(x, y, 0, 2.416, 0.045, 0.028);
-    const lid = 0.13 * gaussian(width, y, 0.1, 2.537, 0.062, 0.029);
-    const nostril = 0.22 * gaussian(width, y, 0.022, 2.409, 0.008, 0.0048);
-    const forward = THREE.MathUtils.smoothstep(frontness, 0.04, 0.63);
-    return base
-      .clone()
-      .lerp(blush, (cheek + nose) * forward)
-      .lerp(shadow, (lid + nostril) * forward);
-  });
+  const headMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.71 });
+  const head = new THREE.Mesh(
+    surface(122, 160, (row, angle) => {
+      const y = THREE.MathUtils.lerp(headRings[0][0], headRings[headRings.length - 1][0], row);
+      const [, width, depth, center] = profileAt(headRings, y);
+      const turn = angle * 2 * Math.PI + Math.PI;
+      const x = Math.sin(turn) * width;
+      const facing = Math.cos(turn);
+      const side = Math.abs(x);
+      const cheek = 0.3 * gaussian(side, y, 0.113, 2.426, 0.049, 0.042);
+      const tip = 0.04 * gaussian(x, y, 0, 2.392, 0.017, 0.012);
+      const lid = 0.17 * gaussian(side, y, 0.087, 2.523, 0.051, 0.024);
+      const nostril = 0.31 * gaussian(side, y, 0.014, 2.381, 0.0048, 0.0043);
+      const forward = THREE.MathUtils.smoothstep(facing, 0.04, 0.63);
+      return {
+        point: [x, y, center + facing * depth + faceRelief(x, y, facing)],
+        color: base
+          .clone()
+          .lerp(blush, (cheek + tip) * forward)
+          .lerp(shadow, (lid + nostril) * forward),
+      };
+    }),
+    headMaterial,
+  );
+  // Soften the stylized nose's underside so a tiny contour keeps definition in close-up.
+  const position = head.geometry.attributes.position;
+  const normal = head.geometry.attributes.normal;
+  const softened = new THREE.Vector3();
+  for (let index = 0; index < position.count; index++) {
+    const x = position.getX(index);
+    const y = position.getY(index);
+    if (position.getZ(index) < 0.16 || Math.abs(x) > 0.044 || y < 2.346 || y > 2.415) continue;
+
+    softened.fromBufferAttribute(normal, index);
+    if (softened.y >= 0) continue;
+
+    softened.y *= 1 - 0.79 * gaussian(x, y, 0, 2.378, 0.03, 0.022);
+    softened.normalize();
+    normal.setXYZ(index, softened.x, softened.y, softened.z);
+  }
   head.castShadow = true;
   group.add(head);
 
@@ -246,18 +278,18 @@ function addFace(
 
   for (const side of [-1, 1]) {
     if (appearance.hairStyle !== "wrap") {
-      const ear = ellipse(material, [side * 0.21, 2.435, 0.02], [0.034, 0.058, 0.033]);
+      const ear = ellipse(material, [side * 0.157, 2.445, 0.016], [0.025, 0.042, 0.027]);
       ear.rotation.z = side * -0.16;
-      group.add(ear, ellipse(innerEar, [side * 0.223, 2.433, 0.043], [0.017, 0.03, 0.009]));
+      group.add(ear, ellipse(innerEar, [side * 0.172, 2.443, 0.036], [0.0108, 0.021, 0.008]));
     }
 
-    const cx = side * 0.096;
-    const cy = 2.511;
+    const cx = side * 0.082;
+    const cy = 2.487;
     const eyeContour = (angle: number, radius: number, offset: number): Point => {
-      const x = radius * Math.cos(angle) * 0.0585;
+      const x = radius * Math.cos(angle) * 0.052;
       const sine = Math.sin(angle);
-      const width = sine >= 0 ? 0.036 : 0.029;
-      const y = radius * width * sine * (0.74 + 0.26 * Math.abs(sine)) + side * x * 0.078;
+      const width = sine >= 0 ? 0.036 : 0.028;
+      const y = radius * width * sine * (0.76 + 0.24 * Math.abs(sine)) + side * x * 0.065;
       return facePoint(cx + x, cy + y, offset + 0.007 * (1 - radius ** 2));
     };
     group.add(
@@ -295,7 +327,7 @@ function addFace(
 
     const eyeX = cx - side * 0.002;
     group.add(
-      glowDisk(eyeX, cy + 0.002, 0.034, 0.03, 0.012, iris, (radial, arc) => {
+      glowDisk(eyeX, cy + 0.002, 0.0315, 0.0296, 0.012, iris, (radial, arc) => {
         const rim = 1 - THREE.MathUtils.smoothstep(radial, 0.7, 1);
         const ray =
           0.68 + 0.13 * Math.cos(arc * Math.PI * 38) + 0.15 * Math.sin(arc * Math.PI * 82);
@@ -315,17 +347,17 @@ function addFace(
         upperLid,
         (time) => {
           const corner = side > 0 ? 1 - time : time;
-          return [0.0015 + 0.0029 * taper(time, 0.18) * (0.6 + 0.5 * corner), 0.0021];
+          return [0.00145 + 0.0036 * taper(time, 0.18) * (0.6 + 0.5 * corner), 0.0021];
         },
         liner,
         { steps: 32, sides: 9 },
       ),
     );
 
-    for (let lash = 0; lash < 2; lash++) {
-      const outer = side > 0 ? 0.14 + lash * 0.24 : Math.PI - (0.14 + lash * 0.24);
+    for (let lash = 0; lash < 4; lash++) {
+      const outer = side > 0 ? 0.15 + lash * 0.22 : Math.PI - (0.15 + lash * 0.22);
       const origin = eyeContour(outer, 0.99, 0.0063);
-      const distance = 0.012 - lash * 0.0014;
+      const distance = 0.014 - lash * 0.0016;
       group.add(
         strand(
           [
@@ -333,7 +365,7 @@ function addFace(
             [origin[0] + side * distance * 0.56, origin[1] + distance * 0.3, origin[2] + 0.001],
             [
               origin[0] + side * distance,
-              origin[1] + distance * (0.39 + 0.23 * lash),
+              origin[1] + distance * (0.41 + 0.19 * lash),
               origin[2] - 0.001,
             ],
           ],
@@ -345,50 +377,58 @@ function addFace(
     }
 
     const brow = [
-      facePoint(side * 0.045, 2.569, 0.004),
-      facePoint(side * 0.079, 2.581, 0.0042),
-      facePoint(side * 0.119, 2.582, 0.004),
-      facePoint(side * 0.149, 2.576, 0.0038),
-      facePoint(side * 0.163, 2.563, 0.0035),
+      facePoint(side * 0.035, 2.546, 0.004),
+      facePoint(side * 0.063, 2.555, 0.004),
+      facePoint(side * 0.095, 2.558, 0.0039),
+      facePoint(side * 0.119, 2.555, 0.0038),
+      facePoint(side * 0.143, 2.542, 0.0036),
     ];
     group.add(
       strand(
         brow,
-        (time) => [0.0056 * (1 - time * 0.73) * taper(time, 0.29), 0.0031 * taper(time, 0.52)],
+        (time) => [0.0061 * (1 - time * 0.73) * taper(time, 0.29), 0.0031 * taper(time, 0.52)],
         brows,
         { steps: 19, sides: 9 },
       ),
     );
   }
 
-  const lower = new THREE.Color(palette.lip).lerp(base, 0.54);
-  const upper = new THREE.Color(palette.lip).lerp(base, 0.34);
-  const seam = new THREE.Color(palette.lip).lerp(new THREE.Color("#6b3f45"), 0.46);
+  const lipColor = new THREE.Color(palette.lip);
+  const lower = lipColor.clone().lerp(base, 0.24);
+  const upper = lipColor.clone().lerp(new THREE.Color("#883b43"), 0.13);
+  const seam = lipColor.clone().lerp(new THREE.Color("#69363c"), 0.61);
+  const sheen = lipColor.clone().lerp(base, 0.65);
   const lipMaterial = new THREE.MeshStandardMaterial({
     vertexColors: true,
-    roughness: 0.62,
+    roughness: 0.53,
     side: THREE.DoubleSide,
   });
-  const lipWidth = 0.056;
-  const mouthY = (along: number) => 2.356 + 0.016 * Math.abs(along) ** 1.68;
-  const curveDepth = (along: number) => Math.cos((Math.PI / 2) * along) ** 0.88;
+  const lipWidth = 0.0565;
+  const mouthCenter = 2.319;
   for (const lip of [-1, 1]) {
     group.add(
       new THREE.Mesh(
-        surface(10, 36, (row, sweep) => {
+        surface(16, 48, (row, sweep) => {
           const shift = sweep * 2 - 1;
-          const curve = curveDepth(shift);
-          const bow = 1 - 0.35 * Math.exp(-((shift * 5) ** 2));
-          const height = lip > 0 ? 0.0092 * bow : 0.0098;
-          const tint = (lip > 0 ? upper : lower)
-            .clone()
-            .lerp(base, Math.min(0.88, row ** 1.9 * 0.53));
-          tint.lerp(seam, 0.53 * Math.max(0, 1 - row * 7) * curve);
+          const side = Math.abs(shift);
+          const curve = Math.max(0, 1 - side ** 2) ** 1.08;
+          const bow = Math.exp(-(((side - 0.36) / 0.23) ** 2));
+          const height = lip > 0 ? 0.009 + 0.007 * bow : 0.0195;
+          const mouthLine =
+            mouthCenter + 0.0045 * side ** 1.9 - 0.0019 * Math.exp(-((shift / 0.22) ** 2));
+          const tint = (lip > 0 ? upper : lower).clone();
+          const softEdge = THREE.MathUtils.smoothstep(row, 0.8, 1);
+          const softCorner = THREE.MathUtils.smoothstep(side, 0.86, 1);
+          tint.lerp(seam, 0.88 * Math.max(0, 1 - row * 7) * curve);
+          if (lip < 0) {
+            tint.lerp(sheen, 0.24 * gaussian(shift, row, -0.08, 0.49, 0.46, 0.24));
+          }
+          tint.lerp(base, Math.min(1, softEdge * 0.72 + softCorner));
           return {
             point: facePoint(
               shift * lipWidth,
-              mouthY(shift) + lip * row * height * curve,
-              0.001 + curve * (0.006 * (1 - row) + 0.0023 * Math.sin(Math.PI * row)),
+              mouthLine + lip * row * height * curve,
+              0.0007 + curve * (0.0037 * (1 - row) + 0.0045 * Math.sin(Math.PI * row)),
             ),
             color: tint,
           };
