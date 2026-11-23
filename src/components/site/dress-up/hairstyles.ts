@@ -15,7 +15,7 @@ export type HairStyle = "waves" | "bob" | "bun" | "wrap";
 export type HairColor = "espresso" | "chestnut" | "rosewood" | "honey";
 
 const colors = {
-  espresso: ["#40252c", "#86505e"],
+  espresso: ["#382b29", "#755851"],
   chestnut: ["#824731", "#b6704b"],
   rosewood: ["#784053", "#bb6c82"],
   honey: ["#a76b40", "#e6aa6b"],
@@ -44,6 +44,7 @@ const crownRings: readonly Ring[] = [
 export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, color: HairColor) {
   const group = new THREE.Group();
   const wrapped = style === "wrap";
+  const long = style === "waves";
   const [base, highlight] = (wrapped ? scarfColors : colors)[color];
   const tint: [THREE.Color, THREE.Color] = [new THREE.Color(base), new THREE.Color(highlight)];
   const hair = new THREE.MeshStandardMaterial({
@@ -71,7 +72,7 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
     const forward = Math.max(0, cosine);
     const hairline = wrapped
       ? 2.33 + 0.271 * forward ** 0.76
-      : 2.465 + 0.192 * forward ** 0.93 + 0.026 * Math.sin(angle * 2) * forward;
+      : 2.465 + 0.192 * forward ** 0.93 + (long ? 0.018 : 0.026) * Math.sin(angle * 2) * forward;
     const nape = style === "bun" ? Math.max(0, -cosine) * 0.105 : 0;
     const y = THREE.MathUtils.lerp(hairline - nape, crown, row);
     const [, headWidth, headDepth, headCenter] = profileAt(profile, y);
@@ -102,6 +103,7 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
           [2.281, 0.173, 0.11, -0.024],
           [2.338, 0.198, 0.127, -0.027],
           [2.38, 0.212, 0.146, -0.029],
+          [2.422, 0.22, 0.146, -0.027],
         ],
         porcelain(base, 0.85),
       ),
@@ -196,7 +198,7 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
   // Two overlapping groups follow the side part while keeping the eyes clear.
   lock(
     [
-      [-0.035, 2.822, 0.032],
+      [long ? -0.015 : -0.035, 2.822, 0.032],
       [-0.061, 2.802, 0.106],
       [-0.11, 2.744, 0.161],
       [-0.161, 2.679, 0.186],
@@ -223,7 +225,7 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
   );
   lock(
     [
-      [-0.042, 2.825, 0.044],
+      [long ? 0.005 : -0.042, 2.825, 0.044],
       [0.031, 2.795, 0.116],
       [0.121, 2.734, 0.184],
       [0.185, 2.642, 0.178],
@@ -309,7 +311,6 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
     return group;
   }
 
-  const long = style === "waves";
   const length = long ? 0.46 : 0.0;
   for (let column = 0; column < 11; column++) {
     const cross = (column - 5) / 5;
@@ -337,13 +338,22 @@ export function sculptHairstyle(profile: readonly Ring[], style: HairStyle, colo
   }
 
   for (const side of [-1, 1]) {
+    const shoulderWave: Point[] = long
+      ? [
+          [side * 0.257, 2.123, 0.068],
+          [side * 0.276, 2.014, 0.113],
+          [side * 0.25, 1.916, 0.143],
+          [side * 0.232, 1.864 + side * 0.019, 0.136],
+        ]
+      : [];
     lock(
       [
         [side * 0.198, 2.69, 0.126],
         [side * 0.248, 2.534, 0.064],
         [side * 0.242, 2.419, 0.061],
         [side * 0.222, 2.33 - length * 0.13, 0.076],
-        [side * 0.199, 2.307 - length * 0.27, 0.046],
+        [side * (long ? 0.228 : 0.199), 2.307 - length * 0.23, 0.046],
+        ...shoulderWave,
       ],
       0.048,
       0.026,
