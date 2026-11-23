@@ -76,7 +76,7 @@ export function Footer() {
   const { t, lang, setLang } = useI18n();
   return (
     <footer className="px-5 md:px-8 pb-10">
-      <div className="max-w-7xl mx-auto rounded-[32px] bg-white border border-[color:var(--border)] p-8 md:p-12">
+      <div className="max-w-7xl mx-auto rounded-[32px] bg-card border border-[color:var(--border)] p-8 md:p-12">
         <div className="grid md:grid-cols-[1.4fr_1fr_1fr] gap-8">
           <div>
             <div className="flex items-center gap-2 font-display text-xl text-[color:var(--rose-deep)] font-semibold">

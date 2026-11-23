@@ -130,6 +130,10 @@
   --border: oklch(0.35 0.10 340);
   --input: oklch(0.35 0.10 340);
   --ring: oklch(0.75 0.20 345);
+
+  --mauve: var(--foreground);
+  --rose-soft: var(--muted);
+  --rose-deep: var(--primary);
 }
 
 @layer base {
