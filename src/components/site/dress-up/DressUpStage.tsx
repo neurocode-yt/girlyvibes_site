@@ -305,11 +305,12 @@ function CameraFrame({ portrait }: { portrait: boolean }) {
       return;
     }
 
-    const center = portrait ? 2.4 : 1.4;
-    const height = portrait ? 1.31 : 3.53;
+    const center = portrait ? 2.3 : 1.4;
+    const height = portrait ? 1.32 : 3.53;
     const width = portrait ? 1.02 : 2.07;
 
-    camera.position.set(0.35, center + (portrait ? 0.06 : 0.43), 6.6);
+    // The portrait starts at eye level and keeps the shoulder-length sections in frame.
+    camera.position.set(portrait ? 0 : 0.35, center + (portrait ? 0.06 : 0.43), 6.6);
     camera.lookAt(0, center, 0);
     camera.zoom = Math.min(size.width / width, size.height / height);
     camera.updateProjectionMatrix();
@@ -433,7 +434,7 @@ export function DressUpStage({
               shadows="percentage"
               gl={rendererOptions}
             >
-              <hemisphereLight args={["#ffede6", "#e3cbea", 1.55]} />
+              <hemisphereLight args={["#fff4ee", "#efe0d7", 1.47]} />
               <directionalLight
                 color="#fff0e3"
                 intensity={2.2}
@@ -450,8 +451,8 @@ export function DressUpStage({
                 shadow-bias={-0.00022}
                 shadow-radius={3}
               />
-              <directionalLight color="#fff9f0" intensity={0.55} position={[0, 2.7, 5.3]} />
-              <directionalLight color="#efddff" intensity={0.95} position={[3.2, 3.7, 0.3]} />
+              <directionalLight color="#fff9f4" intensity={0.68} position={[0, 0.75, 5.3]} />
+              <directionalLight color="#efe6ff" intensity={0.8} position={[3.2, 3.7, 0.3]} />
               <directionalLight color="#ffd6c9" intensity={1.25} position={[1.6, 4.9, -3.1]} />
               <StudioSet colors={colors} />
               <Doll look={look} rotation={rotation} />
