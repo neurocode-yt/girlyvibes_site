@@ -53,8 +53,8 @@ const fallRings: readonly Ring[] = [
   [2.58, 0.215, 0.225, -0.006],
 ];
 
-const forehead = 2.682;
-const shellTop = 2.856;
+const forehead = 2.665;
+const shellTop = 2.838;
 
 function curtainHair(profile: readonly Ring[], color: HairColor) {
   const [base, sheen] = colors[color].map((value) => new THREE.Color(value));
@@ -79,7 +79,8 @@ function curtainHair(profile: readonly Ring[], color: HairColor) {
       0.051 * separation ** 1.3 -
       0.126 * frontLength +
       0.027 * Math.sin(turn * tau * 2.8 - 0.34) * (1 - frontLength);
-    const y = THREE.MathUtils.lerp(hem, shellTop, row);
+    const hemFade = 1 - THREE.MathUtils.smoothstep(row, 0, 0.46);
+    const y = THREE.MathUtils.lerp(1.79, shellTop, row) + (hem - 1.79) * hemFade;
     const [, fallWidth, fallDepth, fallCenter] = profileAt(fallRings, y);
     const [, skullWidth, skullDepth, skullCenter] = profileAt(profile, y);
     const crownHeight = THREE.MathUtils.clamp((y - 2.61) / (shellTop - 2.61), 0, 1);
@@ -89,9 +90,12 @@ function curtainHair(profile: readonly Ring[], color: HairColor) {
     const depth = THREE.MathUtils.lerp(fallDepth, Math.max(0.001, 0.203 * dome), crownBlend);
     const center = THREE.MathUtils.lerp(fallCenter, -0.015 - 0.034 * crownHeight, crownBlend);
 
-    const gap = Math.max(0, forehead - y);
+    // An elliptical opening leaves a rounded hairline around the center part.
+    const gap = THREE.MathUtils.clamp((forehead - y) / 0.1, 0, 1);
     const opening =
-      0.815 * (1 - Math.exp(-gap / 0.038)) * THREE.MathUtils.smoothstep(gap, 0, 0.009);
+      (Math.sqrt(0.036 + gap * (2 - gap)) - Math.sqrt(0.036)) *
+      (0.84 / (Math.sqrt(1.036) - Math.sqrt(0.036))) *
+      THREE.MathUtils.smoothstep(gap, 0, 0.061);
     const fall = 1 - THREE.MathUtils.smoothstep(y, 2.06, 2.36);
     const shoulder = 0.22 * fall + 0.125 * fall * Math.sin((y - 1.69) * 13);
     const temple = -0.149 * Math.exp(-(((y - 2.413) / 0.078) ** 2));
@@ -130,7 +134,7 @@ function curtainHair(profile: readonly Ring[], color: HairColor) {
       forward ** 14 *
       Math.exp(-((x / 0.0095) ** 2)) *
       THREE.MathUtils.smoothstep(y, forehead - 0.009, forehead + 0.016) *
-      (1 - THREE.MathUtils.smoothstep(y, 2.837, shellTop));
+      (1 - THREE.MathUtils.smoothstep(y, shellTop - 0.019, shellTop));
     const dark = forward * (1 - THREE.MathUtils.smoothstep(y, 2.02, 2.24)) * (1 - lock) * 0.08;
     const tinted = base
       .clone()
@@ -138,7 +142,7 @@ function curtainHair(profile: readonly Ring[], color: HairColor) {
       .multiplyScalar(1 - 0.36 * seam);
 
     return {
-      point: [x, y - 0.005 * seam, z - 0.004 * seam],
+      point: [x, y, z - 0.0035 * seam],
       color: tinted,
     };
   });
