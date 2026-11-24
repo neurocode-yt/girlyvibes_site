@@ -31,19 +31,18 @@ const browColors: Record<HairColor, string> = {
 };
 
 const headRings: readonly Ring[] = [
-  [2.223, 0.002, 0.002, 0.078],
-  [2.225, 0.024, 0.03, 0.078],
-  [2.236, 0.058, 0.073, 0.068],
-  [2.256, 0.082, 0.111, 0.054],
-  [2.284, 0.099, 0.148, 0.036],
-  [2.322, 0.119, 0.169, 0.025],
-  [2.361, 0.135, 0.182, 0.016],
-  [2.406, 0.151, 0.192, 0.01],
-  [2.45, 0.163, 0.196, 0.008],
-  [2.493, 0.174, 0.202, 0.005],
-  [2.538, 0.18, 0.207, 0.002],
-  [2.585, 0.181, 0.207, 0],
-  [2.641, 0.174, 0.194, -0.007],
+  [2.26, 0.002, 0.003, 0.08],
+  [2.267, 0.031, 0.043, 0.078],
+  [2.281, 0.063, 0.086, 0.063],
+  [2.301, 0.091, 0.123, 0.045],
+  [2.327, 0.116, 0.15, 0.031],
+  [2.36, 0.137, 0.175, 0.02],
+  [2.404, 0.157, 0.19, 0.01],
+  [2.446, 0.173, 0.197, 0.006],
+  [2.49, 0.184, 0.202, 0.004],
+  [2.537, 0.192, 0.205, 0.001],
+  [2.585, 0.19, 0.206, 0],
+  [2.641, 0.181, 0.194, -0.007],
   [2.69, 0.155, 0.173, -0.017],
   [2.736, 0.121, 0.141, -0.025],
   [2.774, 0.072, 0.089, -0.031],
@@ -71,15 +70,17 @@ const torsoRings: readonly Ring[] = [
 function faceRelief(x: number, y: number, frontness: number) {
   const frontal = THREE.MathUtils.smoothstep(frontness, 0, 0.7);
   const side = Math.abs(x);
-  const crest = THREE.MathUtils.smoothstep(y, 2.365, 2.419);
-  const bridge = crest * 0.014 * gaussian(x, y, 0, 2.432, 0.016, 0.034);
-  const tip = 0.023 * gaussian(x, y, 0, 2.393, 0.017, 0.022);
-  const ala = 0.007 * gaussian(side, y, 0.016, 2.385, 0.0068, 0.011);
-  const nostril = 0.0025 * gaussian(side, y, 0.014, 2.381, 0.0048, 0.0039);
-  const cheekbone = 0.007 * gaussian(side, y, 0.116, 2.431, 0.044, 0.034);
-  const socket = 0.012 * gaussian(side, y, 0.083, 2.493, 0.053, 0.034);
-  const mouth = 0.0045 * gaussian(x, y, 0, 2.321, 0.051, 0.025);
-  return frontal * (bridge + tip + ala - nostril + cheekbone - socket + mouth);
+  const ridge = THREE.MathUtils.smoothstep(y, 2.403, 2.45);
+  const bridge = ridge * 0.022 * gaussian(x, y, 0, 2.454, 0.018, 0.052);
+  const tip = 0.027 * gaussian(x, y, 0, 2.419, 0.0205, 0.019);
+  const ala = 0.011 * gaussian(side, y, 0.021, 2.408, 0.0095, 0.0106);
+  const nostril = 0.0038 * gaussian(side, y, 0.0175, 2.402, 0.0053, 0.004);
+  const philtrum = 0.0045 * gaussian(x, y, 0, 2.384, 0.008, 0.014);
+  const cheekbone = 0.009 * gaussian(side, y, 0.127, 2.452, 0.049, 0.04);
+  const socket = 0.014 * gaussian(side, y, 0.088, 2.505, 0.052, 0.043);
+  const brow = 0.003 * gaussian(side, y, 0.089, 2.551, 0.055, 0.02);
+  const mouth = 0.005 * gaussian(x, y, 0, 2.35, 0.054, 0.023);
+  return frontal * (bridge + tip + ala - nostril - philtrum + cheekbone - socket + brow + mouth);
 }
 
 function facePoint(x: number, y: number, offset: number): Point {
@@ -205,231 +206,244 @@ function addFace(
   const base = new THREE.Color(palette.base);
   const blush = new THREE.Color(palette.blush);
   const shadow = new THREE.Color(palette.shadow);
-  const headMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.71 });
+  const headMaterial = new THREE.MeshPhysicalMaterial({
+    vertexColors: true,
+    roughness: 0.68,
+    clearcoat: 0.12,
+    clearcoatRoughness: 0.68,
+  });
+  const noseShadow = base.clone().lerp(new THREE.Color("#8c574b"), 0.55);
+  const skinAt = (x: number, y: number, facing: number) => {
+    const side = Math.abs(x);
+    const cheek = 0.5 * gaussian(side, y, 0.122, 2.447, 0.042, 0.039);
+    const tip = 0.1 * gaussian(x, y, 0, 2.416, 0.017, 0.012);
+    const lids = 0.23 * gaussian(side, y, 0.088, 2.521, 0.049, 0.021);
+    const ala = 0.1 * gaussian(side, y, 0.029, 2.407, 0.006, 0.009);
+    const nostril = 0.38 * gaussian(side, y, 0.017, 2.401, 0.0045, 0.0035);
+    const forward = THREE.MathUtils.smoothstep(facing, 0.04, 0.63);
+    return base
+      .clone()
+      .lerp(blush, (cheek + tip) * forward)
+      .lerp(shadow, (lids + ala) * forward)
+      .lerp(noseShadow, nostril * forward);
+  };
   const head = new THREE.Mesh(
-    surface(122, 160, (row, angle) => {
+    surface(140, 184, (row, angle) => {
       const y = THREE.MathUtils.lerp(headRings[0][0], headRings[headRings.length - 1][0], row);
       const [, width, depth, center] = profileAt(headRings, y);
       const turn = angle * 2 * Math.PI + Math.PI;
       const x = Math.sin(turn) * width;
       const facing = Math.cos(turn);
-      const side = Math.abs(x);
-      const cheek =
-        (appearance.skin === "porcelain" ? 0.52 : 0.37) *
-        gaussian(side, y, 0.109, 2.432, 0.041, 0.044);
-      const tip = 0.04 * gaussian(x, y, 0, 2.392, 0.017, 0.012);
-      const lid = 0.17 * gaussian(side, y, 0.087, 2.523, 0.051, 0.024);
-      const nostril = 0.43 * gaussian(side, y, 0.014, 2.381, 0.0048, 0.004);
-      const forward = THREE.MathUtils.smoothstep(facing, 0.04, 0.63);
       return {
         point: [x, y, center + facing * depth + faceRelief(x, y, facing)],
-        color: base
-          .clone()
-          .lerp(blush, (cheek + tip) * forward)
-          .lerp(shadow, (lid + nostril) * forward),
+        color: skinAt(x, y, facing),
       };
     }),
     headMaterial,
   );
-  // Soften the stylized nose's underside so a tiny contour keeps definition in close-up.
-  const position = head.geometry.attributes.position;
-  const normal = head.geometry.attributes.normal;
-  const softened = new THREE.Vector3();
-  for (let index = 0; index < position.count; index++) {
-    const x = position.getX(index);
-    const y = position.getY(index);
-    if (position.getZ(index) < 0.16 || Math.abs(x) > 0.044 || y < 2.346 || y > 2.415) continue;
+  // Diffuse the shadow directly under the tip without changing the nose silhouette.
+  const positions = head.geometry.attributes.position;
+  const normals = head.geometry.attributes.normal;
+  const shapedNormal = new THREE.Vector3();
+  for (let index = 0; index < positions.count; index++) {
+    const x = positions.getX(index);
+    const y = positions.getY(index);
+    if (positions.getZ(index) < 0.17 || Math.abs(x) > 0.047 || y < 2.369 || y > 2.422) continue;
 
-    softened.fromBufferAttribute(normal, index);
-    if (softened.y >= 0) continue;
-
-    softened.y *= 1 - 0.79 * gaussian(x, y, 0, 2.378, 0.03, 0.022);
-    softened.normalize();
-    normal.setXYZ(index, softened.x, softened.y, softened.z);
+    shapedNormal.fromBufferAttribute(normals, index);
+    if (shapedNormal.y >= 0) continue;
+    shapedNormal.y *= 1 - 0.48 * gaussian(x, y, 0, 2.402, 0.033, 0.018);
+    shapedNormal.normalize();
+    normals.setXYZ(index, shapedNormal.x, shapedNormal.y, shapedNormal.z);
   }
   head.castShadow = true;
   group.add(head);
 
   const innerEar = porcelain(palette.shadow);
-  const white = new THREE.MeshStandardMaterial({
-    color: "#fff8ef",
-    roughness: 0.46,
-    side: THREE.DoubleSide,
-  });
-  const liner = porcelain("#58413a");
-  const lowerLidMaterial = new THREE.MeshStandardMaterial({
-    color: base.clone().lerp(shadow, 0.63),
-    roughness: 0.76,
-  });
-  const brows = porcelain(browColors[appearance.hairColor]);
-  const pupil = new THREE.MeshStandardMaterial({
-    color: "#291921",
-    roughness: 0.32,
-    side: THREE.DoubleSide,
-  });
-  const iris = new THREE.MeshStandardMaterial({
+  const eyeMaterial = new THREE.MeshPhysicalMaterial({
     vertexColors: true,
-    roughness: 0.37,
+    roughness: 0.34,
+    clearcoat: 0.26,
+    clearcoatRoughness: 0.28,
     side: THREE.DoubleSide,
   });
-  const reflection = new THREE.MeshBasicMaterial({ color: "#fff9f4", side: THREE.DoubleSide });
-  const darkIris = new THREE.Color(appearance.skin === "porcelain" ? "#253746" : "#3b2324");
+  const lidMaterial = new THREE.MeshStandardMaterial({
+    vertexColors: true,
+    roughness: 0.68,
+    side: THREE.DoubleSide,
+  });
+  const lashes = porcelain("#503932");
+  const brows = porcelain(browColors[appearance.hairColor]);
+  const catchlight = new THREE.MeshBasicMaterial({ color: "#fffaf4", side: THREE.DoubleSide });
+  const pupil = new THREE.Color("#202329");
+  const limbalRing = new THREE.Color(appearance.skin === "porcelain" ? "#293740" : "#3b2324");
   const irisColor = new THREE.Color(
     appearance.skin === "porcelain"
-      ? "#7e9dab"
+      ? "#82a1ae"
       : appearance.hairColor === "honey"
-        ? "#968254"
+        ? "#aa9360"
         : "#ad7b4e",
   );
+  const ivory = new THREE.Color("#fffaf0");
+  const tearDuct = base.clone().lerp(blush, 0.55);
 
   const eyes: THREE.Group[] = [];
-  const eyeLevel = 2.487;
+  const eyeLevel = 2.498;
   for (const side of [-1, 1]) {
     if (appearance.hairStyle !== "wrap") {
-      const ear = ellipse(material, [side * 0.157, 2.445, 0.016], [0.025, 0.042, 0.027]);
+      const ear = ellipse(material, [side * 0.174, 2.455, 0.012], [0.023, 0.042, 0.027]);
       ear.rotation.z = side * -0.16;
-      group.add(ear, ellipse(innerEar, [side * 0.172, 2.443, 0.036], [0.0108, 0.021, 0.008]));
+      group.add(ear, ellipse(innerEar, [side * 0.188, 2.453, 0.032], [0.0108, 0.021, 0.008]));
     }
 
     const eye = new THREE.Group();
-    const cx = side * 0.082;
-    const cy = eyeLevel;
-    const eyeContour = (angle: number, radius: number, offset: number): Point => {
-      const x = radius * Math.cos(angle) * 0.052;
-      const sine = Math.sin(angle);
-      const width = sine >= 0 ? 0.035 : 0.028;
-      const y = radius * width * sine * (0.76 + 0.24 * Math.abs(sine)) + side * x * 0.065;
-      return facePoint(cx + x, cy + y, offset + 0.007 * (1 - radius ** 2));
+    const cx = side * 0.0815;
+    const irisX = cx - side * 0.0022;
+    const irisY = eyeLevel + 0.0029;
+    const aperture = (x: number) => {
+      const along = THREE.MathUtils.clamp((x - cx) / 0.049, -1, 1);
+      const arch = Math.max(0, 1 - along ** 2) ** 0.72;
+      const center = eyeLevel + side * along * 0.0034;
+      return { top: center + arch * 0.029, bottom: center - arch * 0.0215, arch };
+    };
+    const eyePoint = (x: number, y: number, offset = 0): Point => {
+      const { top, bottom, arch } = aperture(x);
+      const vertical = THREE.MathUtils.clamp((y - bottom) / Math.max(top - bottom, 0.00001), 0, 1);
+      return facePoint(x, y, 0.0016 + Math.sin(Math.PI * vertical) * arch * 0.0085 + offset);
     };
     eye.add(
       new THREE.Mesh(
-        surface(9, 40, (radius, rotation) => ({
-          point: eyeContour(rotation * Math.PI * 2, radius, 0.0032),
-        })),
-        white,
-      ),
-    );
-
-    const glowDisk = (
-      x: number,
-      y: number,
-      radius: number,
-      thickness: number,
-      offset: number,
-      material: THREE.Material,
-      shading?: (radial: number, arc: number) => THREE.Color,
-    ) =>
-      new THREE.Mesh(
-        surface(8, 42, (radial, arc) => {
-          const turn = arc * Math.PI * 2;
-          return {
-            point: facePoint(
-              x + radius * radial * Math.cos(turn),
-              y + thickness * radial * Math.sin(turn),
-              offset + 0.0032 * (1 - radial ** 2),
-            ),
-            color: shading?.(radial, arc),
-          };
+        surface(38, 88, (row, sweep) => {
+          const x = cx + (sweep * 2 - 1) * 0.049;
+          const { top, bottom, arch } = aperture(x);
+          const y = THREE.MathUtils.lerp(bottom, top, row);
+          const dx = (x - irisX) / 0.0268;
+          const dy = (y - irisY) / 0.0268;
+          const radius = Math.hypot(dx, dy);
+          const theta = Math.atan2(dy, dx);
+          const fibers = 0.66 + 0.12 * Math.cos(theta * 23) + 0.11 * Math.sin(theta * 43 + radius);
+          const rim = 1 - THREE.MathUtils.smoothstep(radius, 0.83, 1.01);
+          const irisShade = limbalRing.clone().lerp(irisColor, rim * fibers);
+          irisShade.lerp(pupil, 1 - THREE.MathUtils.smoothstep(radius, 0.47, 0.53));
+          const tissue = 0.5 * (1 - arch) + 0.22 * THREE.MathUtils.smoothstep(row, 0.64, 1);
+          const color = ivory
+            .clone()
+            .lerp(tearDuct, tissue)
+            .lerp(irisShade, 1 - THREE.MathUtils.smoothstep(radius, 0.98, 1.022));
+          color.lerp(limbalRing, 0.18 * THREE.MathUtils.smoothstep(row, 0.72, 1));
+          return { point: eyePoint(x, y), color };
         }),
-        material,
-      );
-
-    const eyeX = cx - side * 0.002;
-    eye.add(
-      glowDisk(eyeX, cy + 0.002, 0.0315, 0.0296, 0.012, iris, (radial, arc) => {
-        const rim = 1 - THREE.MathUtils.smoothstep(radial, 0.7, 1);
-        const ray =
-          0.68 + 0.13 * Math.cos(arc * Math.PI * 38) + 0.15 * Math.sin(arc * Math.PI * 82);
-        const warmth = THREE.MathUtils.smoothstep(radial, 0.4, 0.61);
-        return darkIris.clone().lerp(irisColor, rim * warmth * ray);
-      }),
-      glowDisk(eyeX, cy + 0.003, 0.016, 0.018, 0.0161, pupil),
-      glowDisk(eyeX - 0.01, cy + 0.0125, 0.007, 0.0062, 0.0202, reflection),
-      glowDisk(eyeX + 0.01, cy - 0.0061, 0.0028, 0.0028, 0.02, reflection),
-    );
-
-    const upperLid = Array.from({ length: 11 }, (_, i) =>
-      eyeContour((i / 10) * Math.PI, 1, 0.0046),
-    );
-    eye.add(
-      strand(
-        upperLid,
-        (time) => {
-          const corner = side > 0 ? 1 - time : time;
-          return [0.00145 + 0.0036 * taper(time, 0.18) * (0.6 + 0.5 * corner), 0.0021];
-        },
-        liner,
-        { steps: 32, sides: 9 },
+        eyeMaterial,
       ),
     );
 
-    for (let lash = 0; lash < 4; lash++) {
-      const outer = side > 0 ? 0.15 + lash * 0.22 : Math.PI - (0.15 + lash * 0.22);
-      const origin = eyeContour(outer, 0.99, 0.0063);
-      const distance = 0.014 - lash * 0.0016;
+    for (const [x, y, size] of [
+      [irisX - 0.0085, irisY + 0.0095, 0.0056],
+      [irisX + 0.009, irisY - 0.007, 0.0022],
+    ]) {
       eye.add(
-        strand(
-          [
-            origin,
-            [origin[0] + side * distance * 0.56, origin[1] + distance * 0.3, origin[2] + 0.001],
-            [
-              origin[0] + side * distance,
-              origin[1] + distance * (0.41 + 0.19 * lash),
-              origin[2] - 0.001,
-            ],
-          ],
-          (time) => [0.0019 * (1 - 0.9 * time), 0.0015 * (1 - 0.85 * time)],
-          liner,
-          { steps: 9, sides: 7 },
+        new THREE.Mesh(
+          surface(6, 22, (radius, angle) => ({
+            point: eyePoint(
+              x + radius * size * Math.cos(angle * 2 * Math.PI),
+              y + radius * size * 0.88 * Math.sin(angle * 2 * Math.PI),
+              0.0014,
+            ),
+          })),
+          catchlight,
         ),
       );
     }
 
-    const lowerLid = Array.from({ length: 9 }, (_, i) =>
-      eyeContour((1 + i / 8) * Math.PI, 1, 0.004),
-    );
+    const lashPoint = (sweep: number) => {
+      const x = cx + (sweep * 2 - 1) * 0.049;
+      return eyePoint(x, aperture(x).top, 0.0009);
+    };
+    for (const upper of [true, false]) {
+      eye.add(
+        new THREE.Mesh(
+          surface(9, 50, (row, sweep) => {
+            const x = cx + (sweep * 2 - 1) * 0.049;
+            const { top, bottom, arch } = aperture(x);
+            const size = upper ? 0.009 : 0.0058;
+            const y = (upper ? top : bottom) + (upper ? 1 : -1) * size * arch * row;
+            const fold = arch * Math.sin(row * Math.PI) * (upper ? 0.0028 : 0.0018);
+            const offset = 0.0005 + arch * (1 - row) * 0.0022 + fold;
+            const color = skinAt(x, y, 1).lerp(
+              shadow,
+              arch * (1 - row) ** 2 * (upper ? 0.53 : 0.26),
+            );
+            color.lerp(blush, 12 * fold);
+            return { point: facePoint(x, y, offset), color };
+          }),
+          lidMaterial,
+        ),
+      );
+    }
     eye.add(
-      strand(lowerLid, (time) => [0.0018 * taper(time, 0.2), 0.0013], lowerLidMaterial, {
-        steps: 20,
-        sides: 7,
-      }),
+      strand(
+        Array.from({ length: 15 }, (_, index) => lashPoint(index / 14)),
+        (time) => {
+          const outer = side > 0 ? time : 1 - time;
+          return [0.0011 + 0.0015 * taper(time, 0.18) * outer, 0.0015];
+        },
+        lashes,
+        { steps: 30, sides: 7 },
+      ),
     );
+    for (let lash = 0; lash < 6; lash++) {
+      const sweep = side > 0 ? 0.53 + lash * 0.065 : 0.47 - lash * 0.065;
+      const origin = lashPoint(sweep);
+      const length = 0.0065 + lash * 0.0012;
+      eye.add(
+        strand(
+          [
+            origin,
+            [origin[0] + side * length * 0.45, origin[1] + length * 0.44, origin[2]],
+            [origin[0] + side * length * 0.72, origin[1] + length, origin[2] - 0.002],
+          ],
+          (time) => [0.0014 * (1 - 0.92 * time), 0.0011 * (1 - 0.86 * time)],
+          lashes,
+          { steps: 9, sides: 6 },
+        ),
+      );
+    }
 
-    // Set the pivot at the eye line so the lashes and catchlights follow the lid.
+    // Keep the lid surfaces and catchlights registered with the aperture during a blink.
     eye.position.y = eyeLevel;
     for (const part of eye.children) part.position.y -= eyeLevel;
     eyes.push(eye);
     group.add(eye);
 
     const brow = [
-      facePoint(side * 0.035, 2.546, 0.004),
-      facePoint(side * 0.063, 2.555, 0.004),
-      facePoint(side * 0.095, 2.558, 0.0039),
-      facePoint(side * 0.119, 2.555, 0.0038),
-      facePoint(side * 0.143, 2.542, 0.0036),
+      facePoint(side * 0.031, 2.55, 0.0032),
+      facePoint(side * 0.06, 2.559, 0.0037),
+      facePoint(side * 0.088, 2.563, 0.0037),
+      facePoint(side * 0.12, 2.559, 0.0038),
+      facePoint(side * 0.146, 2.545, 0.0033),
     ];
     group.add(
       strand(
         brow,
-        (time) => [0.0061 * (1 - time * 0.73) * taper(time, 0.29), 0.0031 * taper(time, 0.52)],
+        (time) => [0.0056 * (1 - time * 0.73) * taper(time, 0.25), 0.0026 * taper(time, 0.48)],
         brows,
-        { steps: 19, sides: 9 },
+        { steps: 22, sides: 9 },
       ),
     );
   }
 
   const lipColor = new THREE.Color(palette.lip);
-  const lower = lipColor.clone().lerp(base, 0.28);
+  const lower = lipColor.clone().lerp(base, 0.2);
   const upper = lipColor.clone().lerp(new THREE.Color("#883b43"), 0.13);
-  const seam = lipColor.clone().lerp(new THREE.Color("#69363c"), 0.61);
+  const seam = lipColor.clone().lerp(new THREE.Color("#69363c"), 0.46);
   const sheen = lipColor.clone().lerp(base, 0.65);
   const lipMaterial = new THREE.MeshStandardMaterial({
     vertexColors: true,
-    roughness: 0.53,
+    roughness: 0.61,
     side: THREE.DoubleSide,
   });
-  const lipWidth = 0.0565;
-  const mouthCenter = 2.323;
+  const lipWidth = 0.056;
+  const mouthCenter = 2.351;
   for (const lip of [-1, 1]) {
     group.add(
       new THREE.Mesh(
@@ -438,10 +452,10 @@ function addFace(
           const side = Math.abs(shift);
           const curve = Math.max(0, 1 - side ** 2) ** 1.08;
           const bow = Math.exp(-(((side - 0.36) / 0.23) ** 2));
-          const height = lip > 0 ? 0.012 + 0.0095 * bow : 0.027;
+          const height = lip > 0 ? 0.012 + 0.007 * bow : 0.0215;
           const mouthLine =
             mouthCenter +
-            0.009 * THREE.MathUtils.smoothstep(side, 0.25, 1) -
+            0.0065 * THREE.MathUtils.smoothstep(side, 0.36, 1) -
             0.0015 * Math.exp(-((shift / 0.22) ** 2));
           const tint = (lip > 0 ? upper : lower).clone();
           const softEdge = THREE.MathUtils.smoothstep(row, 0.8, 1);
@@ -450,12 +464,12 @@ function addFace(
           if (lip < 0) {
             tint.lerp(sheen, 0.32 * gaussian(shift, row, -0.08, 0.49, 0.46, 0.24));
           }
-          tint.lerp(base, Math.min(1, softEdge * 0.72 + softCorner));
+          tint.lerp(base, Math.min(1, softEdge * 0.94 + softCorner));
           return {
             point: facePoint(
               shift * lipWidth,
               mouthLine + lip * row * height * curve,
-              0.0007 + curve * (0.0037 * (1 - row) + 0.0045 * Math.sin(Math.PI * row)),
+              0.0005 + curve * (0.0022 * (1 - row) + 0.007 * Math.sin(Math.PI * row)),
             ),
             color: tint,
           };
