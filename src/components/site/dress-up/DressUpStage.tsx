@@ -359,11 +359,11 @@ function CameraFrame({ portrait }: { portrait: boolean }) {
       return;
     }
 
-    const center = portrait ? 2.3 : 1.4;
-    const height = portrait ? 1.32 : 3.53;
-    const width = portrait ? 1.02 : 2.07;
+    const center = portrait ? 2.355 : 1.4;
+    const height = portrait ? 1.18 : 3.53;
+    const width = portrait ? 0.98 : 2.07;
 
-    // The portrait starts at eye level and keeps the shoulder-length sections in frame.
+    // Keep the portrait straight on, with the full hairline and both shoulders visible.
     camera.position.set(portrait ? 0 : 0.35, center + (portrait ? 0.06 : 0.43), 6.6);
     camera.lookAt(0, center, 0);
     camera.zoom = Math.min(size.width / width, size.height / height);
@@ -488,11 +488,11 @@ export function DressUpStage({
               shadows="percentage"
               gl={rendererOptions}
             >
-              <hemisphereLight args={["#fff4ee", "#efe0d7", 1.47]} />
+              <hemisphereLight args={["#f8f4f1", "#e3d5ca", 1.12]} />
               <directionalLight
-                color="#fff0e3"
-                intensity={2.2}
-                position={[-3.4, 6, 4.7]}
+                color="#fff6ee"
+                intensity={2.12}
+                position={[-3.7, 5.3, 5.8]}
                 castShadow
                 shadow-mapSize={[1024, 1024]}
                 shadow-camera-left={-2.8}
@@ -505,9 +505,9 @@ export function DressUpStage({
                 shadow-bias={-0.00022}
                 shadow-radius={3}
               />
-              <directionalLight color="#fff9f4" intensity={0.68} position={[0, 0.75, 5.3]} />
-              <directionalLight color="#efe6ff" intensity={0.8} position={[3.2, 3.7, 0.3]} />
-              <directionalLight color="#ffd6c9" intensity={1.25} position={[1.6, 4.9, -3.1]} />
+              <directionalLight color="#fff9f5" intensity={0.52} position={[0.8, 0.55, 5.4]} />
+              <directionalLight color="#f2edff" intensity={0.68} position={[3.6, 2.2, 2.8]} />
+              <directionalLight color="#ffe3d5" intensity={1.1} position={[1.6, 4.9, -3.1]} />
               <StudioSet colors={colors} />
               <Doll look={look} rotation={rotation} />
               <CameraFrame portrait={portrait} />
